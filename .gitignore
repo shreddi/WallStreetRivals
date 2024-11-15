@@ -1,0 +1,153 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.vite/deps/
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+*.log
+logs/
+*.log.*
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Python
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.pydist
+*.coverage
+.coverage.*
+
+# Django
+*.sqlite3
+db.sqlite3
+*.log
+*.pot
+*.pyc
+*.pyo
+media/
+*.mo
+staticfiles/
+venv/
+local_settings.py
+
+# Virtual Environment
+.env
+.venv/
+ENV/
+env.bak/
+env/
+.env.*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Docker
+**/Dockerfile
+docker-compose.override.yml
+docker-compose.override.*
+docker-compose.yml.bak
+docker-compose*.yml
+
+# VS Code
+.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# IDEs and Editors
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.swp
+*~
+.project
+.settings/
+.classpath
+.idea/
+*.iml
+*.ipynb
+target/
+*.vscode/
+.vscode/
+
+# Coverage
+*.cover
+*.coverage
+*.coverage.*
+.cache/
+coverage/
+coverage-html/
+.tox/
+nosetests.xml
+.coverage
+*.coverage
+
+# Environment variables
+.env
+.env.*
+!*.env.example
+
+# Testing
+.pytest_cache/
+.tox/
+.pytest_cache/
+coverage.xml
+nosetests.xml
+junit.xml
+test-results/
+test-reports/
+
+# Dependencies and Build files
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+build/
+dist/
+temp/
+
+# GitHub
+.github/
+pull_request_template.md
+CONTRIBUTING.md
+
+# Storybook
+.storybook/
+storybook-static/
+__snapshots__/
+__image_snapshots__/
+
+# Temporary files
+*.bak
+*.tmp
+*.swp
+*.swo
+*.bak.*
+
+# Local dev tools
+.eslintcache
+.postcssrc
+.prettiercache
+jest/
