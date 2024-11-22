@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import './App.css'
 import Portfolio from './components/Portfolio';
+import '@mantine/core/styles.css'; // Import Mantine core styles
 
 
 function App() {
@@ -13,6 +14,14 @@ function App() {
         theme={{
           fontFamily: 'Montserrat, sans-serif',
           headings: { fontFamily: 'Montserrat, sans-serif' },
+          fontSizes: {
+            xs: '12px',
+            sm: '16px',
+            md: '20px',
+            lg: '30px',
+            xl: '50px',
+          },
+          
         }}
       >
         <BrowserRouter>
