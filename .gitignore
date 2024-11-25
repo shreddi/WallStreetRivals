@@ -19,10 +19,13 @@ pids/
 *.pid.lock
 
 # Python
+/env
 *.pyc
 __pycache__/
+/__pycache__/*
 *.pyo
 *.pyd
+*.pyc
 *.pydist
 *.coverage
 .coverage.*
