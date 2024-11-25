@@ -23,8 +23,7 @@ class WSRUser(AbstractUser):
 #Stock model: Represents stock in a holding in an user's portfolio. Many holdings refer to one stock. 
 class Stock(MetadataModel):
     ticker = models.CharField(max_length=10, unique=True)
-    name = models.CharField(max_length=255, default='')
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    trade_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
 
 #Holding model: every holding has a portfolio it is in, and a stock it has a certain quantity of.
