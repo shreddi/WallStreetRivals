@@ -30,10 +30,19 @@ class HoldingSerializer(serializers.ModelSerializer):
 
 class PortfolioSerializer(serializers.ModelSerializer):
     holdings = HoldingSerializer(many=True)
+    holdings_total = serializers.SerializerMethodField()
 
     class Meta:
         model = Portfolio
         fields = "__all__"
+
+    def get_holdings_total(self, obj):
+        # Sum up the total_value for all holdings
+        return sum(
+            holding.shares * holding.stock.trade_price
+            for holding in obj.holdings.all()
+            if holding.stock and holding.stock.trade_price
+        )
 
     def create(self, validated_data):
         holdings_data = validated_data.pop('holdings')
