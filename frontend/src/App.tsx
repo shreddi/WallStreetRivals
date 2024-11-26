@@ -2,7 +2,7 @@ import React from 'react'
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import './App.css'
-import Portfolio from './components/Portfolio';
+import PortfolioDashboard from './components/PortfolioDashboard';
 import '@mantine/core/styles.css'; // Import Mantine core styles
 
 
@@ -27,7 +27,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Navigate replace to="/portfolio" />} />
-            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/portfolio" element={<PortfolioDashboard />} />
           </Routes>
         </BrowserRouter>
       </MantineProvider>
