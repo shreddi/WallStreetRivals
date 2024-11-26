@@ -32,5 +32,5 @@ class Holding(MetadataModel):
     shares = models.IntegerField(default=0)
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE, related_name='holdings')
 
-    class Meta:
-        unique_together = ('portfolio', 'stock')
+    # class Meta:
+    #     unique_together = ('portfolio', 'stock')
