@@ -6,6 +6,7 @@ from .models import *
 from .serializers import *
 import requests
 import os
+from app.services.alpaca_service import fetch_and_update_stock_prices
 
 class PortfolioViewSet(viewsets.ModelViewSet):
     queryset = Portfolio.objects.all()
@@ -13,12 +14,12 @@ class PortfolioViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk=None):
         portfolio = self.get_object()
-        self.update_stock_prices(portfolio)
+        self.update_portfolio_stock_prices(portfolio)
         serializer = self.get_serializer(portfolio)
         return Response(serializer.data)
     
-    
-    def update_stock_prices(self, portfolio):
+    # When a portfolio is retrieved, update the stock trade prices from this portfolio in the database and then get these. This should probably be changed
+    def update_portfolio_stock_prices(self, portfolio):
         # Get the stocks in this portfolio
         stocks = Stock.objects.filter(holdings__portfolio=portfolio).distinct()
 
@@ -29,7 +30,6 @@ class PortfolioViewSet(viewsets.ModelViewSet):
             "APCA-API-KEY-ID": os.getenv("ALPACA_API_KEY"),
             "APCA-API-SECRET-KEY": os.getenv("ALPACA_SECRET_KEY"),
         }  
-
 
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
@@ -48,3 +48,19 @@ class HoldingViewSet(viewsets.ModelViewSet):
 class StockViewSet(viewsets.ModelViewSet):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
+
+    def list(self, request, *args, **kwargs):
+        # Fetch updated stock prices from Alpaca API
+        try:
+            fetch_and_update_stock_prices()
+        except Exception as e:
+            return Response({"error": f"Failed to update stock prices: {e}"}, status=500)
+
+        # Retrieve the updated queryset
+        queryset = self.filter_queryset(self.get_queryset())
+        
+        # Serialize and return the data
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+

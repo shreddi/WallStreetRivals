@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Flex, Box, Text, Select, Stack, NumberInput, Button, Table, Loader } from '@mantine/core';
-import { Portfolio, defaultPortfolio, Holding } from '../types';
-import { portfolioApi } from '../apiService';
+import { Portfolio, defaultPortfolio, Holding, Stock, defaultStock } from '../types';
+import { portfolioApi, stockApi } from '../apiService';
 
 const PortfolioDashboard: React.FC = () => {
     // **State**
     const portfolioNum = 1;
     const [quantity, setQuantity] = useState<number>(0);
     const [portfolio, setPortfolio] = useState<Portfolio>(defaultPortfolio);
+    const [stocks, setStocks] = useState<Stock[]>([]);
+    const [selectedStock, setSelectedStock] = useState<Stock>(defaultStock);
     const [loading, setLoading] = useState(true);
 
     // **Derived Data**
     const holdings: Holding[] = portfolio.holdings;
+    const stockOptions = stocks.map((stock) => ({ //data structure used by Select component for user to select stocks from.
+        value: stock.ticker, 
+        label: stock.ticker, 
+    })); 
     const rows = holdings.map((holding) => (
         <Table.Tr key={holding.stock_data.ticker}>
             <Table.Td>{holding.stock_data.ticker}</Table.Td>
@@ -22,13 +28,25 @@ const PortfolioDashboard: React.FC = () => {
         </Table.Tr>
     ));
 
+
+    // **functions**
+    const selectStockByTicker = (ticker: string | null) => {
+        setSelectedStock(
+            stocks.find((stock) => stock.ticker === ticker) || defaultStock
+        )
+    };
+
     // **Effects**
     useEffect(() => {
-        portfolioApi
-            .getPortfolio(portfolioNum)
-            .then((data: Portfolio) => {
-                setPortfolio(data);
-                console.log(data);
+        setLoading(true);
+
+        //Fetch a portfolio and all stocks from the backend.
+        Promise.all([
+            portfolioApi.getPortfolio(portfolioNum),
+            stockApi.getAllStocks()])
+            .then(([portfolioData, stockData]) => {
+                setPortfolio(portfolioData);
+                setStocks(stockData)
             })
             .catch((error: Error) => {
                 console.error(error);
@@ -36,7 +54,7 @@ const PortfolioDashboard: React.FC = () => {
             .finally(() => {
                 setLoading(false);
             });
-    }, [portfolioNum]);
+    }, []);
 
     // **Early Return for Loading State**
     if (loading) {
@@ -63,7 +81,8 @@ const PortfolioDashboard: React.FC = () => {
                 <Stack>
                     <Select
                         label={<Text size="md" c="gray">SEARCH STOCKS</Text>}
-                        data={['APPLE (APPL)', 'AMAZON (AMZN)', 'MICROSOFT (MSFT)']}
+                        data = {stockOptions}
+                        onChange = {(selectedTicker) => selectStockByTicker(selectedTicker)}
                         w="100%"
                     />
                     <Flex align="flex-end" justify="space-between">
