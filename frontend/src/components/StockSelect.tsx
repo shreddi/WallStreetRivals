@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Stock } from '../types'
-import { Combobox, InputBase, Input, useCombobox, Group, CheckIcon, CloseButton, Select } from '@mantine/core'
+import { Combobox, InputBase, Input, useCombobox, Group, CheckIcon, CloseButton, Select, ScrollArea} from '@mantine/core'
 
 interface StockSelectProps {
   stocks: Stock[];
@@ -75,18 +75,20 @@ export default function StockSelect({ stocks, setSelectedStock }: StockSelectPro
           }}
           onClick={() => combobox.openDropdown()}
           onFocus={() => combobox.openDropdown()}
-          // onKeyDown={(event) => {
-          //   if (event.key === 'Enter' && options.length == 1) {
-          //     event.preventDefault();
-          //     handleSelect(options[0].value)
-          //   }
-          // }}
+        // onKeyDown={(event) => {
+        //   if (event.key === 'Enter' && options.length == 1) {
+        //     event.preventDefault();
+        //     handleSelect(options[0].value)
+        //   }
+        // }}
         />
       </Combobox.Target>
 
-      <Combobox.Dropdown>
+      <Combobox.Dropdown >
         <Combobox.Options>
-          {options.length > 0 ? options : <Combobox.Empty>Nothing found</Combobox.Empty>}
+          <ScrollArea.Autosize mah={200} type="scroll">
+            {options.length === 0 ? <Combobox.Empty>Nothing found</Combobox.Empty> : options}
+          </ScrollArea.Autosize>
         </Combobox.Options>
       </Combobox.Dropdown>
     </Combobox >
