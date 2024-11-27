@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Stock } from '../types'
-import { Combobox, InputBase, useCombobox, Group, CheckIcon, } from '@mantine/core'
+import { Combobox, InputBase, Input, useCombobox, Group, CheckIcon, CloseButton, Select } from '@mantine/core'
 
 interface StockSelectProps {
   stocks: Stock[];
@@ -29,33 +29,58 @@ export default function StockSelect({ stocks, setSelectedStock }: StockSelectPro
     </Combobox.Option>
   ));
 
+  const handleSelect = (selection: string | undefined) => {
+    if (selection) {
+      setValue(selection);
+      setSearch(selection);
+      setSelectedStock(stocks.find((stock) => stock.ticker === selection));
+      combobox.closeDropdown()
+    } else {
+      setValue(null)
+      setSearch('')
+      setSelectedStock(undefined)
+      combobox.closeDropdown()
+    }
+  }
+
   return (
     <Combobox
       store={combobox}
       withinPortal={false}
       onOptionSubmit={(val) => {
-        setValue(val);
-        setSearch(val);
-        setSelectedStock(stocks.find((stock) => stock.ticker === val))
-        combobox.closeDropdown()
+        handleSelect(val)
       }}
     >
       <Combobox.Target>
         <InputBase
-          rightSection={<Combobox.Chevron />}
+          rightSection={
+            value !== null ? (
+              <CloseButton
+                size="sm"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => {
+                  handleSelect(undefined)
+                }}
+                aria-label="Clear value"
+              />
+            ) : (
+              <Combobox.Chevron />
+            )
+          }
+          rightSectionPointerEvents={value === null ? 'none' : 'all'}
           value={search}
           onChange={(event) => {
-            combobox.openDropdown();
-            combobox.updateSelectedOptionIndex();
             setSearch(event.currentTarget.value);
+            combobox.openDropdown();
           }}
           onClick={() => combobox.openDropdown()}
           onFocus={() => combobox.openDropdown()}
-          onBlur={() => {
-            combobox.closeDropdown();
-            setSearch(value || '');
-          }}
-          rightSectionPointerEvents="none"
+          // onKeyDown={(event) => {
+          //   if (event.key === 'Enter' && options.length == 1) {
+          //     event.preventDefault();
+          //     handleSelect(options[0].value)
+          //   }
+          // }}
         />
       </Combobox.Target>
 
@@ -64,6 +89,6 @@ export default function StockSelect({ stocks, setSelectedStock }: StockSelectPro
           {options.length > 0 ? options : <Combobox.Empty>Nothing found</Combobox.Empty>}
         </Combobox.Options>
       </Combobox.Dropdown>
-    </Combobox>
+    </Combobox >
   );
 }
