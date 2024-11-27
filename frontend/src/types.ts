@@ -18,10 +18,11 @@ export interface Stock extends ResourceWithMetadata{
 };
 
 export interface Holding extends ResourceWithMetadata{
-    stock?: number; //numerical id of associated stock. Can be undefined if a holding has a stock added in frontend that is not yet created in backend.
-    stock_data: Stock;
+    stock: number; //numerical id of associated stock. Can be undefined if a holding has a stock added in frontend that is not yet created in backend.
+    stock_data?: Stock;
     shares: number;
-    total_value: string; //total value is calculated by serializer in backend.
+    total_value?: string; //total value is calculated by serializer in backend.
+    portfolio: number //numerical id of associated portfolio
 };
 
 export interface Portfolio extends ResourceWithMetadata{
@@ -38,9 +39,9 @@ export const defaultStock: Stock = {
 }
 
 export const defaultHolding: Holding = {
-    stock_data: defaultStock,
+    stock: 0,
     shares: 0, 
-    total_value: '0',
+    portfolio: 0
 }
 
 export const defaultPortfolio: Portfolio = {
