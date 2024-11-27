@@ -1,4 +1,4 @@
-import axios, { AxiosRequestHeaders } from 'axios';
+import axios from 'axios';
 import { Stock, Portfolio, Holding } from './types.ts'
 
 //Base backend URL
@@ -6,17 +6,6 @@ export const API_BASE_URL = 'http://localhost:8000'
 
 //Helper to create full URLs
 const buildUrl = (endpoint: string) => `${API_BASE_URL}${endpoint}`;
-
-// //function to construct axios authorization headers based on locally stored token.
-// export function getAuthHeaders(): AxiosRequestHeaders['headers'] {
-//     const token = localStorage.get('token')
-//     if (!token) {
-//         throw new Error('No access token available');
-//     }
-//     return {
-//         Authorization: `Bearer ${token}`,
-//     };
-// }
 
 //Reusable Axios configuration
 const axiosConfig = { headers: { 'Content-Type': 'application/json' } };
@@ -33,19 +22,9 @@ export const portfolioApi = {
         }
     },
 
-    async getAllPortfolios(): Promise<Portfolio[]> {
-        try {
-            const response = await axios.get(buildUrl('/api/portfolios'), axiosConfig);
-            return response.data;
-        } catch (error) {
-            console.error('Failed to get all portfolios:', error);
-            throw error;
-        }
-    },
-
     async createPortfolio(portfolio: Partial<Portfolio>): Promise<Portfolio> {
         try {
-            const response = await axios.post(buildUrl('/api/portfolios'), portfolio, axiosConfig);
+            const response = await axios.post(buildUrl('/api/portfolios/'), portfolio, axiosConfig);
             return response.data;
         } catch (error) {
             console.error('Failed to create portfolio:', error);
@@ -78,15 +57,6 @@ export const portfolioApi = {
 
 //Stock API Service
 export const stockApi = {
-    async getStock(stock_id: number): Promise<Stock> {
-        try {
-            const response = await axios.get(buildUrl(`/api/stocks/${stock_id}`), axiosConfig);
-            return response.data;
-        } catch (error) {
-            console.error(`Failed to get stock ${stock_id}:`, error);
-            throw error;
-        }
-    },
 
     async getAllStocks(): Promise<Stock[]> {
         try {
@@ -97,37 +67,43 @@ export const stockApi = {
             throw error;
         }
     },
+    
+};
 
-    async createStock(stock: Partial<Stock>): Promise<Stock> {
+
+// Holding API Service
+export const holdingApi = {
+
+    async createHolding(holding: Holding): Promise<Holding> {
         try {
-            const response = await axios.post(buildUrl('/api/stocks'), stock, axiosConfig);
-            return response.data;
+            const response = await axios.post(buildUrl('/api/holdings/'), holding, axiosConfig);
+            console.log(response.data)
+            return response.data
         } catch (error) {
-            console.error('Failed to create stock:', error);
+            console.error('Failed to create holding:', error);
             throw error;
         }
     },
 
-    async updateStock(stock: Stock): Promise<Stock> {
-        if (!stock.id) {
-            throw new Error('Stock ID is required to update a stock.');
+    async updateHolding(holding: Holding): Promise<Holding> {
+        if (!holding.id) {
+            throw new Error('Holding ID is required to update a holding.');
         }
         try {
-            const response = await axios.put(buildUrl(`/api/stocks/${stock.id}`), stock, axiosConfig);
+            const response = await axios.put(buildUrl(`/api/holdings/${holding.id}`), holding, axiosConfig);
             return response.data;
         } catch (error) {
-            console.error(`Failed to update stock ${stock.id}:`, error);
+            console.error(`Failed to update holding ${holding.id}:`, error);
             throw error;
         }
     },
 
-    async deleteStock(stock_id: number): Promise<void> {
+    async deleteHolding(holding_id: number): Promise<void> {
         try {
-            await axios.delete(buildUrl(`/api/stocks/${stock_id}`), axiosConfig);
+            await axios.delete(buildUrl(`/api/holdings/${holding_id}`), axiosConfig);
         } catch (error) {
-            console.error(`Failed to delete stock ${stock_id}:`, error);
+            console.error(`Failed to delete holding ${holding_id}:`, error);
             throw error;
         }
     },
 };
-
