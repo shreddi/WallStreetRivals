@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Flex, Box, Text, Select, Stack, NumberInput, Button, Table, Loader } from '@mantine/core';
-import { Portfolio, defaultPortfolio, Holding, Stock, defaultStock } from '../types';
+import { Flex, Box, Text, Stack, NumberInput, Button, Table, Loader } from '@mantine/core';
+import { Portfolio, defaultPortfolio, Holding, Stock} from '../types';
 import { portfolioApi, stockApi, holdingApi } from '../apiService';
+import StockSelect from './StockSelect'
 
 const PortfolioDashboard: React.FC = () => {
     // **State**
@@ -12,20 +13,8 @@ const PortfolioDashboard: React.FC = () => {
     const [selectedStock, setSelectedStock] = useState<Stock | undefined>(undefined);
     const [loading, setLoading] = useState(true);
 
-    // **Derived Data**
-    const stockOptions = stocks.map((stock) => ({
-        value: stock.ticker, // Ticker is used as the identifier
-        label: `${stock.ticker}`, // Display ticker and price in dropdown
-    }));
-
 
     // **Functions**
-    const selectStockByTicker = (ticker: string | null) => {
-        setSelectedStock(
-            stocks.find((stock) => stock.ticker === ticker) || defaultStock
-        )
-    };
-
     const formatPrice = (priceString: string): string => {
         return parseFloat(priceString).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     }
@@ -113,7 +102,7 @@ const PortfolioDashboard: React.FC = () => {
                 </Flex>
                 <Box p="20px" bg="white">
                     <Stack>
-                        <Select
+                        {/* <Select
                             label={<Text size="md" c="gray">SEARCH STOCKS</Text>}
                             data={stockOptions} // options have value: stock ticker, label: "ticker: $price"
                             value={selectedStock?.ticker}
@@ -127,7 +116,8 @@ const PortfolioDashboard: React.FC = () => {
                             }}
                             searchable
                             clearable
-                        />
+                        /> */}
+                        <StockSelect stocks={stocks} setSelectedStock={setSelectedStock} />
                         {selectedStock && <Flex align="flex-end" justify="space-between">
 
                             <NumberInput
