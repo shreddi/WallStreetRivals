@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from .models import *
 from .serializers import *
 import requests
@@ -37,13 +37,35 @@ class PortfolioViewSet(viewsets.ModelViewSet):
             for ticker, trade_data in data.items():
                 stock = stocks.filter(ticker=ticker).first()
                 if stock:
-                    stock.trade_price = trade_data["p"]  # Update the trade price
+                    stock.trade_price = trade_data["p"]  
                     stock.save()
 
 
 class HoldingViewSet(viewsets.ModelViewSet):
     queryset = Holding.objects.all()
     serializer_class = HoldingSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        holding = self.get_object()  #Get the holding to be deleted
+        portfolio = holding.portfolio  #Get the associated portfolio
+        
+        #Calculate the total value of the holding
+        if holding.stock and holding.stock.trade_price:
+            total_value = holding.shares * holding.stock.trade_price
+        else:
+            total_value = 0
+
+        #Add the value back to the portfolio's cash
+        portfolio.cash += total_value
+        portfolio.save()
+
+        #Proceed with the deletion
+        response = super().destroy(request, *args, **kwargs)
+
+        return Response({
+            "message": f"Holding deleted. ${total_value} added back to portfolio cash.",
+            "portfolio_cash": portfolio.cash
+        }, status=status.HTTP_200_OK)
 
 class StockViewSet(viewsets.ModelViewSet):
     queryset = Stock.objects.all()

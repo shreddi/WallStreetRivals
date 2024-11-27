@@ -22,8 +22,9 @@ const PortfolioDashboard: React.FC = () => {
             <Table.Td>{holding.stock_data?.ticker || ""}</Table.Td>
             <Table.Td>{holding.shares}</Table.Td>
             <Table.Td>${holding.stock_data!.trade_price}</Table.Td>
-            <Table.Td>${holding.total_value}</Table.Td>
+            <Table.Td>${parseFloat(holding.total_value || '0').toLocaleString()}</Table.Td>
             <Table.Td>{new Date(holding.time_updated || "").toLocaleString()}</Table.Td>
+            <Table.Td><Button color="gray" onClick={()=>sellHolding(holding)}>SELL</Button></Table.Td>
         </Table.Tr>
     ));
 
@@ -36,18 +37,24 @@ const PortfolioDashboard: React.FC = () => {
     };
 
     //Buys a new holding based on selected quantity and stock ID. 
-    const buyNewHolding = async () => {
+    const buyHolding = async () => {
         if (!selectedStock.id) {
             console.error("failed to create holding: stock id not present")
         } else {
             const newHolding: Holding = {
                 stock: selectedStock.id,
-                shares: quantity,
+                shares: quantity || 0,
                 portfolio: portfolioNum
             }
-            await holdingApi.createHolding(newHolding)
-            fetchData()
+            await holdingApi.createHolding(newHolding);
+            fetchData();
         }
+        setSelectedStock(defaultStock)
+    }
+
+    const sellHolding = async (holdingToSell: Holding) => {
+        await holdingApi.deleteHolding(holdingToSell.id!);
+        fetchData();
     }
 
     //Fetch a portfolio and all stocks from the backend.
@@ -113,10 +120,9 @@ const PortfolioDashboard: React.FC = () => {
                             <NumberInput
                                 label={<Text size="md" c="gray">QUANTITY</Text>}
                                 allowNegative={false}
-                                value={quantity}
                                 onChange={(value) => setQuantity(Number(value))}
                             />
-                            <Button color="gray" onClick={() => buyNewHolding()}>
+                            <Button color="gray" onClick={() => buyHolding()}>
                                 BUY
                             </Button>
                         </Flex>
@@ -138,6 +144,7 @@ const PortfolioDashboard: React.FC = () => {
                             <Table.Th>PRICE</Table.Th>
                             <Table.Th>TOTAL</Table.Th>
                             <Table.Th>DATE</Table.Th>
+                            <Table.Th></Table.Th>
                         </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody bg="black" c="gray">{rows}</Table.Tbody>

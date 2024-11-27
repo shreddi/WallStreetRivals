@@ -14,7 +14,7 @@ const axiosConfig = { headers: { 'Content-Type': 'application/json' } };
 export const portfolioApi = {
     async getPortfolio(portfolio_id: number): Promise<Portfolio> {
         try {
-            const response = await axios.get(buildUrl(`/api/portfolios/${portfolio_id}`), axiosConfig);
+            const response = await axios.get(buildUrl(`/api/portfolios/${portfolio_id}/`), axiosConfig);
             return response.data;
         } catch (error) {
             console.error(`Failed to get portfolio ${portfolio_id}:`, error);
@@ -37,7 +37,7 @@ export const portfolioApi = {
             throw new Error('Portfolio ID is required to update a portfolio.');
         }
         try {
-            const response = await axios.put(buildUrl(`/api/portfolios/${portfolio.id}`), portfolio, axiosConfig);
+            const response = await axios.put(buildUrl(`/api/portfolios/${portfolio.id}/`), portfolio, axiosConfig);
             return response.data;
         } catch (error) {
             console.error(`Failed to update portfolio ${portfolio.id}:`, error);
@@ -47,7 +47,7 @@ export const portfolioApi = {
 
     async deletePortfolio(portfolio_id: number): Promise<void> {
         try {
-            await axios.delete(buildUrl(`/api/portfolios/${portfolio_id}`), axiosConfig);
+            await axios.delete(buildUrl(`/api/portfolios/${portfolio_id}/`), axiosConfig);
         } catch (error) {
             console.error(`Failed to delete portfolio ${portfolio_id}:`, error);
             throw error;
@@ -67,7 +67,7 @@ export const stockApi = {
             throw error;
         }
     },
-    
+
 };
 
 
@@ -90,7 +90,7 @@ export const holdingApi = {
             throw new Error('Holding ID is required to update a holding.');
         }
         try {
-            const response = await axios.put(buildUrl(`/api/holdings/${holding.id}`), holding, axiosConfig);
+            const response = await axios.put(buildUrl(`/api/holdings/${holding.id}/`), holding, axiosConfig);
             return response.data;
         } catch (error) {
             console.error(`Failed to update holding ${holding.id}:`, error);
@@ -100,7 +100,7 @@ export const holdingApi = {
 
     async deleteHolding(holding_id: number): Promise<void> {
         try {
-            await axios.delete(buildUrl(`/api/holdings/${holding_id}`), axiosConfig);
+            await axios.delete(buildUrl(`/api/holdings/${holding_id}/`), axiosConfig);
         } catch (error) {
             console.error(`Failed to delete holding ${holding_id}:`, error);
             throw error;
