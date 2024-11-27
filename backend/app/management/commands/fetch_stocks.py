@@ -42,6 +42,7 @@ class Command(BaseCommand):
             self.stderr.write("No tickers found from assets endpoint")
             return
         
+
         #Fetch trade prices from Alpaca Latest Trades api using tickers.
         #https://docs.alpaca.markets/reference/stocklatesttrades-1
         prices_url = "https://data.alpaca.markets/v2/stocks/trades/latest?"
@@ -52,17 +53,13 @@ class Command(BaseCommand):
         }
         try:
             prices_response = requests.get(prices_url, headers=prices_headers, params=prices_params) 
-            print(prices_response.text)
             prices_data = prices_response.json().get('trades', {}) #hash table to look up trade price by ticker
         except Exception as e:
             self.stderr.write(f"Failed to fetch trade prices: {e}")
             return
-        
-        print(prices_data)
 
 
-
-        # Update the database with stock names, Tickers, and trade prices
+        #Update the database with stock names, Tickers, and trade prices
         for ticker, name in stocks_data.items():
             trade_price = prices_data.get(ticker, {}).get("p", None)  # "p" is the price field
             if trade_price is not None:
@@ -79,8 +76,7 @@ class Command(BaseCommand):
                 except Exception as e:
                     self.stderr.write(f"Error saving stock {ticker}: {e}")
             else:
-                # self.stderr.write(f"No trade price found for ticker: {ticker}")
-                pass
+                self.stderr.write(f"No trade price found for ticker: {ticker}")
 
 
 
