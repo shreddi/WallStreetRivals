@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Flex, Box, Text, Stack, NumberInput, Button, Table, Loader } from '@mantine/core';
-import { Portfolio, defaultPortfolio, Holding, Stock} from '../types';
+import { Portfolio, defaultPortfolio, Holding, Stock } from '../types';
 import { portfolioApi, stockApi, holdingApi } from '../apiService';
 import StockSelect from './StockSelect'
 
 const PortfolioDashboard: React.FC = () => {
     // **State**
-    const portfolioNum = 3;
+    const portfolioNum = 1;
     const [quantity, setQuantity] = useState<number>(0);
     const [portfolio, setPortfolio] = useState<Portfolio>(defaultPortfolio);
-    const [stocks, setStocks] = useState<Stock[]>([]);
     const [selectedStock, setSelectedStock] = useState<Stock | undefined>(undefined);
     const [loading, setLoading] = useState(true);
 
@@ -44,12 +43,9 @@ const PortfolioDashboard: React.FC = () => {
     //Fetch a portfolio and all stocks from the backend.
     const fetchData = async () => {
         setLoading(true);
-        Promise.all([
-            portfolioApi.getPortfolio(portfolioNum),
-            stockApi.getAllStocks()])
-            .then(([portfolioData, stockData]) => {
+        portfolioApi.getPortfolio(portfolioNum)
+            .then((portfolioData) => {
                 setPortfolio(portfolioData);
-                setStocks(stockData.sort((a, b) => { return a.ticker.localeCompare(b.ticker) })); //sort stocks alphabetically in local langauge
             })
             .catch((error: Error) => {
                 console.error(error);
@@ -102,22 +98,7 @@ const PortfolioDashboard: React.FC = () => {
                 </Flex>
                 <Box p="20px" bg="white">
                     <Stack>
-                        {/* <Select
-                            label={<Text size="md" c="gray">SEARCH STOCKS</Text>}
-                            data={stockOptions} // options have value: stock ticker, label: "ticker: $price"
-                            value={selectedStock?.ticker}
-                            onChange={(stockTicker) => {
-                                selectStockByTicker(stockTicker);
-                            }}
-                            w="100%"
-                            onClear={() => {
-                                setSelectedStock(undefined);
-                                setQuantity(0);
-                            }}
-                            searchable
-                            clearable
-                        /> */}
-                        <StockSelect stocks={stocks} setSelectedStock={setSelectedStock} />
+                        <StockSelect setSelectedStock={setSelectedStock} />
                         {selectedStock && <Flex align="flex-end" justify="space-between">
 
                             <NumberInput
