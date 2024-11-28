@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Stock } from '../types'
-import { Combobox, InputBase, useCombobox, Group, CheckIcon, Flex, CloseButton, ScrollArea, Loader, Text } from '@mantine/core'
+import { Combobox, InputBase, useCombobox, Group, CheckIcon, Space, Flex, CloseButton, ScrollArea, Loader, Text } from '@mantine/core'
 import { stockApi } from '../apiService';
 
 
@@ -10,12 +10,13 @@ interface StockSelectProps {
 
 export default function StockSelect({ setSelectedStock }: StockSelectProps) {
   const [stocks, setStocks] = useState<Stock[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [value, setValue] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const limit = 100;
 
   const getAllStocks = async () => {
+    setLoading(true)
     stockApi.getAllStocks().then((data) => {
       setStocks(data); //sort stocks alphabetically in local langauge
     }).catch((error: Error) => {
@@ -28,7 +29,7 @@ export default function StockSelect({ setSelectedStock }: StockSelectProps) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
     onDropdownOpen: () => {
-      if (loading) {
+      if (stocks.length === 0) {
         getAllStocks()
       }
     },
@@ -42,7 +43,10 @@ export default function StockSelect({ setSelectedStock }: StockSelectProps) {
         break;
       }
 
-      const stock: Stock = stocks[i]
+      let stock: Stock = stocks[i]
+      if (stock.ticker === 'ACGL') {
+        stock.name = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
       // const stockString = stocks[i].ticker + stocks[i].name
 
       if (stock.ticker.toLowerCase().includes(search.trim().toLowerCase())) {
@@ -59,22 +63,17 @@ export default function StockSelect({ setSelectedStock }: StockSelectProps) {
 
   const options = filteredOptions.map((stock) => (
     <Combobox.Option value={stock.ticker} key={stock.id}>
-      <Group justify="space-between">
-        {/* Left Side: Ticker and Name */}
-        <Flex align='center'>
-          <Text fz='sm' mr='8px'>
-            {stock.ticker}
-          </Text>
-          <Text fz="xs" c="gray" >
-            {stock.name}
-          </Text>
-        </Flex>
-
-        {/* Right Side: Price */}
-        <Text fz='sm' >
+      <Flex justify="space-between" align='center' >
+        <Text fz='sm'>
+          {stock.ticker}
+        </Text>
+        <Text fz="xs" ta='center' c="gray" truncate='end' w='75%'>
+          {stock.name}
+        </Text>
+        <Text fz='sm'>
           ${stock.trade_price}
         </Text>
-      </Group>
+      </Flex>
     </Combobox.Option>
   ));
 
@@ -104,7 +103,7 @@ export default function StockSelect({ setSelectedStock }: StockSelectProps) {
         <InputBase
           rightSection={
             loading ? (
-              <Loader size={18} />
+              <Loader size={18} color='gray' />
             ) : value !== null ? (
               <CloseButton
                 size="sm"

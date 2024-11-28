@@ -81,14 +81,14 @@ const PortfolioDashboard: React.FC = () => {
 
     // **JSX**
     return (
-        <Flex justify='center' >
+        <Flex justify='center'>
             <Stack gap="0px" bd='1px solid #ccc'>
                 <Flex p="20px" bg="gray">
                     <Text size="lg" c="white">
                         PORTFOLIO
                     </Text>
                 </Flex>
-                <Flex p="20px" bg="black" align="flex-end" justify="space-between">
+                <Flex w='700px' p="20px" bg="black" align="flex-end" justify="space-between">
                     <Text size="md" c="gray">
                         CASH
                     </Text>
