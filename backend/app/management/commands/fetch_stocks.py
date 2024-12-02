@@ -14,13 +14,13 @@ class Command(BaseCommand):
         if not ALPACA_API_KEY or not ALPACA_SECRET_KEY:
             raise ValueError("Missing Alpaca API credentials in environment variables.")
 
-
         #Request asset information (Stock ticker, company name, etc) from Alpaca API.
         assets_url = "https://paper-api.alpaca.markets/v2/assets"
         assets_params = {
             "asset_class": "us_equity",
-            "exchange": "NYSE",
-            "status": "active"
+            "exchange": "NYSE,NASDAQ",
+            "status": "active",
+            "attributes": "has_options"
         }
         assets_headers = {
             "APCA-API-KEY-ID": ALPACA_API_KEY,

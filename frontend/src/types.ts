@@ -14,6 +14,7 @@ export interface ResourceWithMetadata{
 //Interfaces to represent serialized data in backend
 export interface Stock extends ResourceWithMetadata{
     ticker: string;
+    name: string;
     trade_price: string;
 };
 
@@ -35,6 +36,7 @@ export interface Portfolio extends ResourceWithMetadata{
 //defaults for each interface
 export const defaultStock: Stock = {
     ticker: '',
+    name: '',
     trade_price: '0',
 }
 
