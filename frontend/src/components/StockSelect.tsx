@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Stock } from '../types'
-import { Combobox, InputBase, useCombobox, Group, CheckIcon, Space, Flex, CloseButton, ScrollArea, Loader, Text } from '@mantine/core'
+import { Combobox, InputBase, useCombobox, Group, CloseButton, ScrollArea, Loader, Text } from '@mantine/core'
 import { stockApi } from '../apiService';
 
 
