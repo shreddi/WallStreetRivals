@@ -43,11 +43,7 @@ export default function StockSelect({ setSelectedStock }: StockSelectProps) {
         break;
       }
 
-      let stock: Stock = stocks[i]
-      if (stock.ticker === 'ACGL') {
-        stock.name = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-      }
-      // const stockString = stocks[i].ticker + stocks[i].name
+      const stock: Stock = stocks[i]
 
       if (stock.ticker.toLowerCase().includes(search.trim().toLowerCase())) {
         result.unshift(stocks[i]);
@@ -62,18 +58,18 @@ export default function StockSelect({ setSelectedStock }: StockSelectProps) {
   const filteredOptions: Stock[] = getFilteredOptions()
 
   const options = filteredOptions.map((stock) => (
-    <Combobox.Option value={stock.ticker} key={stock.id}>
-      <Flex justify="space-between" align='center' >
-        <Text fz='sm'>
+    <Combobox.Option value={stock.ticker} key={stock.id} w='650px'>
+      <Group justify="space-between" align='center' grow preventGrowOverflow={false}  wrap="nowrap">
+        <Text fz='sm' ta='left' w='75px'>
           {stock.ticker}
         </Text>
-        <Text fz="xs" ta='center' c="gray" truncate='end' w='75%'>
+        <Text fz="xs" ta='center' c="gray" truncate>
           {stock.name}
         </Text>
-        <Text fz='sm'>
+        <Text fz='sm' ta='right' w='75px'>
           ${stock.trade_price}
         </Text>
-      </Flex>
+      </Group>
     </Combobox.Option>
   ));
 
