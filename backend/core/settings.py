@@ -11,11 +11,14 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
-
+from dotenv import load_dotenv
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load the environment file based on DJANGO_ENV environment variable
+env_file = ".env.prod" if os.getenv("DJANGO_ENV") == "production" else ".env.dev"
+load_dotenv(os.path.join(BASE_DIR, env_file))
 
 
 # Quick-start development settings - unsuitable for production
@@ -80,11 +83,15 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  
     "http://localhost:8000" 
+    "https://wsrdemo.com"
+    "https://api.wsrdemo.com"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",  
     "http://localhost:8000" 
+    "https://wsrdemo.com"
+    "https://api.wsrdemo.com"
 ]
 
 CORS_ALLOW_HEADERS = [
