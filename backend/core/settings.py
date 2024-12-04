@@ -10,6 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+
 import os
 from dotenv import load_dotenv
 from pathlib import Path
@@ -19,10 +22,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load the environment file based on DJANGO_ENV environment variable
 env_file = ".env.prod" if os.getenv("DJANGO_ENV") == "production" else ".env.dev"
 load_dotenv(os.path.join(BASE_DIR, env_file))
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")#"django-insecure-y*kkmdl$+nar0q(f_a@f$(19kvdqr@s1u1a(=5%i$@sl%jm7t6"
@@ -82,9 +81,9 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  
-    "http://localhost:8000" 
-    "https://wsrdemo.com"
-    "https://api.wsrdemo.com"
+    "http://localhost:8000", 
+    "https://wsrdemo.com",
+    "https://api.wsrdemo.com",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
