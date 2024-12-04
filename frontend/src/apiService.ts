@@ -13,6 +13,7 @@ const axiosConfig = { headers: { 'Content-Type': 'application/json' } };
 //Portfolio API Service
 export const portfolioApi = {
     async getPortfolio(portfolio_id: number): Promise<Portfolio> {
+        console.log(API_BASE_URL)
         try {
             const response = await axios.get(buildUrl(`/api/portfolios/${portfolio_id}/`), axiosConfig);
             return response.data;
