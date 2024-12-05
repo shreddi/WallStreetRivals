@@ -82,7 +82,7 @@ const PortfolioDashboard: React.FC = () => {
     // **JSX**
     return (
         <Flex justify='center'>
-            <Stack gap="0px" bd='1px solid #ccc'>
+            <Stack gap="0px">
                 <Flex p="20px" bg="gray" align = "flex-end" justify="space-between">
                     <Text size="lg" c="white">
                         PORTFOLIO
@@ -99,7 +99,7 @@ const PortfolioDashboard: React.FC = () => {
                         ${formatPrice(portfolio.cash).toLocaleString()}
                     </Text>
                 </Flex>
-                <Box p="20px" bg="white">
+                <Box p="20px" bg="white" bd='1px solid #ccc'>
                     <Stack>
                         <StockSelect setSelectedStock={setSelectedStock} />
                         {selectedStock && <Flex align="flex-end" justify="space-between">
