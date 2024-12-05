@@ -19,6 +19,7 @@ services:
       - db
     env_file:
       - ${ENV_FILE:-.env.dev}
+    entrypoint: [ "/app/entrypoint.sh" ]
 
   frontend:
     build:

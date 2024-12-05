@@ -6,7 +6,7 @@ from .models import *
 from .serializers import *
 import requests
 import os
-from app.services.alpaca_service import fetch_and_update_stock_prices
+from app.services.alpaca_service import update_stock_prices_by_ticker
 
 
 class PortfolioViewSet(viewsets.ModelViewSet):
@@ -29,7 +29,7 @@ class PortfolioViewSet(viewsets.ModelViewSet):
         tickers = Stock.objects.filter(holdings__portfolio=portfolio).distinct().values_list('ticker', flat=True)
         
         #Find the updated trade price for these tickers and update the database
-        fetch_and_update_stock_prices(self, tickers)
+        update_stock_prices_by_ticker(self, tickers)
         
 
 class HoldingViewSet(viewsets.ModelViewSet):
@@ -62,20 +62,3 @@ class HoldingViewSet(viewsets.ModelViewSet):
 class StockViewSet(viewsets.ModelViewSet):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
-
-    def list(self, request, *args, **kwargs):
-        #Fetch updated stock prices from Alpaca API
-        try:
-            #Get tickers of all stocks in the database
-            tickers = list(Stock.objects.values_list('ticker', flat=True))
-            #Find the most recent trade price for each ticker and update it in database
-            fetch_and_update_stock_prices(self, tickers)
-        except Exception as e:
-            return Response({"error": f"Failed to update stock prices: {e}"}, status=500)
-
-        #Retrieve the updated queryset
-        queryset = self.filter_queryset(self.get_queryset())
-        
-        #Serialize and return the data
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
