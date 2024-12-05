@@ -83,9 +83,12 @@ const PortfolioDashboard: React.FC = () => {
     return (
         <Flex justify='center'>
             <Stack gap="0px" bd='1px solid #ccc'>
-                <Flex p="20px" bg="gray">
+                <Flex p="20px" bg="gray" justify="space-between">
                     <Text size="lg" c="white">
                         PORTFOLIO
+                    </Text>
+                    <Text size="xl" c="white">
+                        ${formatPrice((parseFloat(portfolio.cash)+parseFloat(portfolio.holdings_total)).toString()).toLocaleString()}
                     </Text>
                 </Flex>
                 <Flex w='700px' p="20px" bg="black" align="flex-end" justify="space-between">
