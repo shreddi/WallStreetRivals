@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Flex, Box, Text, Stack, NumberInput, Button, Table, Loader } from '@mantine/core';
+import { Flex, Box, Text, Stack, NumberInput, Button, Table, Loader, ScrollArea} from '@mantine/core';
 import { Portfolio, defaultPortfolio, Holding, Stock } from '../types';
 import { portfolioApi, holdingApi } from '../apiService';
 import StockSelect from './StockSelect'
@@ -82,10 +82,13 @@ const PortfolioDashboard: React.FC = () => {
     // **JSX**
     return (
         <Flex justify='center'>
-            <Stack gap="0px" bd='1px solid #ccc'>
-                <Flex p="20px" bg="gray">
+            <Stack gap="0px">
+                <Flex p="20px" bg="gray" align = "flex-end" justify="space-between">
                     <Text size="lg" c="white">
                         PORTFOLIO
+                    </Text>
+                    <Text size="xl" c="white">
+                        ${formatPrice((parseFloat(portfolio.cash)+parseFloat(portfolio.holdings_total)).toString()).toLocaleString()}
                     </Text>
                 </Flex>
                 <Flex w='700px' p="20px" bg="black" align="flex-end" justify="space-between">
@@ -96,7 +99,7 @@ const PortfolioDashboard: React.FC = () => {
                         ${formatPrice(portfolio.cash).toLocaleString()}
                     </Text>
                 </Flex>
-                <Box p="20px" bg="white">
+                <Box p="20px" bg="white" bd='1px solid #ccc'>
                     <Stack>
                         <StockSelect setSelectedStock={setSelectedStock} />
                         {selectedStock && <Flex align="flex-end" justify="space-between">
@@ -129,19 +132,21 @@ const PortfolioDashboard: React.FC = () => {
                         ${formatPrice(portfolio.holdings_total)}
                     </Text>
                 </Flex>
-                <Table>
-                    <Table.Thead bg="gray" c="white">
-                        <Table.Tr>
-                            <Table.Th ta='center'>HOLDING</Table.Th>
-                            <Table.Th ta='center'>SHARES</Table.Th>
-                            <Table.Th ta='center'>PRICE</Table.Th>
-                            <Table.Th ta='center'>TOTAL</Table.Th>
-                            <Table.Th ta='center'>DATE</Table.Th>
-                            <Table.Th ></Table.Th>
-                        </Table.Tr>
-                    </Table.Thead>
-                    <Table.Tbody bg="black" c="gray">{rows}</Table.Tbody>
-                </Table>
+                <ScrollArea h={250}>
+                    <Table>
+                        <Table.Thead bg="gray" c="white">
+                            <Table.Tr>
+                                <Table.Th ta='center'>HOLDING</Table.Th>
+                                <Table.Th ta='center'>SHARES</Table.Th>
+                                <Table.Th ta='center'>PRICE</Table.Th>
+                                <Table.Th ta='center'>TOTAL</Table.Th>
+                                <Table.Th ta='center'>DATE</Table.Th>
+                                <Table.Th ></Table.Th>
+                            </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody bg="black" c="gray">{rows}</Table.Tbody>
+                    </Table>
+                </ScrollArea>
             </Stack>
         </Flex >
     );
