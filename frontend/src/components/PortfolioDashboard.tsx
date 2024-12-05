@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Flex, Box, Text, Stack, NumberInput, Button, Table, Loader } from '@mantine/core';
+import { Flex, Box, Text, Stack, NumberInput, Button, Table, Loader, ScrollArea} from '@mantine/core';
 import { Portfolio, defaultPortfolio, Holding, Stock } from '../types';
 import { portfolioApi, holdingApi } from '../apiService';
 import StockSelect from './StockSelect'
@@ -132,19 +132,21 @@ const PortfolioDashboard: React.FC = () => {
                         ${formatPrice(portfolio.holdings_total)}
                     </Text>
                 </Flex>
-                <Table>
-                    <Table.Thead bg="gray" c="white">
-                        <Table.Tr>
-                            <Table.Th ta='center'>HOLDING</Table.Th>
-                            <Table.Th ta='center'>SHARES</Table.Th>
-                            <Table.Th ta='center'>PRICE</Table.Th>
-                            <Table.Th ta='center'>TOTAL</Table.Th>
-                            <Table.Th ta='center'>DATE</Table.Th>
-                            <Table.Th ></Table.Th>
-                        </Table.Tr>
-                    </Table.Thead>
-                    <Table.Tbody bg="black" c="gray">{rows}</Table.Tbody>
-                </Table>
+                <ScrollArea h={250}>
+                    <Table>
+                        <Table.Thead bg="gray" c="white">
+                            <Table.Tr>
+                                <Table.Th ta='center'>HOLDING</Table.Th>
+                                <Table.Th ta='center'>SHARES</Table.Th>
+                                <Table.Th ta='center'>PRICE</Table.Th>
+                                <Table.Th ta='center'>TOTAL</Table.Th>
+                                <Table.Th ta='center'>DATE</Table.Th>
+                                <Table.Th ></Table.Th>
+                            </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody bg="black" c="gray">{rows}</Table.Tbody>
+                    </Table>
+                </ScrollArea>
             </Stack>
         </Flex >
     );
