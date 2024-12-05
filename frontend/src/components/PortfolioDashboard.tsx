@@ -83,7 +83,7 @@ const PortfolioDashboard: React.FC = () => {
     return (
         <Flex justify='center'>
             <Stack gap="0px" bd='1px solid #ccc'>
-                <Flex p="20px" bg="gray" justify="space-between">
+                <Flex p="20px" bg="gray" align = "flex-end" justify="space-between">
                     <Text size="lg" c="white">
                         PORTFOLIO
                     </Text>
