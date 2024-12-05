@@ -5,3 +5,4 @@ django-extensions
 psycopg2-binary
 alpaca-py
 requests
+python-dotenv

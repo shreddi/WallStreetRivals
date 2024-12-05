@@ -68,11 +68,11 @@ Desktop.ini
 $RECYCLE.BIN/
 
 # Docker
-**/Dockerfile
+# **/Dockerfile
 docker-compose.override.yml
 docker-compose.override.*
 docker-compose.yml.bak
-docker-compose*.yml
+# docker-compose*.yml
 
 # VS Code
 .vscode/

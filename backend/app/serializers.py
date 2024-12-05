@@ -16,6 +16,7 @@ class HoldingSerializer(serializers.ModelSerializer):
     stock = serializers.PrimaryKeyRelatedField(queryset=Stock.objects.all(), required=False)
     stock_data = StockSerializer(read_only=True, source='stock')
     total_value = serializers.SerializerMethodField()
+    # portfolio_percentage = serializers.SerializerMethodField()
 
     class Meta:
         model = Holding
@@ -24,6 +25,9 @@ class HoldingSerializer(serializers.ModelSerializer):
     def get_total_value(self, obj):
         # Calculate the total value as shares * trade_price of the stock
         return obj.shares * obj.stock.trade_price if obj.stock and obj.stock.trade_price else 0
+    
+    def get_portfolio_percentage(self, obj):
+        return (obj.portfolio.total / self.get_total_value(obj))*100
     
     def create(self, validated_data):
         # Extract portfolio and stock information
@@ -68,6 +72,7 @@ class HoldingSerializer(serializers.ModelSerializer):
 class PortfolioSerializer(serializers.ModelSerializer):
     holdings = HoldingSerializer(many=True, read_only=True)
     holdings_total = serializers.SerializerMethodField()
+    total = serializers.SerializerMethodField()
 
     class Meta:
         model = Portfolio
@@ -80,3 +85,6 @@ class PortfolioSerializer(serializers.ModelSerializer):
             for holding in obj.holdings.all()
             if holding.stock and holding.stock.trade_price
         )
+    
+    def get_total(self, obj):
+        return self.get_holdings_total(obj) + obj.cash

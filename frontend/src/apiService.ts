@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { Stock, Portfolio, Holding } from './types.ts'
 
-//Base backend URL
-export const API_BASE_URL = 'http://localhost:8000'
+// Base backend URL from environment variable
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 //Helper to create full URLs
 const buildUrl = (endpoint: string) => `${API_BASE_URL}${endpoint}`;
@@ -13,6 +13,7 @@ const axiosConfig = { headers: { 'Content-Type': 'application/json' } };
 //Portfolio API Service
 export const portfolioApi = {
     async getPortfolio(portfolio_id: number): Promise<Portfolio> {
+        console.log(API_BASE_URL)
         try {
             const response = await axios.get(buildUrl(`/api/portfolios/${portfolio_id}/`), axiosConfig);
             return response.data;
