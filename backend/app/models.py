@@ -10,13 +10,13 @@ class MetadataModel(models.Model):
         abstract = True
 
 
-#Portfolio Model: Portfolio to WSRUser is one to one. Portfolio to holdings is many to one. 
+#Portfolio Model: Portfolio to Player is one to one. Portfolio to holdings is many to one. 
 class Portfolio(MetadataModel):
     cash = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
 
-# WSRUser Model: Users for Wall Street Rivals. WSRUser to Portfolio is one-to-one.
-class WSRUser(AbstractUser):
+# Player Model: Users for Wall Street Rivals. Player to Portfolio is one-to-one.
+class Player(AbstractUser):
     portfolio = models.OneToOneField(Portfolio, on_delete=models.CASCADE, related_name='user', null=True)
 
 

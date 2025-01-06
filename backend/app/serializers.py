@@ -2,9 +2,9 @@ from rest_framework import serializers
 from .models import * 
 from django.core.exceptions import ValidationError as DjangoValidationError
 
-class WSRUserSerializer(serializers.ModelSerializer):
+class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = WSRUser
+        model = Player
         fields = "__all__"
 
 class StockSerializer(serializers.ModelSerializer):

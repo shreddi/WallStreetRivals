@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "app",
     'django_crontab',
+    # 'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -116,7 +117,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'app.WSRUser'
+AUTH_USER_MODEL = 'app.Player'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
