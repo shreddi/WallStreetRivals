@@ -13,6 +13,10 @@ from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 
 
+class PlayerViewSet(viewsets.ModelViewSet):
+    queryset = Player.objects.all()
+    serializer_class = PlayerSerializer
+
 class PortfolioViewSet(viewsets.ModelViewSet):
     queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
@@ -83,7 +87,7 @@ class RegisterView(APIView):
         password = request.data.get('password')
         email = request.data.get('email')
         first_name = request.data.get('first_name')
-        last_name = requests.data.get('last_name')
+        last_name = request.data.get('last_name')
 
         if not username or not password or not email or not first_name or not last_name:
             return Response({'error': 'All fields are required'}, status=status.HTTP_400_BAD_REQUEST)
