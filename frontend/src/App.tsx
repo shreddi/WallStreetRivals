@@ -24,16 +24,15 @@ function App() {
             lg: '30px',
             xl: '50px',
           },
-          
+
         }}
       >
         <BrowserRouter>
           <Routes>
-
-          <Route path="/" element={<Navigate replace to="/portfolio" />} />
-          <Route path="/login" element={<Login/>} />
-          <Route path="/register" element={<Register/>} />
-          <Route path="/portfolio" element={<PrivateRoute><PortfolioDashboard /></PrivateRoute>} />
+            <Route path="/" element={<Navigate replace to="/portfolio" />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/portfolio" element={<PrivateRoute><PortfolioDashboard /></PrivateRoute>} />
           </Routes>
         </BrowserRouter>
       </MantineProvider>

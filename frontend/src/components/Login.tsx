@@ -15,8 +15,12 @@ function Login() {
         try {
             await login(username, password);
             navigate('/portfolio');
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            setError(err.message); // Access `message` safely
+        } else {
+            setError('An unexpected error occurred'); // Fallback for non-Error types
+        }
         }
     };
 

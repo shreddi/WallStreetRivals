@@ -1,6 +1,7 @@
 import { AppShell, Button, Flex } from '@mantine/core'
 import { useNavigate } from 'react-router-dom';
 
+// This component provides the structure of the app including the header.
 
 export default function BasicAppShell({ children }: { children: React.ReactNode }){
     const navigate = useNavigate();

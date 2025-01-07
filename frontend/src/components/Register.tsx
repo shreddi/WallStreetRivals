@@ -1,9 +1,23 @@
 // import { useState } from 'react'
-import { Alert, Anchor, Button, Checkbox, Container, Group, PasswordInput, Text, TextInput, Title } from '@mantine/core';
+import { Alert, Anchor, Button, Container, Group, PasswordInput, Text, TextInput, Title } from '@mantine/core';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { register } from '../api/apiService'
 // import { useNavigate } from 'react-router-dom';
+
+interface RegisterValidationError {
+    username: string
+    password: string
+    email: string
+    password2: string
+    first_name: string
+    last_name: string
+    response: {
+        data: {
+            non_field_errors: string
+        }
+    }
+}
 
 function Register() {
 
@@ -27,7 +41,8 @@ function Register() {
         try {
             await register(username, email, password, password2, firstname, lastname);
             navigate('/login');
-        } catch (err: any) {
+        } catch (e: unknown) {
+            const err = e as RegisterValidationError
             // Detailed field-specific errors
             if (err?.username) {
                 setFieldErrors((prev) => ({ ...prev, username: err.username }));
