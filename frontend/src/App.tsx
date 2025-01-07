@@ -4,6 +4,9 @@ import { MantineProvider } from '@mantine/core';
 import './App.css'
 import PortfolioDashboard from './components/PortfolioDashboard';
 import '@mantine/core/styles.css'; // Import Mantine core styles
+import Login from './components/Login'
+import Register from './components/Register'
+
 
 
 function App() {
@@ -26,8 +29,10 @@ function App() {
       >
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navigate replace to="/portfolio" />} />
-            <Route path="/portfolio" element={<PortfolioDashboard />} />
+          <Route path="/" element={<Navigate replace to="/portfolio" />} />
+          <Route path="/login" element={<Login/>} />
+          <Route path="/register" element={<Register/>} />
+          <Route path="/portfolio" element={<PortfolioDashboard />} />
           </Routes>
         </BrowserRouter>
       </MantineProvider>
