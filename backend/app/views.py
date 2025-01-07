@@ -83,20 +83,13 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        email = request.data.get('email')
-        first_name = request.data.get('first_name')
-        last_name = request.data.get('last_name')
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
 
-        if not username or not password or not email or not first_name or not last_name:
-            return Response({'error': 'All fields are required'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if Player.objects.filter(username=username).exists():
-            return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        user = Player.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name)
-        return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
+            return Response({"user": serializer.data}, status=201)
+        return Response(serializer.errors, status=400)
+    
     
 class LoginView(APIView):
     permission_classes = [AllowAny]
