@@ -10,7 +10,7 @@ export const login = async (username: string, password: string) => {
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;  // Set token in headers for subsequent requests
         }
         return response.data;
-    } catch (error) {
+    } catch (error: any) {
         // Check for network errors or specific error statuses
         if (error.response) {
             // Server responded with a status code outside of 2xx
@@ -30,6 +30,37 @@ export const login = async (username: string, password: string) => {
         } else {
             // Something else went wrong in the request setup
             throw new Error('An unexpected error occurred. Please try again.');
+        }
+    }
+};
+
+export const register = async (
+    username: string,
+    email: string,
+    password: string,
+    password2: string,
+    first_name: string,
+    last_name: string,
+) => {
+    try {
+        await axios.post(`${API_BASE_URL}/api/register/`, {
+            username,
+            email,
+            password,
+            password2,
+            first_name,
+            last_name,
+        });
+    } catch (error: unknown) {
+        // Check if error is an AxiosError
+        if (axios.isAxiosError(error) && error.response && error.response.data) {
+            const errorMessages = error.response.data;
+
+            // You can now access field-specific errors, e.g., errorMessages.username, errorMessages.email, etc.
+            throw errorMessages; // Pass the error object to wherever you handle the frontend display
+        } else {
+            // Handle unexpected errors
+            throw { general: "Registration failed due to an unknown error." };
         }
     }
 };
