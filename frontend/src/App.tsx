@@ -6,7 +6,7 @@ import PortfolioDashboard from './components/PortfolioDashboard';
 import '@mantine/core/styles.css'; // Import Mantine core styles
 import Login from './components/Login'
 import Register from './components/Register'
-
+import PrivateRoute from './components/PrivateRoute';
 
 
 function App() {
@@ -29,10 +29,11 @@ function App() {
       >
         <BrowserRouter>
           <Routes>
+
           <Route path="/" element={<Navigate replace to="/portfolio" />} />
           <Route path="/login" element={<Login/>} />
           <Route path="/register" element={<Register/>} />
-          <Route path="/portfolio" element={<PortfolioDashboard />} />
+          <Route path="/portfolio" element={<PrivateRoute><PortfolioDashboard /></PrivateRoute>} />
           </Routes>
         </BrowserRouter>
       </MantineProvider>
