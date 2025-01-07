@@ -26,6 +26,7 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
                 (async () => {
                     localStorage.removeItem('access_token');
                     localStorage.removeItem('refresh_token');
+                    localStorage.setItem('kicked_out', 'true');
                     window.location.href = '/login'; // Redirect after logout
                 })();
             }

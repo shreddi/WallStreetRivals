@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { API_BASE_URL } from './apiService.ts';
 
 export const login = async (username: string, password: string) => {
@@ -10,8 +10,9 @@ export const login = async (username: string, password: string) => {
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;  // Set token in headers for subsequent requests
         }
         return response.data;
-    } catch (error: any) {
+    } catch (e: unknown) {
         // Check for network errors or specific error statuses
+        const error = e as AxiosError
         if (error.response) {
             // Server responded with a status code outside of 2xx
             if (error.response.status === 400) {

@@ -9,6 +9,7 @@ export default function BasicAppShell({ children }: { children: React.ReactNode 
     const logout = () => {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      localStorage.removeItem('kicked_out');
       navigate('/login');
     }
         
