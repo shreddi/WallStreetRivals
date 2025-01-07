@@ -1,10 +1,12 @@
 from rest_framework import serializers
 from .models import * 
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.validators import validate_email
+from django.contrib.auth.password_validation import validate_password
 
-class WSRUserSerializer(serializers.ModelSerializer):
+class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = WSRUser
+        model = Player
         fields = "__all__"
 
 class StockSerializer(serializers.ModelSerializer):
@@ -88,3 +90,58 @@ class PortfolioSerializer(serializers.ModelSerializer):
     
     def get_total(self, obj):
         return self.get_holdings_total(obj) + obj.cash
+    
+class RegisterSerializer(serializers.ModelSerializer):
+    password2 = serializers.CharField(write_only=True)  # Add password2 field for confirmation
+
+    class Meta:
+        model = Player
+        fields = ("username", "email", "password", "password2", "first_name", "last_name")
+        extra_kwargs = {
+            "password": {"write_only": True},  # Make password write-only
+            "password2": {"write_only": True},  # Make password2 write-only
+        }
+
+    def validate(self, data):
+        # Check that the two password entries match
+        if data['password'] != data['password2']:
+            raise serializers.ValidationError({"password2": "The two passwords must match."})
+
+        # Validate email format
+        try:
+            validate_email(data['email'])
+        except DjangoValidationError:
+            raise serializers.ValidationError({"email": "Invalid email format."})
+        
+        # Validate the password against Django's validators
+        try:
+            validate_password(data['password'])
+        except DjangoValidationError as e:
+            raise serializers.ValidationError({"password": list(e.messages)})
+
+        # Check username uniqueness
+        if Player.objects.filter(username=data['username']).exists():
+            raise serializers.ValidationError({"username": "Username is already taken."})
+        
+        if data['first_name'] == '':
+            raise serializers.ValidationError({"first_name": "First name is required."})
+        
+        if data['last_name'] == '':
+            raise serializers.ValidationError({"last_name": "Last name is required."})
+
+        # Additional validations can be added here
+        return data
+
+    def create(self, validated_data):
+        # Remove password2 from validated data since it's not needed for user creation
+        validated_data.pop('password2')
+
+        # Create the user with the validated data
+        user = Player.objects.create_user(
+            username=validated_data["username"],
+            email=validated_data["email"],
+            password=validated_data["password"],
+            first_name=validated_data["first_name"],
+            last_name=validated_data["last_name"],
+        )
+        return user
