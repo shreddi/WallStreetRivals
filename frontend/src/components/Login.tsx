@@ -1,13 +1,68 @@
-// import { useState } from 'react'
-import { Text } from '@mantine/core';
-// import { useNavigate } from 'react-router-dom';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import { login } from '../api/apiService';
+import { TextInput, Button, Title, Text, Anchor, Group, Container } from '@mantine/core';
 
 function Login() {
-    
+
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await login(username, password);
+            navigate('/portfolio');
+        } catch (err: any) {
+            setError(err.message);
+        }
+    };
+
     return (
-        <Text>
-            This is the login page
-        </Text>
+        <Container size="xs">
+          <Title order={2} style={{ textAlign: 'center' }} mt="md">
+            Login
+          </Title>
+          <Text style={{ textAlign: 'center' }} mt="sm">
+            Login to your account
+          </Text>
+          <form onSubmit={handleSubmit}>
+            <TextInput
+              label="Username"
+              placeholder="Your username"
+              value={username}
+              onChange={(e) => setUsername(e.currentTarget.value)}
+              required
+            />
+            <TextInput
+              label="Password"
+              placeholder="Your password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.currentTarget.value)}
+              required
+              mt="md"
+            />
+            {error && (
+              <Text c="red" style={{ textAlign: 'center' }} mt="sm">
+                {error}
+              </Text>
+            )}
+            <Button type="submit" fullWidth mt="xl">
+              Login
+            </Button>
+          </form>
+          <Group style={{ justifyContent: 'center' }} mt="md">
+            <Text size="sm">
+              Don't have an account?{' '}
+              <Anchor href="/register" style={{ fontWeight: 500 }}>
+                Register
+              </Anchor>
+            </Text>
+          </Group>
+        </Container>
       );
 };
 
