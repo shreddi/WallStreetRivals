@@ -1,14 +1,6 @@
 import axios from 'axios';
-import { Stock, Portfolio, Holding } from './types.ts'
-
-// Base backend URL from environment variable
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-//Helper to create full URLs
-const buildUrl = (endpoint: string) => `${API_BASE_URL}${endpoint}`;
-
-//Reusable Axios configuration
-const axiosConfig = { headers: { 'Content-Type': 'application/json' } };
+import { Stock, Portfolio, Holding } from '../types.ts'
+import { API_BASE_URL, axiosConfig, buildUrl } from './apiService.ts';
 
 //Portfolio API Service
 export const portfolioApi = {
@@ -108,3 +100,5 @@ export const holdingApi = {
         }
     },
 };
+
+export * from './authService';

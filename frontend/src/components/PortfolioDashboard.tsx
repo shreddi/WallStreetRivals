@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Flex, Box, Text, Stack, NumberInput, Button, Table, Loader, ScrollArea} from '@mantine/core';
 import { Portfolio, defaultPortfolio, Holding, Stock } from '../types';
-import { portfolioApi, holdingApi } from '../apiService';
+import { portfolioApi, holdingApi } from '../api/apiService';
 import StockSelect from './StockSelect'
 
 const PortfolioDashboard: React.FC = () => {
