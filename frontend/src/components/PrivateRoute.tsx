@@ -23,6 +23,7 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
             if (accessToken && isTokenExpired(accessToken)) {
                 (async () => {
                     localStorage.removeItem('access_token');
+                    localStorage.removeItem('refresh_token');
                     window.location.href = '/login'; // Redirect after logout
                 })();
             }
@@ -36,6 +37,7 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
         if (!accessToken || isTokenExpired(accessToken)) {
             // Perform logout immediately if the token is already expired
             localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
             navigate('/login');
         }
     })
