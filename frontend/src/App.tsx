@@ -2,11 +2,13 @@ import React from 'react'
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import './App.css'
+import './index.css'
 import PortfolioDashboard from './components/PortfolioDashboard';
 import '@mantine/core/styles.css'; // Import Mantine core styles
 import Login from './components/Login'
 import Register from './components/Register'
 import PrivateRoute from './components/PrivateRoute';
+// import classes from './WSR.module.css'
 
 
 function App() {
@@ -15,8 +17,8 @@ function App() {
     <React.StrictMode>
       <MantineProvider
         theme={{
-          fontFamily: 'Montserrat, sans-serif',
-          headings: { fontFamily: 'Montserrat, sans-serif' },
+          fontFamily: 'Roboto, sans-serif',
+          primaryColor: 'yellow', // Primary color
           fontSizes: {
             xs: '12px',
             sm: '16px',
@@ -24,7 +26,18 @@ function App() {
             lg: '30px',
             xl: '50px',
           },
-
+          components: {
+            // Button: Button.extend({
+            //   defaultProps: {
+            //     className: classes.button
+            //   },
+            // }),
+            // Text: Text.extend({
+            //   defaultProps: {
+            //     className: classes.text
+            //   },
+            // }),
+          },
         }}
       >
         <BrowserRouter>
