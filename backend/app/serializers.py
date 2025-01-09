@@ -7,7 +7,7 @@ from django.contrib.auth.password_validation import validate_password
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ['email', 'first_name', 'last_name']
+        fields = ['username', 'id', 'email', 'first_name', 'last_name']
 
 class StockSerializer(serializers.ModelSerializer):
     class Meta:
