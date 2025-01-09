@@ -32,6 +32,14 @@ export interface Portfolio extends ResourceWithMetadata{
     cash: string;
 };
 
+export interface Player {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+}
+
 
 //defaults for each interface
 export const defaultStock: Stock = {
