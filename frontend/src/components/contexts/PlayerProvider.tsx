@@ -30,7 +30,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
 
   // Restore session on app load
   useEffect(() => {
-    const storedToken = localStorage.getItem('accessToken');
+    const storedToken = localStorage.getItem('access_token');
     const storedPlayer = localStorage.getItem('player');
     if (storedToken && storedPlayer) {
       setPlayer(JSON.parse(storedPlayer));
