@@ -11,11 +11,14 @@ class AlertPreferencesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PlayerSerializer(serializers.ModelSerializer):
-    alert_preferences = AlertPreferencesSerializer()
+    alert_preferences = AlertPreferencesSerializer(required=False)
 
     class Meta:
         model = Player
-        fields = ['alert_preferences', 'username', 'id', 'email', 'first_name', 'last_name', 'profile_picture',]
+        fields = ['alert_preferences', 'username', 'id', 'email', 'first_name', 'last_name', 'profile_picture', 'password']
+        # extra_kwargs = {
+        #     "password": {"write_only": True}, 
+        # }
     
     def validate_username(self, value):
         """
@@ -38,7 +41,8 @@ class PlayerSerializer(serializers.ModelSerializer):
             alert_preferences = AlertPreferences.objects.create() #Create default
 
         # Create the player instance using the alert preference object
-        player = Player.objects.create(alert_preferences=alert_preferences, **validated_data)
+        print("wah")
+        player = Player.objects.create_user(alert_preferences=alert_preferences, **validated_data)
 
         return player
 
@@ -187,6 +191,10 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Remove password2 from validated data since it's not needed for user creation
         validated_data.pop('password2')
-
-        user = PlayerSerializer(validated_data).save()
-        return user
+        print(validated_data)
+        user_serializer = PlayerSerializer(data=validated_data)
+        if(user_serializer.is_valid()):
+            user = user_serializer.save()
+            return user
+        else:
+            raise serializers.ValidationError(user_serializer.errors)
