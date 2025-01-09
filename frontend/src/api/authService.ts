@@ -8,6 +8,7 @@ export const login = async (username: string, password: string) => {
             localStorage.setItem('access_token', response.data.access);  // Store access token
             localStorage.setItem('refresh_token', response.data.refresh); // Store refresh token
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;  // Set token in headers for subsequent requests
+            console.log(response.data.user)
         }
         return response.data;
     } catch (e: unknown) {
