@@ -38,6 +38,7 @@ export interface Player {
     first_name: string;
     last_name: string;
     email: string;
+    profilePic: string; //url of static image for user's profile pic
 }
 
 
