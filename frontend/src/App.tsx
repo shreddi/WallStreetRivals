@@ -7,7 +7,7 @@ import '@mantine/core/styles.css'; // Import Mantine core styles
 import Login from './components/Login'
 import Register from './components/Register'
 import PrivateRoute from './components/PrivateRoute';
-
+import { PlayerProvider } from './components/contexts/PlayerProvider';
 
 function App() {
 
@@ -28,12 +28,14 @@ function App() {
         }}
       >
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Navigate replace to="/portfolio" />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/portfolio" element={<PrivateRoute><PortfolioDashboard /></PrivateRoute>} />
-          </Routes>
+          <PlayerProvider>
+            <Routes>
+              <Route path="/" element={<Navigate replace to="/portfolio" />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/portfolio" element={<PrivateRoute><PortfolioDashboard /></PrivateRoute>} />
+            </Routes>
+          </PlayerProvider>
         </BrowserRouter>
       </MantineProvider>
     </React.StrictMode>

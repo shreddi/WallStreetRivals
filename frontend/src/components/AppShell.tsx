@@ -1,17 +1,10 @@
 import { AppShell, Button, Flex } from '@mantine/core'
-import { useNavigate } from 'react-router-dom';
+import { usePlayer } from './contexts/usePlayer';
 
 // This component provides the structure of the app including the header.
 
 export default function BasicAppShell({ children }: { children: React.ReactNode }){
-    const navigate = useNavigate();
-
-    const logout = () => {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      localStorage.removeItem('kicked_out');
-      navigate('/login');
-    }
+    const { logout } = usePlayer()
         
     return (
         <AppShell
