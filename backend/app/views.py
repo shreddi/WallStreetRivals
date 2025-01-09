@@ -16,6 +16,17 @@ from rest_framework.views import APIView
 class PlayerViewSet(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+    
+    def update(self, request, *args, **kwargs):
+        # Override the default update to ensure the logged-in user can only update their own profile
+        instance = self.request.user
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        print(self.get_serializer(instance, data=request.data, partial=True))
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 class PortfolioViewSet(viewsets.ModelViewSet):
     queryset = Portfolio.objects.all()

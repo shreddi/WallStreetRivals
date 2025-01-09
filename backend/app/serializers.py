@@ -16,6 +16,50 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = ['alert_preferences', 'username', 'id', 'email', 'first_name', 'last_name', 'profile_picture',]
+    
+    def validate_username(self, value):
+        """
+        Check if the username is already taken by another user.
+        """
+        user = self.instance  # The current user instance
+        if(user):
+            if Player.objects.exclude(pk=user.pk).filter(username=value).exists():
+                raise serializers.ValidationError("This username is already taken.")
+        return value
+
+    def create(self, validated_data):
+        # Extract nested data
+        alert_preferences_data = validated_data.pop('alert_preferences', None)
+
+        # Create alert preferences object based on if data was included in request, or default if not.
+        if(alert_preferences_data):
+            alert_preferences = AlertPreferences.objects.create(**alert_preferences_data)
+        else:
+            alert_preferences = AlertPreferences.objects.create() #Create default
+
+        # Create the player instance using the alert preference object
+        player = Player.objects.create(alert_preferences=alert_preferences, **validated_data)
+
+        return player
+
+    def update(self, instance, validated_data):
+        # Extract nested data
+        alert_preferences_data = validated_data.pop('alert_preferences', None)
+
+        # Update the player instance
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # Handle the nested alert preferences
+        if alert_preferences_data:
+            alert_preferences, created = AlertPreferences.objects.get_or_create(player=instance)
+            for attr, value in alert_preferences_data.items():
+                setattr(alert_preferences, attr, value)
+            alert_preferences.save()
+
+        return instance
+    
 
 class StockSerializer(serializers.ModelSerializer):
     class Meta:
@@ -144,15 +188,5 @@ class RegisterSerializer(serializers.ModelSerializer):
         # Remove password2 from validated data since it's not needed for user creation
         validated_data.pop('password2')
 
-        # Create the user with the validated data
-        alert_preferences = AlertPreferences.objects.create()
-
-        user = Player.objects.create_user(
-            username=validated_data["username"],
-            email=validated_data["email"],
-            password=validated_data["password"],
-            first_name=validated_data["first_name"],
-            last_name=validated_data["last_name"],
-            alert_preferences=alert_preferences
-        )
+        user = PlayerSerializer(validated_data).save()
         return user
