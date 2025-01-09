@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import './App.css'
+import './index.css'
 import PortfolioDashboard from './components/PortfolioDashboard';
 import '@mantine/core/styles.css'; // Import Mantine core styles
 import Login from './components/Login'
