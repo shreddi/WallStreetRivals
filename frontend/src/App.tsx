@@ -9,7 +9,7 @@ import Login from './components/Login'
 import Register from './components/Register'
 import PrivateRoute from './components/PrivateRoute';
 import { PlayerProvider } from './components/contexts/PlayerProvider';
-import Settings from './components/settings'
+import Settings from './components/ProfileSettings'
 
 function App() {
 
