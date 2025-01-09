@@ -4,10 +4,18 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 
+class AlertPreferencesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AlertPreferences
+        fields = '__all__'
+
 class PlayerSerializer(serializers.ModelSerializer):
+    alert_preferences = AlertPreferencesSerializer()
+
     class Meta:
         model = Player
-        fields = ['username', 'id', 'email', 'first_name', 'last_name', 'profile_picture',]
+        fields = ['alert_preferences', 'username', 'id', 'email', 'first_name', 'last_name', 'profile_picture',]
 
 class StockSerializer(serializers.ModelSerializer):
     class Meta:
@@ -137,11 +145,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         validated_data.pop('password2')
 
         # Create the user with the validated data
+        alert_preferences = AlertPreferences.objects.create()
+
         user = Player.objects.create_user(
             username=validated_data["username"],
             email=validated_data["email"],
             password=validated_data["password"],
             first_name=validated_data["first_name"],
             last_name=validated_data["last_name"],
+            alert_preferences=alert_preferences
         )
         return user
