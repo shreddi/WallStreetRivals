@@ -17,8 +17,7 @@ class Portfolio(MetadataModel):
 
 # Player Model: Users for Wall Street Rivals. Player to Portfolio is one-to-one.
 class Player(AbstractUser):
-    portfolio = models.OneToOneField(Portfolio, on_delete=models.CASCADE, related_name='user', null=True)
-
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
 
 #Stock model: Represents stock in a holding in an user's portfolio. Many holdings refer to one stock. 
 class Stock(MetadataModel):
