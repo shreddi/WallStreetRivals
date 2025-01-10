@@ -10,29 +10,33 @@ import {
     Box,
     Title,
     Loader,
+    Text,
 } from '@mantine/core';
-import { Player } from '../types'; // Adjust the path as needed
+import { Player } from '../types';
 import { usePlayer } from './contexts/usePlayer';
-import AppShell from './AppShell'
+import AppShell from './AppShell';
 import { updatePlayer } from '../api/authService';
+import { isEqual } from 'lodash';
 
 export default function ProfileSettings() {
-    // const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [playerData, setPlayerData] = useState<Player | null>(null)
-    const [picture, setPicture] = useState<File | undefined>()
-    const { currentPlayer, setCurrentPlayer } = usePlayer()
+    const [playerData, setPlayerData] = useState<Player | null>(null);
+    const [picture, setPicture] = useState<File | undefined>();
+    const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
+    const [successAlert, setSuccessAlert] = useState(false)
+    const { currentPlayer, setCurrentPlayer } = usePlayer();
+    const wasChanged = !isEqual(currentPlayer, playerData) || picture
 
     useEffect(() => {
-        setPlayerData(currentPlayer)
-        console.log(currentPlayer)
-    }, [currentPlayer])
+        setPlayerData(currentPlayer);
+        console.log(currentPlayer);
+    }, [currentPlayer]);
 
-    // Handle form submission
     const handleSave = async () => {
         if (!playerData) return;
 
         setSaving(true);
+        setErrors({}); // Clear previous errors
 
         const formData = new FormData();
         formData.append('username', playerData.username);
@@ -43,25 +47,36 @@ export default function ProfileSettings() {
             formData.append('profile_picture', picture);
         }
 
-        // Include nested fields like alert_preferences
         Object.entries(playerData.alert_preferences).forEach(([key, value]) => {
             formData.append(`alert_preferences.${key}`, String(value));
         });
 
-
-        updatePlayer(playerData.id, formData)
-        .then((data) => {
-            setPlayerData(data)
-            setCurrentPlayer(data)
-            alert('Profile updated successfully!')
-        })
-        .catch((error) => {
+        try {
+            const data = await updatePlayer(playerData.id, formData);
+            setPlayerData(data);
+            setCurrentPlayer(data);
+            setPicture(undefined)
+            alert('Profile updated successfully!');
+        } catch (e) {
+            const error = e as unknown
             console.error('Error updating profile:', error);
-            alert('Failed to update profile. Please try again.');
-        }).finally(() => {
-            setSaving(false)
-        })
+
+            // Extract error details from the response
+            if (error.response?.data) {
+                setErrors(error.response.data); // Assume error response contains field-specific errors
+            } else {
+                alert('An unexpected error occurred. Please try again.');
+            }
+        } finally {
+            setSaving(false);
+        }
     };
+
+    const discardChanges = () => {
+        setPlayerData(currentPlayer); 
+        setPicture(undefined)
+        setErrors({});
+    }
 
     if (!currentPlayer) {
         return <Loader />;
@@ -74,47 +89,62 @@ export default function ProfileSettings() {
     return (
         <AppShell>
             <Box mx="auto" w={600}>
-                <Title order={2} mb="lg">
+                <Title tt="uppercase" order={2} mb="lg">
                     Profile Settings
                 </Title>
 
                 <Stack spacing="md">
-                    {/* Profile Picture */}
                     <Group>
-                        <Avatar src={picture ? URL.createObjectURL(picture) : playerData.profile_picture} radius="xl" size="lg" />
-                        {/* <Avatar src={playerData.profile_picture} radius="xl" size="lg" /> */}
+                        <Avatar
+                            src={picture ? URL.createObjectURL(picture) : playerData.profile_picture}
+                            radius="150"
+                            size="300px"
+                        />
                         <FileInput
                             label="Change Profile Picture"
                             placeholder="Choose file"
-                            onChange={(file) => {
-                                if (file) {
-                                    setPicture(file);
-                                }
-                            }}
+                            onChange={(file) => file && setPicture(file)}
                             accept="image/*"
                         />
                     </Group>
 
-                    {/* Username */}
                     <TextInput
                         label="Username"
                         value={playerData.username}
                         onChange={(e) =>
-                            setPlayerData({
-                                ...playerData,
-                                username: e.currentTarget.value
-                            })
+                            setPlayerData({ ...playerData, username: e.currentTarget.value })
                         }
+                        error={errors.username?.[0]} // Display the first error for 'username'
                     />
 
-                    {/* Email */}
+                    <TextInput
+                        label="First Name"
+                        value={playerData.first_name}
+                        onChange={(e) =>
+                            setPlayerData({ ...playerData, first_name: e.currentTarget.value })
+                        }
+                        error={errors.first_name?.[0]} // Display the first error for 'first_name'
+                    />
+
+                    <TextInput
+                        label="Last Name"
+                        value={playerData.last_name}
+                        onChange={(e) =>
+                            setPlayerData({ ...playerData, last_name: e.currentTarget.value })
+                        }
+                        error={errors.last_name?.[0]} // Display the first error for 'last_name'
+                    />
+
                     <TextInput
                         label="Email"
                         value={playerData.email}
                         disabled
                     />
 
-                    {/* Alert Preferences */}
+                    <Title mt='20px' tt="uppercase" order={2} mb="lg">
+                        Notification Settings
+                    </Title>
+
                     <Checkbox
                         label="Weekly Summary"
                         checked={playerData.alert_preferences.weekly_summary}
@@ -127,7 +157,9 @@ export default function ProfileSettings() {
                                 },
                             })
                         }
+                        error={errors['alert_preferences.weekly_summary']?.[0]} // Error for weekly summary
                     />
+
                     <Checkbox
                         label="Daily Summary"
                         checked={playerData.alert_preferences.daily_summary}
@@ -140,7 +172,9 @@ export default function ProfileSettings() {
                                 },
                             })
                         }
+                        error={errors['alert_preferences.daily_summary']?.[0]} // Error for daily summary
                     />
+
                     <Checkbox
                         label="Contest Rank Change"
                         checked={playerData.alert_preferences.contest_rank_change}
@@ -153,14 +187,26 @@ export default function ProfileSettings() {
                                 },
                             })
                         }
+                        error={errors['alert_preferences.contest_rank_change']?.[0]} // Error for contest rank change
                     />
 
-                    {/* Save Button */}
-                    <Button onClick={handleSave} loading={saving} fullWidth>
-                        Save Changes
-                    </Button>
+                    {/* General Error Message */}
+                    {Object.keys(errors).length > 0 && (
+                        <Text c="red">Please fix the errors above and try again.</Text>
+                    )}
+
+                    {wasChanged &&
+                        <>
+                            <Button onClick={handleSave} loading={saving} fullWidth>
+                                Save Changes
+                            </Button>
+                            <Button onClick={() => {discardChanges()}} fullWidth>
+                                Discard changes
+                            </Button>
+                        </>
+                    }
                 </Stack>
             </Box>
         </AppShell>
     );
-};
+}
