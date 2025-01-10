@@ -12,13 +12,13 @@ class AlertPreferencesSerializer(serializers.ModelSerializer):
 
 class PlayerSerializer(serializers.ModelSerializer):
     alert_preferences = AlertPreferencesSerializer(required=False)
+    profile_picture = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Player
         fields = ['alert_preferences', 'username', 'id', 'email', 'first_name', 'last_name', 'profile_picture', 'password']
         extra_kwargs = {
             "password": {"write_only": True}, 
-            'profile_picture': {'read_only': True},
         }
     
     def validate_username(self, value):
@@ -42,7 +42,6 @@ class PlayerSerializer(serializers.ModelSerializer):
             alert_preferences = AlertPreferences.objects.create() #Create default
 
         # Create the player instance using the alert preference object
-        print("wah")
         player = Player.objects.create_user(alert_preferences=alert_preferences, **validated_data)
 
         return player
@@ -64,6 +63,12 @@ class PlayerSerializer(serializers.ModelSerializer):
             alert_preferences.save()
 
         return instance
+    
+    def get_profile_picture(self, obj):
+        request = self.context.get('request')
+        if obj.profile_picture:
+            return request.build_absolute_uri(obj.profile_picture.url)
+        return None
     
 
 class StockSerializer(serializers.ModelSerializer):

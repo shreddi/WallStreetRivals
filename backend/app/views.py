@@ -129,10 +129,10 @@ class LoginView(APIView):
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         
         refresh = RefreshToken.for_user(user)
-        serializedUser = PlayerSerializer(user).data
+        serialized_user = PlayerSerializer(user, context={'request': request}).data
 
         return Response({
             'access': str(refresh.access_token),
             'refresh': str(refresh),
-            'user': serializedUser
+            'user': serialized_user
         })
