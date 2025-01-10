@@ -82,3 +82,12 @@ export const getPlayer = async (playerID: number) => {
     }
     return response.data
 }
+
+export const resetPassword = async (email: string) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/api/password_reset/`, { email });
+        return response.data
+    } catch (err) {
+        throw new Error("failed to reset password.")
+    }
+};

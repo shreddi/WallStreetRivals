@@ -32,6 +32,8 @@ DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") 
 
+# FRONTEND_URL = os.environ.get("FRONTEND_URL")
+FRONTEND_URL = "http://localhost:5173"
 
 # Application definition
 
@@ -66,7 +68,7 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / 'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
