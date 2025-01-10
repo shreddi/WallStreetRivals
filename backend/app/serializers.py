@@ -204,6 +204,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         if Player.objects.filter(username=data['username']).exists():
             raise serializers.ValidationError({"username": "Username is already taken."})
         
+        # Check username uniqueness
+        if Player.objects.filter(email=data['email']).exists():
+            raise serializers.ValidationError({"email": "An user with that email already exists."})
+        
         if data['first_name'] == '':
             raise serializers.ValidationError({"first_name": "First name is required."})
         

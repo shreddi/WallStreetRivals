@@ -10,6 +10,8 @@ import Register from './components/Register'
 import PrivateRoute from './components/PrivateRoute';
 import { PlayerProvider } from './components/contexts/PlayerProvider';
 import Settings from './components/ProfileSettings'
+import PasswordResetRequest from './components/PasswordResetRequest';
+import PasswordResetConfirm from './components/PasswordResetConfirm';
 
 function App() {
 
@@ -37,6 +39,8 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/portfolio" element={<PrivateRoute><PortfolioDashboard /></PrivateRoute>} />
               <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+              <Route path="/reset_password" element={<PasswordResetRequest />} />
+              <Route path="/reset_password_confirm/:uidb64/:token" element={<PasswordResetConfirm />} />
             </Routes>
           </PlayerProvider>
         </BrowserRouter>
