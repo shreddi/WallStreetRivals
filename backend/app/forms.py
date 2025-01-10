@@ -24,7 +24,7 @@ class CustomPasswordResetForm(PasswordResetForm):
             context = {
                 "email": user.email,
                 "domain": full_domain,
-                "site_name": "Your App Name",
+                "site_name": "Wall Street Rivals",
                 "uid": urlsafe_base64_encode(force_bytes(user.pk)),
                 "token": token_generator.make_token(user),
                 "user": user,

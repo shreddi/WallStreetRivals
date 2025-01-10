@@ -171,7 +171,7 @@ class PasswordResetRequestAPIView(APIView):
             # Prepare the email context
             context = {
                 'email': user.email,
-                'site_name': "Your App Name",
+                'site_name': "Wall Street Rivals",
                 'reset_url': reset_url,
             }
 
