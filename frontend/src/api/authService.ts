@@ -1,12 +1,11 @@
 import axios, { AxiosError } from 'axios';
-import { API_BASE_URL } from './apiService.ts';
+import { API_BASE_URL, getAuthHeaders } from './apiService.ts';
+import { Player } from '../types.ts';
 
 export const login = async (username: string, password: string) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/api/login/`, { username, password });
         if (response.data.access) {
-            localStorage.setItem('access_token', response.data.access);  // Store access token
-            localStorage.setItem('refresh_token', response.data.refresh); // Store refresh token
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;  // Set token in headers for subsequent requests
         }
         return response.data;
@@ -63,5 +62,32 @@ export const register = async (
             // Handle unexpected errors
             throw { general: "Registration failed due to an unknown error." };
         }
+    }
+};
+
+export const updatePlayer = async (playerID: number, formData: FormData) => {
+    const headers = getAuthHeaders()
+    const response = await axios.put(`${API_BASE_URL}/api/players/${playerID}/`, formData, { headers, withCredentials: true })
+    if (response.status !== 200) {
+        throw new Error('failed to update player');
+    }
+    return response.data
+}
+
+export const getPlayer = async (playerID: number) => {
+    const headers = getAuthHeaders()
+    const response = await axios.get(`${API_BASE_URL}/api/players/${playerID}/`, { headers, withCredentials: true })
+    if (response.status !== 200) {
+        throw new Error('failed to get player');
+    }
+    return response.data
+}
+
+export const resetPassword = async (email: string) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/api/password_reset/`, { email });
+        return response.data
+    } catch (err) {
+        throw new Error("failed to reset password.")
     }
 };

@@ -1,22 +1,20 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import { login } from '../api/apiService';
-import { TextInput, Button, Title, Text, Anchor, Group, Stack, Alert, Center } from '@mantine/core';
+import { login as apiLogin } from '../api/apiService';
+import { TextInput, Button, Title, Text, Anchor, Group, Alert, Stack, Center } from '@mantine/core';
+import { usePlayer } from './contexts/usePlayer';
 
 function Login() {
-
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const kickedOut = !!localStorage.getItem('kicked_out')
-  const navigate = useNavigate();
+  const { login } = usePlayer()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(username, password);
-      localStorage.removeItem('kicked_out')
-      navigate('/portfolio');
+      const loginResponse = await apiLogin(username, password);
+      login(loginResponse.user, loginResponse.access, loginResponse.refresh)
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message); // Access `message` safely
@@ -67,6 +65,12 @@ function Login() {
                 Register
               </Anchor>
             </Text>
+            <Text size="sm">
+            Forgot your password?{' '}
+            <Anchor href="/reset_password" style={{ fontWeight: 500 }}>
+              Reset Password
+            </Anchor>
+          </Text>
           </Group>
         </Stack>
       </Center>

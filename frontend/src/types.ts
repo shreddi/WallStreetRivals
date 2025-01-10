@@ -32,6 +32,22 @@ export interface Portfolio extends ResourceWithMetadata{
     cash: string;
 };
 
+export interface AlertPreferences {
+    weekly_summary: boolean;
+    daily_summary: boolean;
+    contest_rank_change: boolean;
+}
+
+export interface Player {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    profile_picture?: string; //url of static image for user's profile pic
+    alert_preferences: AlertPreferences
+}
+
 
 //defaults for each interface
 export const defaultStock: Stock = {

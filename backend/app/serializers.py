@@ -4,10 +4,91 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 
+class AlertPreferencesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AlertPreferences
+        fields = '__all__'
+
 class PlayerSerializer(serializers.ModelSerializer):
+    alert_preferences = AlertPreferencesSerializer(required=False)
+    profile_picture = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Player
-        fields = "__all__"
+        fields = ['alert_preferences', 'username', 'id', 'email', 'first_name', 'last_name', 'profile_picture', 'password']
+        extra_kwargs = {
+            "password": {"write_only": True}, 
+        }
+    
+    def validate_username(self, value):
+        """
+        Check if the username is already taken by another user.
+        """
+        if(value.strip()==''):
+            raise serializers.ValidationError("Username is required.")
+        user = self.instance  # The current user instance
+        if(user):
+            if Player.objects.exclude(pk=user.pk).filter(username=value).exists():
+                raise serializers.ValidationError("This username is already taken.")
+        return value
+    
+    def validate(self, data):
+         # Check username uniqueness
+        
+        if data['first_name'].strip() == '':
+            raise serializers.ValidationError({"first_name": "First name is required."})
+        
+        if len(data['first_name']) > 25:
+            raise serializers.ValidationError({"first_name": "Name must be fewer than 25 characters."})
+        
+        if data['last_name'].strip() == '':
+            raise serializers.ValidationError({"last_name": "Last name is required."})
+        
+        if len(data['last_name']) > 25:
+            raise serializers.ValidationError({"last_name": "Name must be fewer than 25 characters."})
+            
+        return super().validate(data)
+
+    def create(self, validated_data):
+        # Extract nested data
+        alert_preferences_data = validated_data.pop('alert_preferences', None)
+
+        # Create alert preferences object based on if data was included in request, or default if not.
+        if(alert_preferences_data):
+            alert_preferences = AlertPreferences.objects.create(**alert_preferences_data)
+        else:
+            alert_preferences = AlertPreferences.objects.create() #Create default
+
+        # Create the player instance using the alert preference object
+        player = Player.objects.create_user(alert_preferences=alert_preferences, **validated_data)
+
+        return player
+
+    def update(self, instance, validated_data):
+        # Extract nested data
+        alert_preferences_data = validated_data.pop('alert_preferences', None)
+
+        # Update the player instance
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # Handle the nested alert preferences
+        if alert_preferences_data:
+            alert_preferences, created = AlertPreferences.objects.get_or_create(player=instance)
+            for attr, value in alert_preferences_data.items():
+                setattr(alert_preferences, attr, value)
+            alert_preferences.save()
+
+        return instance
+    
+    def get_profile_picture(self, obj):
+        request = self.context.get('request')
+        if obj.profile_picture:
+            return request.build_absolute_uri(obj.profile_picture.url)
+        return None
+    
 
 class StockSerializer(serializers.ModelSerializer):
     class Meta:
@@ -123,6 +204,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         if Player.objects.filter(username=data['username']).exists():
             raise serializers.ValidationError({"username": "Username is already taken."})
         
+        # Check username uniqueness
+        if Player.objects.filter(email=data['email']).exists():
+            raise serializers.ValidationError({"email": "An user with that email already exists."})
+        
         if data['first_name'] == '':
             raise serializers.ValidationError({"first_name": "First name is required."})
         
@@ -135,13 +220,10 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Remove password2 from validated data since it's not needed for user creation
         validated_data.pop('password2')
-
-        # Create the user with the validated data
-        user = Player.objects.create_user(
-            username=validated_data["username"],
-            email=validated_data["email"],
-            password=validated_data["password"],
-            first_name=validated_data["first_name"],
-            last_name=validated_data["last_name"],
-        )
-        return user
+        print(validated_data)
+        user_serializer = PlayerSerializer(data=validated_data)
+        if(user_serializer.is_valid()):
+            user = user_serializer.save()
+            return user
+        else:
+            raise serializers.ValidationError(user_serializer.errors)
