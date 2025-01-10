@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import {
     IconSettings,
     IconLogout,
+    IconCurrencyDollar,
 } from '@tabler/icons-react';
 
 export default function UserDropdown() {
@@ -36,6 +37,12 @@ export default function UserDropdown() {
                     onClick={() => logout()}
                 >
                     LOGOUT
+                </Menu.Item>
+                <Menu.Item
+                    leftSection={<IconCurrencyDollar style={{ width: rem(14), height: rem(14) }} />}
+                    onClick={() => navigate('/portfolio')}
+                >
+                    DASHBOARD
                 </Menu.Item>
             </Menu.Dropdown>
         </Menu >

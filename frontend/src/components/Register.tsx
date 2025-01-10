@@ -1,5 +1,5 @@
 // import { useState } from 'react'
-import { Alert, Anchor, Button, Container, Group, PasswordInput, Text, TextInput, Title } from '@mantine/core';
+import { Alert, Anchor, Box, Stack, Button, Container, Group, PasswordInput, Text, TextInput, Title } from '@mantine/core';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { register } from '../api/apiService'
@@ -69,8 +69,8 @@ function Register() {
     };
 
     return (
-        <Container size="xs">
-            <Title order={2} mt="md" style={{ textAlign: 'center' }}>Register</Title>
+            <Stack w='600'>
+            <Title order={1} mt="md" style={{ textAlign: 'center' }}>Register</Title>
             <Text mt="sm" style={{ textAlign: 'center' }}>Create a new account</Text>
 
             {error && <Alert title="Error" color="red" mt="md">{error}</Alert>}
@@ -138,7 +138,7 @@ function Register() {
                     </Anchor>
                 </Text>
             </Group>
-        </Container>
+        </Stack>
     );
 };
 

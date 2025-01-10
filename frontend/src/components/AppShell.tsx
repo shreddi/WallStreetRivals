@@ -1,4 +1,4 @@
-import { AppShell, Flex, Text } from '@mantine/core'
+import { AppShell, Flex, Title } from '@mantine/core'
 import { usePlayer } from './contexts/usePlayer';
 import UserDropdown from './UserDropdown';
 
@@ -12,9 +12,9 @@ export default function BasicAppShell({ children }: { children: React.ReactNode 
           header={{ height: 70 }}
           padding="md"
         >
-          <AppShell.Header p="md">
+          <AppShell.Header bg='black' p="md">
             <Flex align="center" justify="Flex-end" gap='md'>
-              <Text tt='uppercase'>welcome, {currentPlayer?.username}</Text>
+              <Title order={6} c='white' fw={700} tt='uppercase'>welcome, {currentPlayer?.username}</Title>
               <UserDropdown/>
             </Flex>
           </AppShell.Header>

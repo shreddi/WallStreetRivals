@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { login as apiLogin } from '../api/apiService';
-import { TextInput, Button, Title, Text, Anchor, Group, Container, Alert } from '@mantine/core';
+import { TextInput, Button, Title, Text, Anchor, Group, Alert, Stack, Center } from '@mantine/core';
 import { usePlayer } from './contexts/usePlayer';
 
 function Login() {
@@ -27,54 +27,53 @@ function Login() {
   return (
     <>
       {kickedOut && <Alert>Your session has timed out. Please log in again.</Alert>}
-      <Container size="xs">
-        <Title order={2} style={{ textAlign: 'center' }} mt="md">
-          Login
-        </Title>
-        <Text style={{ textAlign: 'center' }} mt="sm">
-          Login to your account
-        </Text>
-        <form onSubmit={handleSubmit}>
-          <TextInput
-            label="Username"
-            placeholder="Your username"
-            value={username}
-            onChange={(e) => setUsername(e.currentTarget.value)}
-            required
-          />
-          <TextInput
-            label="Password"
-            placeholder="Your password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.currentTarget.value)}
-            required
-            mt="md"
-          />
-          {error && (
-            <Text c="red" style={{ textAlign: 'center' }} mt="sm">
-              {error}
-            </Text>
-          )}
-          <Button type="submit" fullWidth mt="xl">
+      <Center>
+        <Stack w="600px">
+          <Title order={1}  mt="md">
             Login
-          </Button>
-        </form>
-        <Group style={{ justifyContent: 'center' }} mt="md">
-          <Text size="sm">
-            Don't have an account?{' '}
-            <Anchor href="/register" style={{ fontWeight: 500 }}>
-              Register
-            </Anchor>
-          </Text>
-          <Text size="sm">
+          </Title>
+          <form onSubmit={handleSubmit}>
+            <TextInput
+              // tt = 'uppercase'
+              label="Username"
+              placeholder="Your username"
+              value={username}
+              onChange={(e) => setUsername(e.currentTarget.value)}
+              required
+            />
+            <TextInput
+              // tt='uppercase'
+              label="Password"
+              placeholder="Your password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.currentTarget.value)}
+              required
+              mt="md"
+            />
+            {error && (
+              <Text c="red" style={{ textAlign: 'center' }} mt="sm">
+                {error}
+              </Text>
+            )}
+            <Button type="submit" fullWidth mt="xl">
+              Login
+            </Button>
+          </form>
+            <Text size="sm">
+              Don't have an account?{' '}
+              <Anchor href="/register" style={{ fontWeight: 500 }}>
+                Register
+              </Anchor>
+            </Text>
+            <Text size="sm">
             Forgot your password?{' '}
             <Anchor href="/reset_password" style={{ fontWeight: 500 }}>
               Reset Password
             </Anchor>
           </Text>
-        </Group>
-      </Container>
+        </Stack>
+      </Center>
     </>
   );
 };

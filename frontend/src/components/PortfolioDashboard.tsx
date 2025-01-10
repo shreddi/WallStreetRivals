@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Flex, Box, Text, Stack, NumberInput, Button, Table, Loader, ScrollArea } from '@mantine/core';
+import { Flex, Box, Text, Stack, NumberInput, Button, Table, Loader, ScrollArea, Title } from '@mantine/core';
 import { Portfolio, defaultPortfolio, Holding, Stock } from '../types';
 import { portfolioApi, holdingApi } from '../api/apiService';
 import StockSelect from './StockSelect'
@@ -86,20 +86,20 @@ const PortfolioDashboard: React.FC = () => {
             <Flex justify='center'>
                 <Stack gap="0px">
                     <Flex p="20px" bg="gray" align="flex-end" justify="space-between">
-                        <Text size="lg" c="white">
-                            PORTFOLIO
-                        </Text>
-                        <Text size="xl" c="white">
+                        <Title order={2} c="white">
+                            portfolio
+                        </Title>
+                        <Title order={1} c="white">
                             ${formatPrice((parseFloat(portfolio.cash) + parseFloat(portfolio.holdings_total)).toString()).toLocaleString()}
-                        </Text>
+                        </Title>
                     </Flex>
                     <Flex w='700px' p="20px" bg="black" align="flex-end" justify="space-between">
-                        <Text size="md" c="gray">
+                        <Title order={4} c="gray">
                             CASH
-                        </Text>
-                        <Text size="xl" c="white">
+                        </Title>
+                        <Title order={1} c="white">
                             ${formatPrice(portfolio.cash).toLocaleString()}
-                        </Text>
+                        </Title>
                     </Flex>
                     <Box p="20px" bg="white" bd='1px solid #ccc'>
                         <Stack>
@@ -127,18 +127,18 @@ const PortfolioDashboard: React.FC = () => {
                         </Stack>
                     </Box>
                     <Flex p="20px" bg="black" align="flex-end" justify="space-between">
-                        <Text size="md" c="gray">
+                        <Title order={4} c="gray">
                             HOLDINGS
-                        </Text>
-                        <Text size="xl" c="white">
+                        </Title>
+                        <Title order={1} c="white">
                             ${formatPrice(portfolio.holdings_total)}
-                        </Text>
+                        </Title>
                     </Flex>
                     <ScrollArea h={250}>
                         <Table>
-                            <Table.Thead bg="gray" c="white">
+                            <Table.Thead bg="gray" c="white" tt='uppercase' fw={700}>
                                 <Table.Tr>
-                                    <Table.Th ta='center'>HOLDING</Table.Th>
+                                    <Table.Th ta='center'>hOLDING</Table.Th>
                                     <Table.Th ta='center'>SHARES</Table.Th>
                                     <Table.Th ta='center'>PRICE</Table.Th>
                                     <Table.Th ta='center'>TOTAL</Table.Th>
