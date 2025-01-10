@@ -29,11 +29,12 @@ function Login() {
       {kickedOut && <Alert>Your session has timed out. Please log in again.</Alert>}
       <Center>
         <Stack w="600px">
-          <Title order={2} style={{ textAlign: 'center' }} mt="md">
+          <Title order={1}  mt="md">
             Login
           </Title>
           <form onSubmit={handleSubmit}>
             <TextInput
+              // tt = 'uppercase'
               label="Username"
               placeholder="Your username"
               value={username}
@@ -41,6 +42,7 @@ function Login() {
               required
             />
             <TextInput
+              // tt='uppercase'
               label="Password"
               placeholder="Your password"
               type="password"
@@ -58,7 +60,6 @@ function Login() {
               Login
             </Button>
           </form>
-          <Group style={{ justifyContent: 'center' }} mt="md">
             <Text size="sm">
               Don't have an account?{' '}
               <Anchor href="/register" style={{ fontWeight: 500 }}>
@@ -71,7 +72,6 @@ function Login() {
               Reset Password
             </Anchor>
           </Text>
-          </Group>
         </Stack>
       </Center>
     </>

@@ -12,9 +12,9 @@ export default function BasicAppShell({ children }: { children: React.ReactNode 
           header={{ height: 70 }}
           padding="md"
         >
-          <AppShell.Header p="md">
+          <AppShell.Header bg='black' p="md">
             <Flex align="center" justify="Flex-end" gap='md'>
-              <Text tt='uppercase'>welcome, {currentPlayer?.username}</Text>
+              <Text c='white' fw={700} tt='uppercase'>welcome, {currentPlayer?.username}</Text>
               <UserDropdown/>
             </Flex>
           </AppShell.Header>

@@ -70,7 +70,7 @@ function Register() {
 
     return (
             <Stack w='600'>
-            <Title order={2} mt="md" style={{ textAlign: 'center' }}>Register</Title>
+            <Title order={1} mt="md" style={{ textAlign: 'center' }}>Register</Title>
             <Text mt="sm" style={{ textAlign: 'center' }}>Create a new account</Text>
 
             {error && <Alert title="Error" color="red" mt="md">{error}</Alert>}
