@@ -73,7 +73,7 @@ export default function ProfileSettings() {
     };
 
     const discardChanges = () => {
-        setPlayerData(currentPlayer); 
+        setPlayerData(currentPlayer);
         setPicture(undefined)
         setErrors({});
     }
@@ -88,125 +88,123 @@ export default function ProfileSettings() {
 
     return (
         <AppShell>
-            <Box mx="auto" w={600}>
+            <Stack w={600} >
                 <Title tt="uppercase" order={2} mb="lg">
                     Profile Settings
                 </Title>
 
-                <Stack spacing="md">
-                    <Group>
-                        <Avatar
-                            src={picture ? URL.createObjectURL(picture) : playerData.profile_picture}
-                            radius="150"
-                            size="300px"
-                        />
-                        <FileInput
-                            label="Change Profile Picture"
-                            placeholder="Choose file"
-                            onChange={(file) => file && setPicture(file)}
-                            accept="image/*"
-                        />
-                    </Group>
-
-                    <TextInput
-                        label="Username"
-                        value={playerData.username}
-                        onChange={(e) =>
-                            setPlayerData({ ...playerData, username: e.currentTarget.value })
-                        }
-                        error={errors.username?.[0]} // Display the first error for 'username'
+                <Group>
+                    <Avatar
+                        src={picture ? URL.createObjectURL(picture) : playerData.profile_picture}
+                        radius="150"
+                        size="300px"
                     />
-
-                    <TextInput
-                        label="First Name"
-                        value={playerData.first_name}
-                        onChange={(e) =>
-                            setPlayerData({ ...playerData, first_name: e.currentTarget.value })
-                        }
-                        error={errors.first_name?.[0]} // Display the first error for 'first_name'
+                    <FileInput
+                        label="Change Profile Picture"
+                        placeholder="Choose file"
+                        onChange={(file) => file && setPicture(file)}
+                        accept="image/*"
                     />
+                </Group>
 
-                    <TextInput
-                        label="Last Name"
-                        value={playerData.last_name}
-                        onChange={(e) =>
-                            setPlayerData({ ...playerData, last_name: e.currentTarget.value })
-                        }
-                        error={errors.last_name?.[0]} // Display the first error for 'last_name'
-                    />
-
-                    <TextInput
-                        label="Email"
-                        value={playerData.email}
-                        disabled
-                    />
-
-                    <Title mt='20px' tt="uppercase" order={2} mb="lg">
-                        Notification Settings
-                    </Title>
-
-                    <Checkbox
-                        label="Weekly Summary"
-                        checked={playerData.alert_preferences.weekly_summary}
-                        onChange={(e) =>
-                            setPlayerData({
-                                ...playerData,
-                                alert_preferences: {
-                                    ...playerData.alert_preferences,
-                                    weekly_summary: e.currentTarget.checked,
-                                },
-                            })
-                        }
-                        error={errors['alert_preferences.weekly_summary']?.[0]} // Error for weekly summary
-                    />
-
-                    <Checkbox
-                        label="Daily Summary"
-                        checked={playerData.alert_preferences.daily_summary}
-                        onChange={(e) =>
-                            setPlayerData({
-                                ...playerData,
-                                alert_preferences: {
-                                    ...playerData.alert_preferences,
-                                    daily_summary: e.currentTarget.checked,
-                                },
-                            })
-                        }
-                        error={errors['alert_preferences.daily_summary']?.[0]} // Error for daily summary
-                    />
-
-                    <Checkbox
-                        label="Contest Rank Change"
-                        checked={playerData.alert_preferences.contest_rank_change}
-                        onChange={(e) =>
-                            setPlayerData({
-                                ...playerData,
-                                alert_preferences: {
-                                    ...playerData.alert_preferences,
-                                    contest_rank_change: e.currentTarget.checked,
-                                },
-                            })
-                        }
-                        error={errors['alert_preferences.contest_rank_change']?.[0]} // Error for contest rank change
-                    />
-
-                    {/* General Error Message */}
-                    {Object.keys(errors).length > 0 && (
-                        <Text c="red">Please fix the errors above and try again.</Text>
-                    )}
-
-                    {wasChanged &&
-                        <>
-                            <Button onClick={handleSave} loading={saving} fullWidth>
-                                Save Changes
-                            </Button>
-                            <Button onClick={() => {discardChanges()}} fullWidth>
-                                Discard changes
-                            </Button>
-                        </>
+                <TextInput
+                    label="Username"
+                    value={playerData.username}
+                    onChange={(e) =>
+                        setPlayerData({ ...playerData, username: e.currentTarget.value })
                     }
-                </Stack>
-            </Box>
+                    error={errors.username?.[0]} // Display the first error for 'username'
+                />
+
+                <TextInput
+                    label="First Name"
+                    value={playerData.first_name}
+                    onChange={(e) =>
+                        setPlayerData({ ...playerData, first_name: e.currentTarget.value })
+                    }
+                    error={errors.first_name?.[0]} // Display the first error for 'first_name'
+                />
+
+                <TextInput
+                    label="Last Name"
+                    value={playerData.last_name}
+                    onChange={(e) =>
+                        setPlayerData({ ...playerData, last_name: e.currentTarget.value })
+                    }
+                    error={errors.last_name?.[0]} // Display the first error for 'last_name'
+                />
+
+                <TextInput
+                    label="Email"
+                    value={playerData.email}
+                    disabled
+                />
+
+                <Title mt='20px' tt="uppercase" order={2} mb="lg">
+                    Notification Settings
+                </Title>
+
+                <Checkbox
+                    label="Weekly Summary"
+                    checked={playerData.alert_preferences.weekly_summary}
+                    onChange={(e) =>
+                        setPlayerData({
+                            ...playerData,
+                            alert_preferences: {
+                                ...playerData.alert_preferences,
+                                weekly_summary: e.currentTarget.checked,
+                            },
+                        })
+                    }
+                    error={errors['alert_preferences.weekly_summary']?.[0]} // Error for weekly summary
+                />
+
+                <Checkbox
+                    label="Daily Summary"
+                    checked={playerData.alert_preferences.daily_summary}
+                    onChange={(e) =>
+                        setPlayerData({
+                            ...playerData,
+                            alert_preferences: {
+                                ...playerData.alert_preferences,
+                                daily_summary: e.currentTarget.checked,
+                            },
+                        })
+                    }
+                    error={errors['alert_preferences.daily_summary']?.[0]} // Error for daily summary
+                />
+
+                <Checkbox
+                    label="Contest Rank Change"
+                    checked={playerData.alert_preferences.contest_rank_change}
+                    onChange={(e) =>
+                        setPlayerData({
+                            ...playerData,
+                            alert_preferences: {
+                                ...playerData.alert_preferences,
+                                contest_rank_change: e.currentTarget.checked,
+                            },
+                        })
+                    }
+                    error={errors['alert_preferences.contest_rank_change']?.[0]} // Error for contest rank change
+                />
+
+                {/* General Error Message */}
+                {Object.keys(errors).length > 0 && (
+                    <Text c="red">Please fix the errors above and try again.</Text>
+                )}
+
+                {wasChanged &&
+                    <>
+                        <Button mt='md' onClick={handleSave} loading={saving} fullWidth>
+                            Save Changes
+                        </Button>
+                        <Button onClick={() => { discardChanges() }} fullWidth>
+                            Discard changes
+                        </Button>
+                    </>
+                }
+            </Stack>
         </AppShell>
     );
 }
