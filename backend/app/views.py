@@ -205,7 +205,7 @@ class PasswordResetConfirmAPIView(APIView):
         
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
-            user = User.objects.get(pk=uid)
+            user = Player.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             return Response({'error': 'Invalid token or user ID'}, status=status.HTTP_400_BAD_REQUEST)
         
