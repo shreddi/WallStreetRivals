@@ -20,21 +20,41 @@ export default function ProfileSettings() {
     // const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [playerData, setPlayerData] = useState<Player | null>(null)
-    const { player } = usePlayer()
+    const [picture, setPicture] = useState<File | undefined>()
+    const { currentPlayer, setCurrentPlayer } = usePlayer()
 
     useEffect(() => {
-        setPlayerData(player)
-    }, [player])
+        setPlayerData(currentPlayer)
+        console.log(currentPlayer)
+    }, [currentPlayer])
 
     // Handle form submission
     const handleSave = async () => {
         if (!playerData) return;
 
         setSaving(true);
-        const newPlayerData = {...playerData, id:1}
-        console.log(newPlayerData)
-        updatePlayer(newPlayerData)
-        .then(() => {alert('Profile updated successfully!')})
+
+        const formData = new FormData();
+        formData.append('username', playerData.username);
+        formData.append('first_name', playerData.first_name);
+        formData.append('last_name', playerData.last_name);
+
+        if (picture) {
+            formData.append('profile_picture', picture);
+        }
+
+        // Include nested fields like alert_preferences
+        Object.entries(playerData.alert_preferences).forEach(([key, value]) => {
+            formData.append(`alert_preferences.${key}`, String(value));
+        });
+
+
+        updatePlayer(playerData.id, formData)
+        .then((data) => {
+            setPlayerData(data)
+            setCurrentPlayer(data)
+            alert('Profile updated successfully!')
+        })
         .catch((error) => {
             console.error('Error updating profile:', error);
             alert('Failed to update profile. Please try again.');
@@ -43,7 +63,7 @@ export default function ProfileSettings() {
         })
     };
 
-    if (!player) {
+    if (!currentPlayer) {
         return <Loader />;
     }
 
@@ -61,15 +81,14 @@ export default function ProfileSettings() {
                 <Stack spacing="md">
                     {/* Profile Picture */}
                     <Group>
-                        <Avatar src={playerData.profile_picture} radius="xl" size="lg" />
+                        <Avatar src={picture ? URL.createObjectURL(picture) : playerData.profile_picture} radius="xl" size="lg" />
+                        {/* <Avatar src={playerData.profile_picture} radius="xl" size="lg" /> */}
                         <FileInput
                             label="Change Profile Picture"
                             placeholder="Choose file"
                             onChange={(file) => {
                                 if (file) {
-                                    const reader = new FileReader();
-                                    reader.onload = () => setPlayerData({ ...playerData, profile_picture: reader.result as string });
-                                    reader.readAsDataURL(file);
+                                    setPicture(file);
                                 }
                             }}
                             accept="image/*"

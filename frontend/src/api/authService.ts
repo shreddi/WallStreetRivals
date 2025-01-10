@@ -65,9 +65,9 @@ export const register = async (
     }
 };
 
-export const updatePlayer = async (player: Player) => {
+export const updatePlayer = async (playerID: number, formData: FormData) => {
     const headers = getAuthHeaders()
-    const response = await axios.put(`${API_BASE_URL}/api/players/${player.id}/`, player, { headers, withCredentials: true })
+    const response = await axios.put(`${API_BASE_URL}/api/players/${playerID}/`, formData, { headers, withCredentials: true })
     if (response.status !== 200) {
         throw new Error('failed to update player');
     }
