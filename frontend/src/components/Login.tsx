@@ -67,6 +67,12 @@ function Login() {
               Register
             </Anchor>
           </Text>
+          <Text size="sm">
+            Forgot your password?{' '}
+            <Anchor href="/reset_password" style={{ fontWeight: 500 }}>
+              Reset Password
+            </Anchor>
+          </Text>
         </Group>
       </Container>
     </>

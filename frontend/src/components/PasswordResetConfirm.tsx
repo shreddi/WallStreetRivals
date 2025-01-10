@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, TextInput, Title } from '@mantine/core';
+import { Button, Stack, TextInput, Title } from '@mantine/core';
 
 const PasswordResetConfirm = () => {
   const { uidb64, token } = useParams();
@@ -23,7 +23,7 @@ const PasswordResetConfirm = () => {
   };
 
   return (
-    <div>
+    <Stack p='md'>
       <Title order={2}>Set a New Password</Title>
       <TextInput
         type="password"
@@ -34,7 +34,7 @@ const PasswordResetConfirm = () => {
       <Button onClick={handleResetConfirm}>Reset Password</Button>
       {message && <p>{message}</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
-    </div>
+    </Stack>
   );
 };
 

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { resetPassword } from '../api/authService';
-import { Button, Title, Text, TextInput } from '@mantine/core';
+import { Button, Title, Text, TextInput, Stack } from '@mantine/core';
 
-const PasswordResetRequest = () => {
+export default function PasswordResetRequest() {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
@@ -19,9 +19,8 @@ const PasswordResetRequest = () => {
             })
     }
 
-
     return (
-        <div>
+        <Stack p='md'>
             <Title order={2}>Reset Your Password</Title>
             <TextInput
                 type="email"
@@ -32,8 +31,6 @@ const PasswordResetRequest = () => {
             <Button onClick={() => handleResetPassword()}>Send Reset Link</Button>
             {message && <Text>{message}</Text>}
             {error && <Text c='red'>{error}</Text>}
-        </div>
+        </Stack>
     );
 };
-
-export default PasswordResetRequest;
