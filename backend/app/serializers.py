@@ -16,9 +16,10 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = ['alert_preferences', 'username', 'id', 'email', 'first_name', 'last_name', 'profile_picture', 'password']
-        # extra_kwargs = {
-        #     "password": {"write_only": True}, 
-        # }
+        extra_kwargs = {
+            "password": {"write_only": True}, 
+            'profile_picture': {'read_only': True},
+        }
     
     def validate_username(self, value):
         """
