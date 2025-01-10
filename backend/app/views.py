@@ -11,11 +11,40 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
+from django.db import transaction
 
 
 class PlayerViewSet(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+    
+    @transaction.atomic
+    def update(self, request, *args, **kwargs):
+        # Override the default update to ensure the logged-in user can only update their own profile
+        instance = self.request.user  # Ensure the user can only update their own profile
+        data = request.data
+        file = request.FILES.get('profile_picture') 
+
+        # Delete old profile picture if a new one is uploaded
+            # Check if the file actually exists
+
+
+        serializer = self.get_serializer(instance, data=data, partial=True)
+        if serializer.is_valid():
+            if file:
+                if instance.profile_picture:
+                    try:
+                        if instance.profile_picture and instance.profile_picture.path:
+                            if os.path.isfile(instance.profile_picture.path):
+                                os.remove(instance.profile_picture.path)
+                    except ValueError:
+                        # Handle case where no file is associated
+                        pass
+                instance.profile_picture = file  # Save the file to the model field
+            serializer.save()  # Save the other fields
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 class PortfolioViewSet(viewsets.ModelViewSet):
     queryset = Portfolio.objects.all()
@@ -103,10 +132,10 @@ class LoginView(APIView):
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         
         refresh = RefreshToken.for_user(user)
-        serializedUser = PlayerSerializer(user).data
+        serialized_user = PlayerSerializer(user, context={'request': request}).data
 
         return Response({
             'access': str(refresh.access_token),
             'refresh': str(refresh),
-            'user': serializedUser
+            'user': serialized_user
         })

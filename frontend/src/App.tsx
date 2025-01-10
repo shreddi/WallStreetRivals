@@ -9,6 +9,7 @@ import Login from './components/Login'
 import Register from './components/Register'
 import PrivateRoute from './components/PrivateRoute';
 import { PlayerProvider } from './components/contexts/PlayerProvider';
+import Settings from './components/ProfileSettings'
 
 function App() {
 
@@ -35,6 +36,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/portfolio" element={<PrivateRoute><PortfolioDashboard /></PrivateRoute>} />
+              <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
             </Routes>
           </PlayerProvider>
         </BrowserRouter>

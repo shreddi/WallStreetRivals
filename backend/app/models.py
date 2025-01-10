@@ -15,9 +15,16 @@ class Portfolio(MetadataModel):
     cash = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
 
+class AlertPreferences(models.Model):
+    weekly_summary = models.BooleanField(default=True)
+    daily_summary = models.BooleanField(default=False)
+    contest_rank_change = models.BooleanField(default=False)
+
+
 # Player Model: Users for Wall Street Rivals. Player to Portfolio is one-to-one.
 class Player(AbstractUser):
-    portfolio = models.OneToOneField(Portfolio, on_delete=models.CASCADE, related_name='user', null=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    alert_preferences = models.ForeignKey(AlertPreferences, null=True, on_delete=models.CASCADE, related_name='player')
 
 
 #Stock model: Represents stock in a holding in an user's portfolio. Many holdings refer to one stock. 
