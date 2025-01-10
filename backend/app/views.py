@@ -11,12 +11,14 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
+from django.db import transaction
 
 
 class PlayerViewSet(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
     
+    @transaction.atomic
     def update(self, request, *args, **kwargs):
         # Override the default update to ensure the logged-in user can only update their own profile
         instance = self.request.user  # Ensure the user can only update their own profile
@@ -24,19 +26,20 @@ class PlayerViewSet(viewsets.ModelViewSet):
         file = request.FILES.get('profile_picture') 
 
         # Delete old profile picture if a new one is uploaded
-        if file and instance.profile_picture:
             # Check if the file actually exists
-            try:
-                if instance.profile_picture and instance.profile_picture.path:
-                    if os.path.isfile(instance.profile_picture.path):
-                        os.remove(instance.profile_picture.path)
-            except ValueError:
-                # Handle case where no file is associated
-                pass
+
 
         serializer = self.get_serializer(instance, data=data, partial=True)
         if serializer.is_valid():
             if file:
+                if instance.profile_picture:
+                    try:
+                        if instance.profile_picture and instance.profile_picture.path:
+                            if os.path.isfile(instance.profile_picture.path):
+                                os.remove(instance.profile_picture.path)
+                    except ValueError:
+                        # Handle case where no file is associated
+                        pass
                 instance.profile_picture = file  # Save the file to the model field
             serializer.save()  # Save the other fields
             return Response(serializer.data)

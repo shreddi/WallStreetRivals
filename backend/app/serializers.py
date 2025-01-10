@@ -25,11 +25,30 @@ class PlayerSerializer(serializers.ModelSerializer):
         """
         Check if the username is already taken by another user.
         """
+        if(value.strip()==''):
+            raise serializers.ValidationError("Username is required.")
         user = self.instance  # The current user instance
         if(user):
             if Player.objects.exclude(pk=user.pk).filter(username=value).exists():
                 raise serializers.ValidationError("This username is already taken.")
         return value
+    
+    def validate(self, data):
+         # Check username uniqueness
+        
+        if data['first_name'].strip() == '':
+            raise serializers.ValidationError({"first_name": "First name is required."})
+        
+        if len(data['first_name']) > 25:
+            raise serializers.ValidationError({"first_name": "Name must be fewer than 25 characters."})
+        
+        if data['last_name'].strip() == '':
+            raise serializers.ValidationError({"last_name": "Last name is required."})
+        
+        if len(data['last_name']) > 25:
+            raise serializers.ValidationError({"last_name": "Name must be fewer than 25 characters."})
+            
+        return super().validate(data)
 
     def create(self, validated_data):
         # Extract nested data
