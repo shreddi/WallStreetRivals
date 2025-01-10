@@ -21,9 +21,8 @@ class PlayerViewSet(viewsets.ModelViewSet):
         # Override the default update to ensure the logged-in user can only update their own profile
         instance = self.request.user
         serializer = self.get_serializer(instance, data=request.data, partial=True)
-        print(self.get_serializer(instance, data=request.data, partial=True))
         if serializer.is_valid():
-            serializer.save()
+            serializer.save() 
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

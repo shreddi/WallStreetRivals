@@ -14,6 +14,7 @@ import {
 import { Player } from '../types'; // Adjust the path as needed
 import { usePlayer } from './contexts/usePlayer';
 import AppShell from './AppShell'
+import { updatePlayer } from '../api/authService';
 
 export default function ProfileSettings() {
     // const [loading, setLoading] = useState(true);
@@ -30,15 +31,16 @@ export default function ProfileSettings() {
         if (!playerData) return;
 
         setSaving(true);
-
-        try {
-            alert('Profile updated successfully!');
-        } catch (error) {
+        const newPlayerData = {...playerData, id:1}
+        console.log(newPlayerData)
+        updatePlayer(newPlayerData)
+        .then(() => {alert('Profile updated successfully!')})
+        .catch((error) => {
             console.error('Error updating profile:', error);
             alert('Failed to update profile. Please try again.');
-        } finally {
-            setSaving(false);
-        }
+        }).finally(() => {
+            setSaving(false)
+        })
     };
 
     if (!player) {
@@ -78,7 +80,6 @@ export default function ProfileSettings() {
                     <TextInput
                         label="Username"
                         value={playerData.username}
-                        disabled
                         onChange={(e) =>
                             setPlayerData({
                                 ...playerData,

@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
-import { API_BASE_URL } from './apiService.ts';
+import { API_BASE_URL, getAuthHeaders } from './apiService.ts';
+import { Player } from '../types.ts';
 
 export const login = async (username: string, password: string) => {
     try {
@@ -63,3 +64,21 @@ export const register = async (
         }
     }
 };
+
+export const updatePlayer = async (player: Player) => {
+    const headers = getAuthHeaders()
+    const response = await axios.put(`${API_BASE_URL}/api/players/${player.id}/`, player, { headers, withCredentials: true })
+    if (response.status !== 200) {
+        throw new Error('failed to update player');
+    }
+    return response.data
+}
+
+export const getPlayer = async (playerID: number) => {
+    const headers = getAuthHeaders()
+    const response = await axios.get(`${API_BASE_URL}/api/players/${playerID}/`, { headers, withCredentials: true })
+    if (response.status !== 200) {
+        throw new Error('failed to get player');
+    }
+    return response.data
+}

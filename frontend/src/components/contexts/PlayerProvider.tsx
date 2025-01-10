@@ -2,7 +2,7 @@ import { ReactNode, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Player } from "../../types";
 import { PlayerContext } from "./PlayerContext";
-
+import { getPlayer } from "../../api/authService";
 
 export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const [player, setPlayer] = useState<Player | null>(null);
@@ -14,7 +14,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('access_token', accessToken);
     localStorage.setItem('refresh_token', refreshToken);
     localStorage.removeItem('kicked_out')
-    localStorage.setItem('player', JSON.stringify(playerData));
+    localStorage.setItem('playerID', (playerData.id).toString());
     navigate('/')
   };
 
@@ -24,17 +24,16 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('kicked_out')
-    localStorage.removeItem('player');
+    localStorage.removeItem('playerID');
     navigate('/login');
   };
 
   // Restore session on app load
   useEffect(() => {
-    const storedToken = localStorage.getItem('access_token');
-    const storedPlayer = localStorage.getItem('player');
-    if (storedToken && storedPlayer) {
-      setPlayer(JSON.parse(storedPlayer));
-    }
+    const id = parseInt(localStorage.getItem('playerID') || "")
+    getPlayer(id)
+    .then((data: Player) => {setPlayer(data)})
+    .catch((error: Error) => console.log(error))
   }, []);
 
   return (
