@@ -5,7 +5,7 @@ import UserDropdown from './UserDropdown';
 // This component provides the structure of the app including the header.
 
 export default function BasicAppShell({ children }: { children: React.ReactNode }){
-    const { player } = usePlayer()
+    const { currentPlayer } = usePlayer()
 
     return (
         <AppShell
@@ -14,7 +14,7 @@ export default function BasicAppShell({ children }: { children: React.ReactNode 
         >
           <AppShell.Header p="md">
             <Flex align="center" justify="Flex-end" gap='md'>
-              <Text tt='uppercase'>welcome, {player?.first_name} {player?.last_name}</Text>
+              <Text tt='uppercase'>welcome, {currentPlayer?.username}</Text>
               <UserDropdown/>
             </Flex>
           </AppShell.Header>

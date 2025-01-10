@@ -10,7 +10,7 @@ import {
 export default function UserDropdown() {
     const navigate = useNavigate()
     const [opened, setOpened] = useState(false);
-    const { logout, player } = usePlayer()
+    const { logout, currentPlayer } = usePlayer()
 
     return (
         <Menu
@@ -20,7 +20,7 @@ export default function UserDropdown() {
         >
             <Menu.Target>
                 <Avatar
-                    src={player?.profilePic || ""}
+                    src={currentPlayer?.profile_picture || ""}
                 />
             </Menu.Target>
 

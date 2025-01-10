@@ -5,22 +5,23 @@ import { PlayerContext } from "./PlayerContext";
 import { getPlayer } from "../../api/authService";
 
 export const PlayerProvider = ({ children }: { children: ReactNode }) => {
-  const [player, setPlayer] = useState<Player | null>(null);
+  const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
   const navigate = useNavigate();
 
   // Login function
   const login = (playerData: Player, accessToken: string, refreshToken: string) => {
-    setPlayer(playerData);
     localStorage.setItem('access_token', accessToken);
     localStorage.setItem('refresh_token', refreshToken);
     localStorage.removeItem('kicked_out')
     localStorage.setItem('playerID', (playerData.id).toString());
+    console.log(playerData)
+    setCurrentPlayer(playerData);
     navigate('/')
   };
 
   // Logout function
   const logout = () => {
-    setPlayer(null);
+    setCurrentPlayer(null);
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('kicked_out')
@@ -32,12 +33,15 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const id = parseInt(localStorage.getItem('playerID') || "")
     getPlayer(id)
-    .then((data: Player) => {setPlayer(data)})
+    .then((data: Player) => {
+      console.log(data)
+      setCurrentPlayer(data)
+    })
     .catch((error: Error) => console.log(error))
   }, []);
 
   return (
-    <PlayerContext.Provider value={{ player, login, logout }}>
+    <PlayerContext.Provider value={{ currentPlayer, setCurrentPlayer, login, logout }}>
       {children}
     </PlayerContext.Provider>
   );
