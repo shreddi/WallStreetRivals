@@ -16,14 +16,22 @@ const PasswordResetConfirm = () => {
         new_password: newPassword,
       });
       setMessage(response.data.message);
+      setError(''); // Clear any previous errors
       setTimeout(() => navigate('/login'), 3000); // Redirect after success
     } catch (err) {
-      setError(err.response?.data?.error || 'Something went wrong.');
+      // Display errors from the backend
+      const errorMessage = err.response?.data?.error || 'Something went wrong.';
+      if (Array.isArray(errorMessage)) {
+        // If the error is a list of validation errors, join them
+        setError(errorMessage.join(' '));
+      } else {
+        setError(errorMessage);
+      }
     }
   };
 
   return (
-    <Stack p='md'>
+    <Stack p="md">
       <Title order={2}>Set a New Password</Title>
       <TextInput
         type="password"

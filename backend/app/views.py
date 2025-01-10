@@ -20,6 +20,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.contrib.auth.password_validation import validate_password
 
 
 
@@ -203,6 +204,12 @@ class PasswordResetConfirmAPIView(APIView):
         if not new_password:
             return Response({'error': 'New password is required'}, status=status.HTTP_400_BAD_REQUEST)
         
+        # Validate the password against Django's validators
+        try:
+            validate_password(new_password)
+        except DjangoValidationError as e:
+            return Response({"error": list(e.messages)}, status=status.HTTP_400_BAD_REQUEST)
+        
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
             user = Player.objects.get(pk=uid)
@@ -214,4 +221,4 @@ class PasswordResetConfirmAPIView(APIView):
         
         user.set_password(new_password)
         user.save()
-        return Response({'message': 'Password reset successful'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Password reset successful, rerouting to login...'}, status=status.HTTP_200_OK)
