@@ -118,6 +118,10 @@ class StockViewSet(viewsets.ModelViewSet):
     serializer_class = StockSerializer
 
 
+class ContestViewSet(viewsets.ModelViewSet):
+    queryset = Contest.objects.all()
+    serializer_class = ContestSerializer
+
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 

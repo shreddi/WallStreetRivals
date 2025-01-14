@@ -3,6 +3,7 @@ from .models import *
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
+from datetime import date, timedelta
 
 class AlertPreferencesSerializer(serializers.ModelSerializer):
 
@@ -47,6 +48,15 @@ class PlayerSerializer(serializers.ModelSerializer):
         
         if len(data['last_name']) > 25:
             raise serializers.ValidationError({"last_name": "Name must be fewer than 25 characters."})
+        
+        try:
+            validate_email(data['email'])
+        except DjangoValidationError:
+            raise serializers.ValidationError({"email": "Invalid email format."})
+        
+        # Check username uniqueness
+        if Player.objects.filter(email=data['email']).exists():
+            raise serializers.ValidationError({"email": "An user with that email already exists."})
             
         return super().validate(data)
 
@@ -153,6 +163,7 @@ class HoldingSerializer(serializers.ModelSerializer):
 
 
 class PortfolioSerializer(serializers.ModelSerializer):
+    player = PlayerSerializer(read_only=True)
     holdings = HoldingSerializer(many=True, read_only=True)
     holdings_total = serializers.SerializerMethodField()
     total = serializers.SerializerMethodField()
@@ -171,6 +182,80 @@ class PortfolioSerializer(serializers.ModelSerializer):
     
     def get_total(self, obj):
         return self.get_holdings_total(obj) + obj.cash
+    
+
+class ContestSerializer(serializers.ModelSerializer):
+    portfolios = PortfolioSerializer(many=True, read_only=True)
+    players = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Player.objects.all()
+    )
+
+    class Meta:
+        model = Contest
+        fields = [
+            'id',
+            'owner',
+            'picture',
+            'is_tournament',
+            'league_type',
+            'cash_interest_rate',
+            'duration',
+            'start_date',
+            'player_limit',
+            'nyse',
+            'nasdaq',
+            'crypto',
+            'portfolios',  
+            'players',  
+        ]
+    
+    def create(self, validated_data):
+        # Extract player IDs from the input data
+        players = validated_data.pop('players', [])
+        contest = Contest.objects.create(**validated_data)
+
+        # Create a portfolio for each player and associate with the contest
+        for player in players:
+            Portfolio.objects.create(player=player, contest=contest)
+
+        return contest
+    
+    def validate(self, data):
+        today = date.today()
+        one_year_from_now = today + timedelta(days=365)
+
+        # Ensure the start date is at least one day in the future
+        if 'start_date' in data:
+            if data['start_date'] <= today:
+                raise serializers.ValidationError(
+                    {"start_date": "The start date must be at least one day in the future."}
+                )
+            if data['start_date'] > one_year_from_now:
+                raise serializers.ValidationError(
+                    {"start_date": "The start date cannot be more than one year from today."}
+                )
+
+        # Validate player count does not exceed player_limit
+        if 'players' in data and 'player_limit' in data:
+            if len(data['players']) > data['player_limit']:
+                raise serializers.ValidationError(
+                    {"players": "The number of players exceeds the player limit."}
+                )
+
+        # Validate that at least one marketplace is enabled
+        if not (data.get('nyse') or data.get('nasdaq') or data.get('crypto')):
+            raise serializers.ValidationError(
+                {"marketplaces": "At least one marketplace (NYSE, NASDAQ, or Crypto) must be enabled."}
+            )
+
+        return data
+    
+    def to_representation(self, instance):
+        """Customize the representation to include players as IDs."""
+        representation = super().to_representation(instance)
+        representation['players'] = [portfolio.player.id for portfolio in instance.portfolios.all()]
+        return representation
+
     
 class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)  # Add password2 field for confirmation
@@ -200,21 +285,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         except DjangoValidationError as e:
             raise serializers.ValidationError({"password": list(e.messages)})
 
-        # Check username uniqueness
-        if Player.objects.filter(username=data['username']).exists():
-            raise serializers.ValidationError({"username": "Username is already taken."})
-        
-        # Check username uniqueness
-        if Player.objects.filter(email=data['email']).exists():
-            raise serializers.ValidationError({"email": "An user with that email already exists."})
-        
-        if data['first_name'] == '':
-            raise serializers.ValidationError({"first_name": "First name is required."})
-        
-        if data['last_name'] == '':
-            raise serializers.ValidationError({"last_name": "Last name is required."})
-
-        # Additional validations can be added here
         return data
 
     def create(self, validated_data):
