@@ -27,6 +27,7 @@ export interface Holding extends ResourceWithMetadata{
 };
 
 export interface Portfolio extends ResourceWithMetadata{
+    player: Player
     holdings: Holding[];
     holdings_total: string;
     cash: string;
@@ -46,6 +47,24 @@ export interface Player {
     email: string;
     profile_picture?: string; //url of static image for user's profile pic
     alert_preferences: AlertPreferences
+}
+
+export interface Contest extends ResourceWithMetadata{
+    id: number;
+    owner: number; //fk
+    picture?: string //static image url
+    is_tournament: boolean; 
+    league_type: string;
+    cash_interest_rate: number;
+    duration: string;
+    start_date: Date;
+    end_date: Date;
+    player_limit: number;
+    nyse: boolean
+    nasdaq: boolean
+    crypto: boolean
+    portfolios: Portfolio[]
+    players: number[] //fk's
 }
 
 
