@@ -187,7 +187,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
 class ContestSerializer(serializers.ModelSerializer):
     portfolios = PortfolioSerializer(many=True, read_only=True)
     players = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Player.objects.all()
+        many=True, queryset=Player.objects.all(), write_only=True
     )
 
     class Meta:
@@ -201,6 +201,7 @@ class ContestSerializer(serializers.ModelSerializer):
             'cash_interest_rate',
             'duration',
             'start_date',
+            'end_date',
             'player_limit',
             'nyse',
             'nasdaq',
@@ -208,6 +209,7 @@ class ContestSerializer(serializers.ModelSerializer):
             'portfolios',  
             'players',  
         ]
+        extra_kwargs = {'start_date': {'read_only': True}}
     
     def create(self, validated_data):
         # Extract player IDs from the input data
