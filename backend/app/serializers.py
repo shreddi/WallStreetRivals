@@ -3,6 +3,7 @@ from .models import *
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
+from datetime import date, timedelta
 
 class AlertPreferencesSerializer(serializers.ModelSerializer):
 
@@ -186,7 +187,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
 class ContestSerializer(serializers.ModelSerializer):
     portfolios = PortfolioSerializer(many=True, read_only=True)
     players = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Player.objects.all(), write_only=True
+        many=True, queryset=Player.objects.all()
     )
 
     class Meta:
@@ -218,6 +219,36 @@ class ContestSerializer(serializers.ModelSerializer):
             Portfolio.objects.create(player=player, contest=contest)
 
         return contest
+    
+    def validate(self, data):
+        today = date.today()
+        one_year_from_now = today + timedelta(days=365)
+
+        # Ensure the start date is at least one day in the future
+        if 'start_date' in data:
+            if data['start_date'] <= today:
+                raise serializers.ValidationError(
+                    {"start_date": "The start date must be at least one day in the future."}
+                )
+            if data['start_date'] > one_year_from_now:
+                raise serializers.ValidationError(
+                    {"start_date": "The start date cannot be more than one year from today."}
+                )
+
+        # Validate player count does not exceed player_limit
+        if 'players' in data and 'player_limit' in data:
+            if len(data['players']) > data['player_limit']:
+                raise serializers.ValidationError(
+                    {"players": "The number of players exceeds the player limit."}
+                )
+
+        # Validate that at least one marketplace is enabled
+        if not (data.get('nyse') or data.get('nasdaq') or data.get('crypto')):
+            raise serializers.ValidationError(
+                {"marketplaces": "At least one marketplace (NYSE, NASDAQ, or Crypto) must be enabled."}
+            )
+
+        return data
     
     def to_representation(self, instance):
         """Customize the representation to include players as IDs."""
