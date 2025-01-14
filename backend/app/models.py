@@ -50,24 +50,41 @@ class Contest(MetadataModel):
         choices= STATE_CHOICES,
         default="upcoming",
     )
+    DURATION_CHOICES = [
+        ("day", "Day"),
+        ("week", "Week"),
+        ("month", "Month"),
+    ]
+    duration = models.CharField(max_length=10, choices=DURATION_CHOICES, default="day")
     cash_interest_rate = models.FloatField(default=1.0)
-    start_datetime = models.DateTimeField(default=datetime.now)
-    end_datetime = models.DateTimeField()
+    start_date = models.DateField()
+    end_date = models.DateField()
     player_limit = models.PositiveIntegerField(default=10)
 
     # Marketplaces
-    nyse = models.BooleanField(default=False)
-    nasdaq = models.BooleanField(default=False)
-    crypto = models.BooleanField(default=False)
+    nyse = models.BooleanField(default=True)
+    nasdaq = models.BooleanField(default=True)
+    crypto = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if self.start_date:
+            if self.duration == "day":
+                self.end_date = self.start_date + timedelta(days=1)
+            elif self.duration == "week":
+                self.end_date = self.start_date + timedelta(weeks=1)
+            elif self.duration == "month":
+                self.end_date = self.start_date + timedelta(days=30)  # Approximation for months
+        super().save(*args, **kwargs)
 
 
 # Portfolio Model
 class Portfolio(MetadataModel):
+    active = models.BooleanField(default=False)
     player = models.ForeignKey(
-        Player, on_delete=models.CASCADE, related_name="portfolio"
+        Player, on_delete=models.CASCADE, related_name="portfolios"
     )
     contest = models.ForeignKey(
-        Contest, on_delete=models.CASCADE, related_name="portfolio"
+        Contest, on_delete=models.CASCADE, related_name="portfolios"
     )
     cash = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
