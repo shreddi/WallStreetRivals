@@ -13,6 +13,7 @@ router.register(r'portfolios', PortfolioViewSet, basename='portfolio')
 router.register(r'stocks', StockViewSet, basename='stock') 
 router.register(r'holdings', HoldingViewSet, basename='holding') 
 router.register(r'players', PlayerViewSet, basename='player')
+router.register(r'contests', ContestViewSet, basename='contest')
 
 
 urlpatterns = [
@@ -21,8 +22,6 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-
-
     path('password_reset/', 
          PasswordResetRequestAPIView.as_view(),
          name='password_reset'),
