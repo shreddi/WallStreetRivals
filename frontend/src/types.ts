@@ -72,6 +72,28 @@ export interface Contest extends ResourceWithMetadata{
     num_active_players: number
 }
 
+export const defaultContest: Contest = {
+    id: undefined, // Optional ID, can be undefined for a new contest
+    name: "Default Contest",
+    owner: undefined, // Will be assigned when the contest is created
+    is_tournament: false, 
+    league_type: "public",
+    cash_interest_rate: 1.0, 
+    duration: "week", 
+    start_date: new Date(), // Default start date is today
+    end_date: new Date(new Date().setDate(new Date().getDate() + 7)), // Default to 1 week later
+    player_limit: 10, 
+    nyse: true, 
+    nasdaq: true, 
+    crypto: true, 
+    portfolios: [], 
+    players: [], 
+    state: "upcoming", 
+    rank: 0,
+    time_left: "", 
+    num_active_players: 0 
+};
+
 // export const defaultContest: Contest = {
 //     is_tournament: false,
 //     league_type: 'public',

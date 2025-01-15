@@ -17,6 +17,7 @@ import PasswordResetConfirm from './components/PasswordResetConfirm';
 import PasswordResetRequest from './components/PasswordResetRequest';
 import Settings from './components/ProfileSettings';
 import OpenContests from './components/OpenContests'
+import NewLeague from './components/NewLeague';
 function App() {
 
   return (
@@ -90,6 +91,7 @@ function App() {
               <Route path="/" element={<PrivateRoute><PortfolioDashboard /></PrivateRoute>} />
               <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
               <Route path="/open_contests" element={<PrivateRoute><OpenContests /></PrivateRoute>} />
+              <Route path="/new_league" element={<PrivateRoute><NewLeague /></PrivateRoute>} />
               <Route path="/reset_password" element={<PasswordResetRequest />} />
               <Route path="/reset_password_confirm/:uidb64/:token" element={<PasswordResetConfirm />} />
             </Routes>
