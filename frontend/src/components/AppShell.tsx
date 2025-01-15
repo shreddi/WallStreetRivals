@@ -13,7 +13,6 @@ export default function BasicAppShell({ children }: { children: React.ReactNode 
   return (
     <AppShell
       header={{ height: 140 }}
-      padding="md"
     >
       <AppShell.Header bg='black' p="md">
         <Stack>
