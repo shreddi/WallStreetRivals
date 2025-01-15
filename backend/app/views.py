@@ -22,12 +22,15 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
 
 
 
 class PlayerViewSet(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['username', 'first_name', 'last_name']  # Add searchable fields
     
     @transaction.atomic
     def update(self, request, *args, **kwargs):

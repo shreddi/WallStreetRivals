@@ -83,6 +83,24 @@ export const getPlayer = async (playerID: number) => {
     return response.data
 }
 
+export const getAllPlayers = async () => {
+    const headers = getAuthHeaders()
+    const response = await axios.get(`${API_BASE_URL}/api/players/`, { headers, withCredentials: true })
+    if (response.status !== 200) {
+        throw new Error('failed to get all players');
+    }
+    return response.data
+}
+
+export const searchPlayers = async (query: string) => {
+    const headers = getAuthHeaders()
+    const response = await axios.get(`${API_BASE_URL}/api/players/?search=${query}`, { headers, withCredentials: true })
+    if (response.status !== 200) {
+        throw new Error('failed to get players from query.');
+    }
+    return response.data
+}
+
 export const resetPassword = async (email: string) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/api/password_reset/`, { email });
