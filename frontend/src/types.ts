@@ -66,6 +66,10 @@ export interface Contest extends ResourceWithMetadata{
     crypto: boolean
     portfolios: Portfolio[]
     players: number[] //fk's
+    state: string
+    rank: number
+    time_left: string
+    num_active_players: number
 }
 
 // export const defaultContest: Contest = {
