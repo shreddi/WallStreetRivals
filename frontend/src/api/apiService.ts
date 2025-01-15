@@ -20,3 +20,4 @@ export function getAuthHeaders(): AxiosRequestHeaders['headers'] {
 //export API services from other files 
 export * from './portfolioService'
 export * from './authService'
+export * from './contestService'
