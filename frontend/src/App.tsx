@@ -83,10 +83,9 @@ function App() {
         <BrowserRouter>
           <PlayerProvider>
             <Routes>
-              <Route path="/" element={<Navigate replace to="/portfolio" />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/portfolio" element={<PrivateRoute><PortfolioDashboard /></PrivateRoute>} />
+              <Route path="/" element={<PrivateRoute><PortfolioDashboard /></PrivateRoute>} />
               <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
               <Route path="/reset_password" element={<PasswordResetRequest />} />
               <Route path="/reset_password_confirm/:uidb64/:token" element={<PasswordResetConfirm />} />
