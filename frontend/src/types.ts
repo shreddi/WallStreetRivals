@@ -50,8 +50,8 @@ export interface Player {
 }
 
 export interface Contest extends ResourceWithMetadata{
-    id: number;
-    owner: number; //fk
+    id?: number;
+    owner?: number; //fk
     picture?: string //static image url
     is_tournament: boolean; 
     league_type: string;
@@ -67,6 +67,13 @@ export interface Contest extends ResourceWithMetadata{
     players: number[] //fk's
 }
 
+// export const defaultContest: Contest = {
+//     is_tournament: false,
+//     league_type: 'public',
+//     cash_interest_rate: 0,
+//     duration: 'day',
+//     start_date: 2025/01/20
+// }
 
 //defaults for each interface
 export const defaultStock: Stock = {
