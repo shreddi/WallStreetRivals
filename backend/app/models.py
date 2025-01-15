@@ -29,6 +29,7 @@ class Player(AbstractUser):
 
 
 class Contest(MetadataModel):
+    name = models.CharField(max_length=50)
     owner = models.ForeignKey(Player, null=True, on_delete=models.SET_NULL, related_name='contest')
     picture = models.ImageField(upload_to="contest_pictures/", null=True, blank=True)
     is_tournament = models.BooleanField(default=False)

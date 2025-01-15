@@ -194,6 +194,7 @@ class ContestSerializer(serializers.ModelSerializer):
         model = Contest
         fields = [
             'id',
+            'name',
             'owner',
             'picture',
             'is_tournament',
