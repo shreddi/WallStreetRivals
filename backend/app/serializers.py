@@ -50,14 +50,15 @@ class PlayerSerializer(serializers.ModelSerializer):
         if len(data['last_name']) > 25:
             raise serializers.ValidationError({"last_name": "Name must be fewer than 25 characters."})
         
-        try:
-            validate_email(data['email'])
-        except DjangoValidationError:
-            raise serializers.ValidationError({"email": "Invalid email format."})
-        
-        # Check username uniqueness
-        if Player.objects.filter(email=data['email']).exists():
-            raise serializers.ValidationError({"email": "An user with that email already exists."})
+        email = data.get('email')
+        if(email):
+            try:
+                validate_email(email)
+            except DjangoValidationError:
+                raise serializers.ValidationError({"email": "Invalid email format."})
+            # Check email uniqueness
+            if Player.objects.filter(email=data['email']).exists():
+                raise serializers.ValidationError({"email": "An user with that email already exists."})
             
         return super().validate(data)
 
