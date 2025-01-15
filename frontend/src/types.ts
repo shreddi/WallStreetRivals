@@ -51,6 +51,7 @@ export interface Player {
 
 export interface Contest extends ResourceWithMetadata{
     id?: number;
+    name: string;
     owner?: number; //fk
     picture?: string //static image url
     is_tournament: boolean; 

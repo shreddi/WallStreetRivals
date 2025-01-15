@@ -2,6 +2,7 @@ import { Center, Loader, Text } from "@mantine/core"
 import { Contest } from "../types"
 import { useEffect, useState } from "react"
 import { getOpenContests } from "../api/contestService"
+import ContestTable from './ContestTable'
 
 export default function CreateLeague() {
     const [contests, setContests] = useState<Contest[]>([])
@@ -11,6 +12,7 @@ export default function CreateLeague() {
         getOpenContests()
             .then((data) => {
                 setContests(data)
+                console.log(data)
             })
             .catch((error: Error) => {
                 console.error(error);
@@ -19,8 +21,6 @@ export default function CreateLeague() {
                 setLoading(false)
             })
     }, [])
-
-    console.log(contests)
 
     if (loading) {
         return (
@@ -31,7 +31,7 @@ export default function CreateLeague() {
     }
 
     return (
-        <Text>hello</Text>
+        <ContestTable contests={contests}/>
     )
 
 }
