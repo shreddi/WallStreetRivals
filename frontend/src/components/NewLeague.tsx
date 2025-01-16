@@ -10,6 +10,7 @@ import AvatarEditor from 'react-avatar-editor'
 import placeholderImage from '../assets/placeholder.png';
 import { DatePicker } from '@mantine/dates';
 import { createContest } from "../api/contestService";
+import { useNavigate } from "react-router-dom";
 
 
 export default function NewLeague() {
@@ -21,6 +22,13 @@ export default function NewLeague() {
     const [searchQuery, setSearchQuery] = useState('')
     const [picture, setPicture] = useState<File | null>(null);
     const avatarEditorRef = useRef<AvatarEditor | null>(null);
+    const [validationErrors, setValidationErrors] = useState({
+        start_date: "",
+        players: "",
+        marketplaces: "",
+        name: "",
+    })
+    const navigate = useNavigate()
 
     const saveCroppedImage = () => {
         if (avatarEditorRef.current) {
@@ -39,14 +47,15 @@ export default function NewLeague() {
                 }
             }, "image/png");
         }
+
     };
 
     const handleCreate = () => {
         saveCroppedImage();
-    
+
         // Prepare player IDs
         const playerIds = invitedPlayers.map((player) => player.id);
-    
+
         // Prepare contest object
         const contestToCreate: Contest = {
             ...contest,
@@ -56,14 +65,14 @@ export default function NewLeague() {
                     ? contest.start_date.toISOString().split('T')[0]
                     : contest.start_date, // Format date if it's a Date
         };
-    
+
         const formData = new FormData();
-    
+
         // Add the picture if available
         if (picture) {
             formData.append('picture', picture);
         }
-    
+
         // Add all other contest fields
         Object.entries(contestToCreate).forEach(([key, value]) => {
             if (key === "players" && Array.isArray(value)) {
@@ -73,15 +82,60 @@ export default function NewLeague() {
                 formData.append(key, String(value)); // Add other fields as strings
             }
         });
-    
+
         console.log('FormData contents:');
         for (const [key, value] of formData.entries()) {
             console.log(`${key}:`, value);
         }
-    
-        createContest(formData); // Call API
+
+        // Call the API and handle errors
+        createContest(formData)
+            .then(() => {
+                notifications.show({
+                    message: "Contest created successfully!",
+                    color: "green",
+                    position: "top-center",
+                    autoClose: 2000,
+                });
+                navigate('/open_contests')
+            })
+            .catch((error) => {
+                if (error.response && error.response.data) {
+
+                    notifications.show({
+                        color: 'red',
+                        message: 'Please fix errors and try again.',
+                        position: 'top-center',
+                        autoClose: 1500
+                    })
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth", // Use "smooth" for a smoother scrolling effect
+                    });
+
+                    // Assuming the error response is a JSON object with field-specific errors
+                    const apiErrors = error.response.data;
+
+                    // Update validationErrors state
+                    setValidationErrors((prevErrors) => ({
+                        ...prevErrors,
+                        ...Object.entries(apiErrors).reduce(
+                            (acc, [key, value]) => ({
+                                ...acc,
+                                [key]: Array.isArray(value) ? value.join(", ") : value,
+                            }),
+                            {}
+                        ),
+                    }));
+
+                    console.error("Validation errors:", apiErrors);
+                } else {
+                    console.error("Unexpected error:", error);
+                }
+            });
     };
-    
+
 
     useEffect(() => {
         if (currentPlayer) {
@@ -130,11 +184,12 @@ export default function NewLeague() {
 
     return (
         <AppShell>
-            <Stack w='1200' gap='xl' p='md'>
+            <Stack w='1200' gap='xl' p='md' >
                 <Title order={1}>
                     Create new league
                 </Title>
                 <Title order={4}>Invite players</Title>
+                {validationErrors.players && <Text c='red'>{validationErrors.players}</Text>}
                 <Group grow align='top'>
                     <Stack w='50%'>
                         <Text mb='6'>Invited Players</Text>
@@ -151,10 +206,18 @@ export default function NewLeague() {
                     </Stack>
                 </Group>
                 <Title order={4} > Contest Options</Title>
+                <Stack>
+                    <Text>Name</Text>
+                    <TextInput
+                        value={contest.name}
+                        onChange={(event) => setContest({ ...contest, name: (event.currentTarget.value)})}
+                    />
+                    {validationErrors.name && <Text c='red'>{validationErrors.name}</Text>}
+                </Stack>
                 <Flex justify='space-between' gap='xl'>
                     <Stack>
                         {picture ? <AvatarEditor
-                            borderRadius={125}
+                            // borderRadius={125}
                             ref={avatarEditorRef}
                             image={picture}
                             width={250}
@@ -164,7 +227,11 @@ export default function NewLeague() {
                             scale={1.2}
                             rotate={0}
                             crossOrigin="anonymous"
-                        /> : <Avatar size={250} radius={125} src={placeholderImage} />}
+                        /> : <Avatar
+                            size={250}
+                            radius={0}
+                            src={placeholderImage}
+                        />}
                         <FileInput
                             label="Change Contest Picture"
                             placeholder="Choose file"
@@ -178,30 +245,7 @@ export default function NewLeague() {
                         <Checkbox checked={contest.nyse} label='NYSE' onChange={(event) => setContest({ ...contest, nyse: event.currentTarget.checked })} />
                         <Checkbox checked={contest.nasdaq} label='NASDAQ' onChange={(event) => setContest({ ...contest, nasdaq: event.currentTarget.checked })} />
                         <Checkbox checked={contest.crypto} label='Crypto' onChange={(event) => setContest({ ...contest, crypto: event.currentTarget.checked })} />
-                    </Stack>
-                    <Stack>
-                        <Text>Duration</Text>
-                        <Select
-                            value={contest.duration}
-                            data={[
-                                { value: 'day', label: 'Day' },
-                                { value: 'week', label: 'Week' },
-                                { value: 'month', label: 'Month' },
-                            ]}
-                            onChange={(value) => setContest({ ...contest, duration: value || 'day' })}
-                        />
-                    </Stack>
-                    <Stack>
-                        <Text>Visibility</Text>
-                        <Select
-                            value={contest.league_type}
-                            data={[
-                                { value: 'public', label: 'Public' },
-                                { value: 'private', label: 'Private' },
-                                { value: 'self', label: 'Self' },
-                            ]}
-                            onChange={(value) => setContest({ ...contest, league_type: value || 'public' })}
-                        />
+                        {validationErrors.marketplaces && <Text c='red'>{validationErrors.marketplaces}</Text>}
                     </Stack>
                     <Stack>
                         <Text>Cash Interest Rate</Text>
@@ -224,6 +268,7 @@ export default function NewLeague() {
                             minDate={new Date(new Date().setDate(new Date().getDate() + 1))} // 1 day after today
                             maxDate={new Date(new Date().setFullYear(new Date().getFullYear() + 1))} // 1 year from today
                         />
+                        {validationErrors.start_date && <Text c='red'>{validationErrors.start_date}</Text>}
                     </Stack>
                     <Stack>
                         <Text>Player Limit</Text>
@@ -241,9 +286,29 @@ export default function NewLeague() {
                                 }
                             }}
                         />
+                        <Text>Duration</Text>
+                        <Select
+                            value={contest.duration}
+                            data={[
+                                { value: 'day', label: 'Day' },
+                                { value: 'week', label: 'Week' },
+                                { value: 'month', label: 'Month' },
+                            ]}
+                            onChange={(value) => setContest({ ...contest, duration: value || 'day' })}
+                        />
+                        <Text>Visibility</Text>
+                        <Select
+                            value={contest.league_type}
+                            data={[
+                                { value: 'public', label: 'Public' },
+                                { value: 'private', label: 'Private' },
+                                { value: 'self', label: 'Self' },
+                            ]}
+                            onChange={(value) => setContest({ ...contest, league_type: value || 'public' })}
+                        />
                     </Stack>
                 </Flex>
-                <Button size='lg' onClick={handleCreate}>Create Contest</Button>
+                <Button size='xl' onClick={handleCreate}>Create Contest</Button>
             </Stack>
         </AppShell >
     )

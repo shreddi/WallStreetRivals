@@ -3,6 +3,8 @@ import { Contest } from '../types'
 import { MRT_Table, MRT_ColumnDef, useMantineReactTable } from 'mantine-react-table';
 import { AspectRatio, Badge, Box, Flex, Group, NumberFormatter, Text } from '@mantine/core';
 import moment from 'moment'
+import placeholderImage from '../assets/placeholder.png';
+
 
 interface ContestTableProps {
     contests: Contest[]
@@ -21,7 +23,7 @@ export default function ContestTable({ contests }: ContestTableProps) {
 
                     <Group>
                         <AspectRatio ratio={1} w={50}>
-                            <img src={cell.getValue<string>()} />
+                            <img src={cell.getValue<string>() ?? placeholderImage} />
                         </AspectRatio>
                         <Text size='sm'>
                             {row.original.name}

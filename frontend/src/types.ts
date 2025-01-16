@@ -75,7 +75,7 @@ export interface Contest extends ResourceWithMetadata{
 
 export const defaultContest: Contest = {
     id: undefined, // Optional ID, can be undefined for a new contest
-    name: "Default Contest",
+    name: "",
     owner: undefined, // Will be assigned when the contest is created
     is_tournament: false, 
     league_type: "public",
