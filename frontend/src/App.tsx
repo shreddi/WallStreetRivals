@@ -11,6 +11,7 @@ import './index.css';
 import '@mantine/core/styles.css'; //import Mantine V7 styles needed by MRT
 import '@mantine/dates/styles.css'; //if using mantine date picker features
 import 'mantine-react-table/styles.css'; //import MRT styles
+import '@mantine/notifications/styles.css';
 import { Button, Title } from '@mantine/core';
 import { PlayerProvider } from './components/contexts/PlayerProvider';
 import PasswordResetConfirm from './components/PasswordResetConfirm';
@@ -18,6 +19,9 @@ import PasswordResetRequest from './components/PasswordResetRequest';
 import Settings from './components/ProfileSettings';
 import OpenContests from './components/OpenContests'
 import NewLeague from './components/NewLeague';
+import { Notifications } from '@mantine/notifications';
+
+
 function App() {
 
   return (
@@ -83,6 +87,7 @@ function App() {
           },
         }}
       >
+        <Notifications />
         <BrowserRouter>
           <PlayerProvider>
             <Routes>

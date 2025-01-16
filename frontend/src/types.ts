@@ -47,6 +47,7 @@ export interface Player {
     email: string;
     profile_picture?: string; //url of static image for user's profile pic
     alert_preferences: AlertPreferences
+    is_owner?: boolean
 }
 
 export interface Contest extends ResourceWithMetadata{

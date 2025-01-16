@@ -1,13 +1,18 @@
-import { MantineReactTable, MRT_ColumnDef, MRT_Table, useMantineReactTable } from 'mantine-react-table';
+import { MantineReactTable, MRT_ColumnDef, useMantineReactTable } from 'mantine-react-table';
 import { Player } from "../types";
-import { Group, Text, Box, Avatar } from '@mantine/core';
+import { Group, Text, Box, Avatar, ActionIcon, ThemeIcon, Tooltip, Center } from '@mantine/core';
 import { useMemo } from 'react';
+import { IconPlus, IconX, IconCrown } from '@tabler/icons-react'
 
 interface PlayerProps {
     players: Player[];
+    onAdd?: (player: Player) => void;
+    onRemove?: (player: Player) => void;
+    emptyLabel?: string
+    loading?: boolean
 }
 
-export default function PlayerTable({ players }: PlayerProps) {
+export default function PlayerTable({ players, onAdd, onRemove, emptyLabel, loading }: PlayerProps) {
 
 
     const columns = useMemo<MRT_ColumnDef<Player>[]>(
@@ -15,7 +20,7 @@ export default function PlayerTable({ players }: PlayerProps) {
             {
                 accessorKey: 'profile_picture',
                 header: 'Username',
-                size: 300,
+                size: 200,
                 Cell: ({ cell, row }) =>
                 (
                     <Group>
@@ -27,6 +32,13 @@ export default function PlayerTable({ players }: PlayerProps) {
                         <Text size='sm'>
                             {row.original.username}
                         </Text>
+                        {row.original.is_owner &&
+                            <Tooltip label='Contest Owner'>
+                                <ThemeIcon variant='filled' color='gold'>
+                                    <IconCrown />
+                                </ThemeIcon>
+                            </Tooltip>
+                        }
                     </Group>
                 )
             },
@@ -40,9 +52,35 @@ export default function PlayerTable({ players }: PlayerProps) {
                         </Text>
                     </Group>
                 )
-            }
+            },
+            {
+                header: 'Invite',
+                id: 'invite',
+                size: 50,
+                Cell: ({ row }) =>
+                (
+                    <Center>
+                        <ActionIcon color='green' onClick={() => onAdd!(row.original)}>
+                            <IconPlus />
+                        </ActionIcon>
+                    </Center>
+                )
+            },
+            {
+                header: 'Remove',
+                id: 'uninvite',
+                size: 50,
+                Cell: ({ row }) =>
+                (
+                    <Center>
+                        <ActionIcon color='red' onClick={() => onRemove!(row.original)} disabled={row.original.is_owner}>
+                            <IconX />
+                        </ActionIcon>
+                    </Center>
+                )
+            },
         ],
-        [],
+        [onAdd, onRemove],
     );
 
     const table = useMantineReactTable({
@@ -50,10 +88,24 @@ export default function PlayerTable({ players }: PlayerProps) {
         data: players,
         enableSorting: false,
         enableColumnActions: false,
-        initialState: { density: 'xs', pagination: { pageSize: 5, pageIndex: 0 } },
+        enableTableHead: false,
+        initialState: {
+            density: 'xs',
+            pagination: { pageSize: 5, pageIndex: 0 },
+            columnVisibility: {
+                invite: (!!onAdd),
+                uninvite: (!!onRemove)
+            },
+        },
+        mantineTableContainerProps: {
+            style: {
+                minHeight: '354px', // Adjust the height as needed
+                height: '354px',    // Ensures table always takes up this height
+            },
+        },
         renderEmptyRowsFallback: () => (
             <Box p="md" style={{ textAlign: 'center' }}>
-                <Text>No Players Found</Text>
+                <Text>{emptyLabel ? emptyLabel : "No Users to Display."}</Text>
             </Box>
         ),
         mantinePaginationProps: {
@@ -61,8 +113,7 @@ export default function PlayerTable({ players }: PlayerProps) {
             withEdges: false, // Customizes pagination controls
         },
         enableTopToolbar: false,
-        enableBottomToolbar: true,
-        // paginationDisplayMode: 'pages',
+        state: { isLoading: loading }
     })
 
     return (
