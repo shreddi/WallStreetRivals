@@ -1,19 +1,26 @@
-import React from 'react'
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
-import './App.css'
-import './index.css'
-import PortfolioDashboard from './components/PortfolioDashboard';
 import '@mantine/core/styles.css'; // Import Mantine core styles
-import Login from './components/Login'
-import Register from './components/Register'
+import React from 'react';
+import { BrowserRouter, Route, Routes, } from 'react-router-dom';
+import './App.css';
+import Login from './components/Login';
+import PortfolioDashboard from './components/PortfolioDashboard';
 import PrivateRoute from './components/PrivateRoute';
-
+import Register from './components/Register';
+import './index.css';
+import '@mantine/core/styles.css'; //import Mantine V7 styles needed by MRT
+import '@mantine/dates/styles.css'; //if using mantine date picker features
+import 'mantine-react-table/styles.css'; //import MRT styles
+import '@mantine/notifications/styles.css';
+import { Button, Title } from '@mantine/core';
 import { PlayerProvider } from './components/contexts/PlayerProvider';
-import Settings from './components/ProfileSettings'
-import PasswordResetRequest from './components/PasswordResetRequest';
 import PasswordResetConfirm from './components/PasswordResetConfirm';
-import { Title, Button } from '@mantine/core'
+import PasswordResetRequest from './components/PasswordResetRequest';
+import Settings from './components/ProfileSettings';
+import OpenContests from './components/OpenContests'
+import NewLeague from './components/NewLeague';
+import { Notifications } from '@mantine/notifications';
+
 
 function App() {
 
@@ -80,14 +87,16 @@ function App() {
           },
         }}
       >
+        <Notifications />
         <BrowserRouter>
           <PlayerProvider>
             <Routes>
-              <Route path="/" element={<Navigate replace to="/portfolio" />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/portfolio" element={<PrivateRoute><PortfolioDashboard /></PrivateRoute>} />
+              <Route path="/" element={<PrivateRoute><PortfolioDashboard /></PrivateRoute>} />
               <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+              <Route path="/open_contests" element={<PrivateRoute><OpenContests /></PrivateRoute>} />
+              <Route path="/new_league" element={<PrivateRoute><NewLeague /></PrivateRoute>} />
               <Route path="/reset_password" element={<PasswordResetRequest />} />
               <Route path="/reset_password_confirm/:uidb64/:token" element={<PasswordResetConfirm />} />
             </Routes>

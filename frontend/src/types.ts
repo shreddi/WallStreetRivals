@@ -27,6 +27,7 @@ export interface Holding extends ResourceWithMetadata{
 };
 
 export interface Portfolio extends ResourceWithMetadata{
+    player: Player
     holdings: Holding[];
     holdings_total: string;
     cash: string;
@@ -46,8 +47,61 @@ export interface Player {
     email: string;
     profile_picture?: string; //url of static image for user's profile pic
     alert_preferences: AlertPreferences
+    is_owner?: boolean
 }
 
+export interface Contest extends ResourceWithMetadata{
+    id?: number;
+    name: string;
+    owner?: number; //fk
+    picture?: string //static image url
+    is_tournament: boolean; 
+    league_type: string;
+    cash_interest_rate: number;
+    duration: string;
+    start_date: Date | string;
+    end_date: Date;
+    player_limit: number;
+    nyse: boolean
+    nasdaq: boolean
+    crypto: boolean
+    portfolios: Portfolio[]
+    players: number[] //fk's
+    state: string
+    rank: number
+    time_left: string
+    num_active_players: number
+}
+
+export const defaultContest: Contest = {
+    id: undefined, // Optional ID, can be undefined for a new contest
+    name: "",
+    owner: undefined, // Will be assigned when the contest is created
+    is_tournament: false, 
+    league_type: "public",
+    cash_interest_rate: 0.0, 
+    duration: "day", 
+    start_date: new Date(), // Default start date is today
+    end_date: new Date(new Date().setDate(new Date().getDate() + 7)), // Default to 1 week later
+    player_limit: 10, 
+    nyse: true, 
+    nasdaq: true, 
+    crypto: true, 
+    portfolios: [], 
+    players: [], 
+    state: "upcoming", 
+    rank: 0,
+    time_left: "", 
+    num_active_players: 0 
+};
+
+// export const defaultContest: Contest = {
+//     is_tournament: false,
+//     league_type: 'public',
+//     cash_interest_rate: 0,
+//     duration: 'day',
+//     start_date: 2025/01/20
+// }
 
 //defaults for each interface
 export const defaultStock: Stock = {

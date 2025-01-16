@@ -3,7 +3,8 @@ from .models import *
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
-from datetime import date, timedelta
+from datetime import date, timedelta, time
+import pytz
 
 class AlertPreferencesSerializer(serializers.ModelSerializer):
 
@@ -49,14 +50,15 @@ class PlayerSerializer(serializers.ModelSerializer):
         if len(data['last_name']) > 25:
             raise serializers.ValidationError({"last_name": "Name must be fewer than 25 characters."})
         
-        try:
-            validate_email(data['email'])
-        except DjangoValidationError:
-            raise serializers.ValidationError({"email": "Invalid email format."})
-        
-        # Check username uniqueness
-        if Player.objects.filter(email=data['email']).exists():
-            raise serializers.ValidationError({"email": "An user with that email already exists."})
+        email = data.get('email')
+        if(email):
+            try:
+                validate_email(email)
+            except DjangoValidationError:
+                raise serializers.ValidationError({"email": "Invalid email format."})
+            # Check email uniqueness
+            if Player.objects.filter(email=data['email']).exists():
+                raise serializers.ValidationError({"email": "An user with that email already exists."})
             
         return super().validate(data)
 
@@ -185,15 +187,21 @@ class PortfolioSerializer(serializers.ModelSerializer):
     
 
 class ContestSerializer(serializers.ModelSerializer):
-    portfolios = PortfolioSerializer(many=True, read_only=True)
+    # portfolios = PortfolioSerializer(many=True, read_only=True)
+    portfolios = serializers.SerializerMethodField()
+    time_left = serializers.SerializerMethodField(read_only=True)
     players = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Player.objects.all()
+        many=True, queryset=Player.objects.all(), write_only=True
     )
+    num_active_players = serializers.SerializerMethodField(read_only=True)
+    rank = serializers.SerializerMethodField(read_only=True)
+    balance = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Contest
         fields = [
             'id',
+            'name',
             'owner',
             'picture',
             'is_tournament',
@@ -201,13 +209,20 @@ class ContestSerializer(serializers.ModelSerializer):
             'cash_interest_rate',
             'duration',
             'start_date',
+            'end_date',
             'player_limit',
             'nyse',
             'nasdaq',
             'crypto',
             'portfolios',  
             'players',  
+            'time_left',
+            'num_active_players',
+            'rank',
+            'balance',
+            'state',
         ]
+        extra_kwargs = {'end_date': {'read_only': True}}
     
     def create(self, validated_data):
         # Extract player IDs from the input data
@@ -255,6 +270,65 @@ class ContestSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['players'] = [portfolio.player.id for portfolio in instance.portfolios.all()]
         return representation
+    
+    def get_time_left(self, obj):
+        now = datetime.now(pytz.utc)
+        print(obj.state) 
+        till_date = obj.end_date if obj.state == 'active' else obj.start_date
+        till_time = time(16, 30) 
+        till_datetime = datetime.combine(till_date, till_time)
+        eastern = pytz.timezone('US/Eastern')
+        localized_datetime = eastern.localize(till_datetime)
+        
+        # Calculate the time difference
+        diff = localized_datetime - now
+        return diff
+    
+    def get_num_active_players(self, obj):
+        portfolios = obj.portfolios.all()
+        count = sum(1 for portfolio in portfolios if portfolio.active)
+        return count
+    
+    def get_rank(self, obj):
+        request = self.context.get('request', None)
+        user_id = request.user.id
+
+
+        serialized_portfolios = PortfolioSerializer(
+            obj.portfolios.all(), many=True, context=self.context
+        ).data
+        
+        rank = 1
+        sorted_portfolios = sorted(serialized_portfolios, key=lambda p: p.get('total', 0), reverse=True)
+                
+        for portfolio in sorted_portfolios:
+            if(portfolio.get('player').get('id') == user_id):
+                if(portfolio.get('active')):
+                    return rank
+            if(not portfolio.get('active')):
+                continue
+            rank+=1
+        
+        return -1 #player is not in this contest
+        
+    
+    def get_portfolios(self, obj):
+        # Order the portfolios by total_value
+        serialized_portfolios = PortfolioSerializer(
+            obj.portfolios.all(), many=True, context=self.context
+        ).data
+        sorted_portfolios = sorted(serialized_portfolios, key=lambda p: p.get('total', 0), reverse=True)
+        return sorted_portfolios
+    
+    def get_balance(self,obj):
+        request = self.context.get('request', None)
+        user = request.user
+        for portfolio in obj.portfolios.all():
+            print(portfolio.player)
+            if portfolio.player == user:
+                serialized_portfolio = PortfolioSerializer(portfolio).data
+                return serialized_portfolio.get('total')
+        return -1
 
     
 class RegisterSerializer(serializers.ModelSerializer):
@@ -290,7 +364,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Remove password2 from validated data since it's not needed for user creation
         validated_data.pop('password2')
-        print(validated_data)
         user_serializer = PlayerSerializer(data=validated_data)
         if(user_serializer.is_valid()):
             user = user_serializer.save()
