@@ -14,3 +14,15 @@ export const getOpenContests = async () => {
         throw error;
     }
 }
+
+export const createContest = async (formData: FormData) => {
+    const headers = getAuthHeaders()
+
+    try {
+        const response = await axios.post(buildUrl(`/api/contests/`), formData, {headers, withCredentials: true});
+        return response.data;
+    } catch (error) {
+        console.error(`Failed create contest: `, error);
+        throw error;
+    }
+}

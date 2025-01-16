@@ -7,9 +7,9 @@ import { notifications } from '@mantine/notifications'
 import PlayerTable from "./PlayerTable";
 import { usePlayer } from './contexts/usePlayer';
 import AvatarEditor from 'react-avatar-editor'
-import { IconCoins } from "@tabler/icons-react";
 import placeholderImage from '../assets/placeholder.png';
 import { DatePicker } from '@mantine/dates';
+import { createContest } from "../api/contestService";
 
 
 export default function NewLeague() {
@@ -34,27 +34,54 @@ export default function NewLeague() {
                     const file = new File([blob], "avatar.png", { type: "image/png" });
                     setPicture(file);
 
-                    // Notify user
-                    notifications.show({
-                        message: "Cropped image saved!",
-                        color: "green",
-                        position: "top-center",
-                        autoClose: 1500,
-                    });
 
                     console.log("Cropped image saved as file:", file);
-                } else {
-                    notifications.show({
-                        message: "Failed to save cropped image.",
-                        color: "red",
-                        position: "top-center",
-                        autoClose: 1500,
-                    });
                 }
             }, "image/png");
         }
     };
 
+    const handleCreate = () => {
+        saveCroppedImage();
+    
+        // Prepare player IDs
+        const playerIds = invitedPlayers.map((player) => player.id);
+    
+        // Prepare contest object
+        const contestToCreate: Contest = {
+            ...contest,
+            players: playerIds,
+            start_date:
+                contest.start_date instanceof Date
+                    ? contest.start_date.toISOString().split('T')[0]
+                    : contest.start_date, // Format date if it's a Date
+        };
+    
+        const formData = new FormData();
+    
+        // Add the picture if available
+        if (picture) {
+            formData.append('picture', picture);
+        }
+    
+        // Add all other contest fields
+        Object.entries(contestToCreate).forEach(([key, value]) => {
+            if (key === "players" && Array.isArray(value)) {
+                // Append each player ID individually
+                value.forEach((id) => formData.append('players', String(id)));
+            } else {
+                formData.append(key, String(value)); // Add other fields as strings
+            }
+        });
+    
+        console.log('FormData contents:');
+        for (const [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+        }
+    
+        createContest(formData); // Call API
+    };
+    
 
     useEffect(() => {
         if (currentPlayer) {
@@ -103,7 +130,7 @@ export default function NewLeague() {
 
     return (
         <AppShell>
-            <Stack w='1200' gap='xl' >
+            <Stack w='1200' gap='xl' p='md'>
                 <Title order={1}>
                     Create new league
                 </Title>
@@ -216,6 +243,7 @@ export default function NewLeague() {
                         />
                     </Stack>
                 </Flex>
+                <Button size='lg' onClick={handleCreate}>Create Contest</Button>
             </Stack>
         </AppShell >
     )
