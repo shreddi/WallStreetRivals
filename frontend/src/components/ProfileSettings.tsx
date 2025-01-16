@@ -189,6 +189,7 @@ export default function ProfileSettings() {
                     error={errors['alert_preferences.contest_rank_change']?.[0]} // Error for contest rank change
                 />
 
+
                 {/* General Error Message */}
                 {Object.keys(errors).length > 0 && (
                     <Text c="red">Please fix the errors above and try again.</Text>
