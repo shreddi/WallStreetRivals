@@ -13,13 +13,38 @@ class MetadataModel(models.Model):
 
 
 class AlertPreferences(models.Model):
-    weekly_summary = models.BooleanField(default=True)
-    daily_summary = models.BooleanField(default=False)
+    weekly_summary = models.BooleanField(default=False)
+    daily_summary = models.BooleanField(default=True)
     contest_rank_change = models.BooleanField(default=False)
 
 
-# Player Model: Users for Wall Street Rivals. P
+# Player Model: Users for Wall Street Rivals.
 class Player(AbstractUser):
+    HERE_FOR_THE_CHOICES = [
+        ("Competition", "Competition"),
+        ("Cash Prizes", "Cash Prizes"),
+        ("Learning", "Learning"),
+        ("Strategy Testing", "Strategy Testing"),
+        ("Just Checking It Out", "Just Checking It Out"),
+    ]
+    EDUCATION_CHOICES = [
+        ("None", "None"),
+        ("High School", "High School"),
+        ("College", "College"),
+        ("Post-Grad", "Post-Grad"),
+    ]
+    GENDER_CHOICES = [
+        ("Male", "Male"),
+        ("Female", "Female"),
+        ("Other", "Other"),
+        ("Prefer not to say", "Prefer not to say"),
+    ]
+    here_for_the = models.CharField(max_length = 127, choices=HERE_FOR_THE_CHOICES, default='Competition')
+    education = models.CharField(max_length = 127, choices=EDUCATION_CHOICES, default='None')
+    gender = models.CharField(max_length = 127, choices=EDUCATION_CHOICES, default='Male')
+    birthday = models.DateField()
+    city = models.CharField(max_length = 127)
+    state = models.CharField(max_length = 30)
     profile_picture = models.ImageField(
         upload_to="profile_pictures/", null=True, blank=True
     )
