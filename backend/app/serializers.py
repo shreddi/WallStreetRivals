@@ -29,53 +29,88 @@ class PlayerSerializer(serializers.ModelSerializer):
             "last_name",
             "profile_picture",
             "password",
+            "here_for_the",
+            "education",
+            "gender",
+            "birthday",
+            "city",
+            "state",
+            "investing_knowledge",
         ]
         extra_kwargs = {
             "password": {"write_only": True},
         }
 
     def validate_username(self, value):
-        """
-        Check if the username is already taken by another user.
-        """
+        """Check if the username is already taken by another user."""
         if value.strip() == "":
             raise serializers.ValidationError("Username is required.")
-        user = self.instance  # The current user instance
+        user = self.instance
         if user:
             if Player.objects.exclude(pk=user.pk).filter(username=value).exists():
                 raise serializers.ValidationError("This username is already taken.")
         return value
 
-    def validate(self, data):
-        # Check username uniqueness
+    def validate_birthday(self, value):
+        """Ensure the birthday is in the past."""
+        if value >= date.today():
+            raise serializers.ValidationError("Birthday must be in the past.")
+        return value
 
+    def validate_city(self, value):
+        """Ensure city is not empty."""
+        if value.strip() == "":
+            raise serializers.ValidationError("City is required.")
+        return value
+
+    def validate_state(self, value):
+        """Ensure state is not empty and valid."""
+        if value.strip() == "":
+            raise serializers.ValidationError("State is required.")
+        if len(value) > 30:
+            raise serializers.ValidationError("State must not exceed 30 characters.")
+        return value
+
+    def validate(self, data):
+        """Perform additional validation on nested data."""
+        # Validate first name and last name
         if data["first_name"].strip() == "":
             raise serializers.ValidationError({"first_name": "First name is required."})
-
         if len(data["first_name"]) > 25:
             raise serializers.ValidationError(
-                {"first_name": "Name must be fewer than 25 characters."}
+                {"first_name": "First name must be fewer than 25 characters."}
             )
 
         if data["last_name"].strip() == "":
             raise serializers.ValidationError({"last_name": "Last name is required."})
-
         if len(data["last_name"]) > 25:
             raise serializers.ValidationError(
-                {"last_name": "Name must be fewer than 25 characters."}
+                {"last_name": "Last name must be fewer than 25 characters."}
             )
 
+        # Validate email
         email = data.get("email")
         if email:
+            if Player.objects.filter(email=email).exists():
+                raise serializers.ValidationError(
+                    {"email": "A user with that email already exists."}
+                )
             try:
                 validate_email(email)
             except DjangoValidationError:
                 raise serializers.ValidationError({"email": "Invalid email format."})
-            # Check email uniqueness
-            if Player.objects.filter(email=data["email"]).exists():
-                raise serializers.ValidationError(
-                    {"email": "An user with that email already exists."}
-                )
+
+        # Validate 'here_for_the' choices
+        if data.get("here_for_the") not in dict(Player.HERE_FOR_THE_CHOICES):
+            raise serializers.ValidationError({"here_for_the": "Cannot be blank."})
+
+        # Validate 'education' choices
+        if data.get("education") not in dict(Player.EDUCATION_CHOICES):
+            raise serializers.ValidationError({"education": "Cannot be blank."})
+
+        # Validate 'gender' choices
+        if data.get("gender") not in dict(Player.GENDER_CHOICES):
+            raise serializers.ValidationError({"gender": "Cannot be blank."})
 
         return super().validate(data)
 
@@ -405,37 +440,41 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Player
-        fields = (
+        fields = [
+            "alert_preferences",
             "username",
+            "id",
             "email",
-            "password",
-            "password2",
             "first_name",
             "last_name",
-        )
+            "profile_picture",
+            "password",
+            "here_for_the",
+            "education",
+            "gender",
+            "birthday",
+            "city",
+            "state",
+            "password",
+            "password2",
+        ]
         extra_kwargs = {
             "password": {"write_only": True},  # Make password write-only
             "password2": {"write_only": True},  # Make password2 write-only
         }
 
     def validate(self, data):
-        # Check that the two password entries match
-        if data["password"] != data["password2"]:
-            raise serializers.ValidationError(
-                {"password2": "The two passwords must match."}
-            )
-
-        # Validate email format
-        try:
-            validate_email(data["email"])
-        except DjangoValidationError:
-            raise serializers.ValidationError({"email": "Invalid email format."})
-
         # Validate the password against Django's validators
         try:
             validate_password(data["password"])
         except DjangoValidationError as e:
             raise serializers.ValidationError({"password": list(e.messages)})
+
+        # Check that the two password entries match
+        if data["password"] != data["password2"]:
+            raise serializers.ValidationError(
+                {"password2": "The two passwords must match."}
+            )
 
         return data
 

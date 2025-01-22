@@ -39,9 +39,16 @@ class Player(AbstractUser):
         ("Other", "Other"),
         ("Prefer not to say", "Prefer not to say"),
     ]
+    INVESTING_KNOWLEDGE_CHOICES = [
+        ("Beginner", "Beginner"),
+        ("Intermediate", "Intermediate"),
+        ("Advanced", "Advanced"),
+        ("Professional", "Professional"),
+    ]
     here_for_the = models.CharField(max_length = 127, choices=HERE_FOR_THE_CHOICES, default='Competition')
     education = models.CharField(max_length = 127, choices=EDUCATION_CHOICES, default='None')
-    gender = models.CharField(max_length = 127, choices=EDUCATION_CHOICES, default='Male')
+    gender = models.CharField(max_length = 127, choices=GENDER_CHOICES, default='Male')
+    investing_knowledge = models.CharField(max_length = 127, choices=INVESTING_KNOWLEDGE_CHOICES, default='Beginner')
     birthday = models.DateField()
     city = models.CharField(max_length = 127)
     state = models.CharField(max_length = 30)
