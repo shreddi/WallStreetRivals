@@ -13,12 +13,12 @@ import { DatePicker } from '@mantine/dates';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { register } from '../api/apiService';
-import { defaultPlayer, Player } from '../types';
+import { defaultAccount, Account } from '../types';
 import { notifications } from '@mantine/notifications';
 import moment from 'moment';
 import citiesAndStates from './citiesAndStates';
 
-interface RegisterValidationError {
+interface AccountValidationError {
     username?: string;
     password?: string;
     email?: string;
@@ -29,19 +29,15 @@ interface RegisterValidationError {
     city?: string;
     state?: string;
     here_for_the?: string;
+    location?: string;
     education?: string;
     gender?: string;
-    response?: {
-        data?: {
-            non_field_errors: string;
-        };
-    };
 }
 
 export default function Register() {
     const navigate = useNavigate();
-    const [form, setForm] = useState<Player>(defaultPlayer)
-    const [errors, setErrors] = useState<RegisterValidationError | undefined>()
+    const [form, setForm] = useState<Account>(defaultAccount)
+    const [errors, setErrors] = useState<AccountValidationError | undefined>()
 
     //convert date object to string.
     const dateToString = (date: Date): string => {
@@ -150,11 +146,11 @@ export default function Register() {
                 data={citiesAndStates}
                 value={form.location ?? ''}
                 onChange={(value) => setForm({...form, location: value ?? ''})}
-                error={errors?.state}
+                error={errors?.location}
                 searchable
             />
             <Select
-                label="Here for the"
+                label="Here for the:"
                 value={form.here_for_the}
                 onChange={(value) => setForm({...form, here_for_the: value ?? 'Competition'})}
                 data={[

@@ -24,13 +24,15 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 
-
-
 class PlayerViewSet(viewsets.ModelViewSet):
     queryset = Player.objects.all()
-    serializer_class = AccountSerializer
+    serializer_class = PlayerSerializer
     filter_backends = [SearchFilter]
     search_fields = ['username', 'first_name', 'last_name']  # Add searchable fields
+
+class AccountViewSet(viewsets.ModelViewSet):
+    queryset = Player.objects.all()
+    serializer_class = AccountSerializer
     
     @transaction.atomic
     def update(self, request, *args, **kwargs):
@@ -40,9 +42,6 @@ class PlayerViewSet(viewsets.ModelViewSet):
         file = request.FILES.get('profile_picture') 
 
         # Delete old profile picture if a new one is uploaded
-            # Check if the file actually exists
-
-
         serializer = self.get_serializer(instance, data=data, partial=True)
         if serializer.is_valid():
             if file:

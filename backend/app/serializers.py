@@ -6,9 +6,47 @@ from django.contrib.auth.password_validation import validate_password
 from datetime import date, timedelta, time
 import pytz
 
+class PlayerSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Player
+        fields = [
+            "username",
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "profile_picture",
+            "location",
+        ]
 
 class AccountSerializer(serializers.ModelSerializer):
     profile_picture = serializers.SerializerMethodField(read_only=True)
+    birthday = serializers.DateField(
+        required=True,
+        error_messages={
+            "invalid": "Please select a birthday.",
+            "blank": "Please select a birthday.",
+            "null": "Please select a birthday.",
+        },
+    )
+    education = serializers.CharField(
+        required=True,
+        error_messages={"blank": "Please select an education level.", "null": "Please select an education level."},
+    )
+    gender = serializers.CharField(
+        required=True,
+        error_messages={"blank": "Please select a gender.", "null": "Please select a gender."},
+    )
+    location = serializers.CharField(
+        required=True,
+        error_messages={"blank": "Please select a location.", "null": "Please select a location."},
+    )
+    here_for_the = serializers.CharField(
+        required=True,
+        error_messages={"blank": "Please select a reason.", "null": "Please select a reason."},
+    )
 
     class Meta:
         model = Player
@@ -25,7 +63,7 @@ class AccountSerializer(serializers.ModelSerializer):
             "birthday",
             "location",
         ]
-
+    
     def validate_birthday(self, value):
         if value >= date.today():
             raise serializers.ValidationError("Birthday must be in the past.")
