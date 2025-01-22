@@ -39,18 +39,18 @@ export const register = async ( player: Player ) => {
     return response.data
 };
 
-export const updatePlayer = async (playerID: number, formData: FormData) => {
+export const updateAccount = async (accountID: number, formData: FormData) => {
     const headers = getAuthHeaders()
-    const response = await axios.put(`${API_BASE_URL}/api/players/${playerID}/`, formData, { headers, withCredentials: true })
+    const response = await axios.put(`${API_BASE_URL}/api/accounts/${accountID}/`, formData, { headers, withCredentials: true })
     if (response.status !== 200) {
         throw new Error('failed to update player');
     }
     return response.data
 }
 
-export const getPlayer = async (playerID: number) => {
+export const getAccount = async (accountID: number) => {
     const headers = getAuthHeaders()
-    const response = await axios.get(`${API_BASE_URL}/api/players/${playerID}/`, { headers, withCredentials: true })
+    const response = await axios.get(`${API_BASE_URL}/api/players/${accountID}/`, { headers, withCredentials: true })
     if (response.status !== 200) {
         throw new Error('failed to get player');
     }

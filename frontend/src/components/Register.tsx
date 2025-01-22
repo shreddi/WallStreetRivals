@@ -17,27 +17,12 @@ import { defaultAccount, Account } from '../types';
 import { notifications } from '@mantine/notifications';
 import moment from 'moment';
 import citiesAndStates from './citiesAndStates';
-
-interface AccountValidationError {
-    username?: string;
-    password?: string;
-    email?: string;
-    password2?: string;
-    first_name?: string;
-    last_name?: string;
-    birthday?: string;
-    city?: string;
-    state?: string;
-    here_for_the?: string;
-    location?: string;
-    education?: string;
-    gender?: string;
-}
+import { AccountValidationErrors } from '../types';
 
 export default function Register() {
     const navigate = useNavigate();
     const [form, setForm] = useState<Account>(defaultAccount)
-    const [errors, setErrors] = useState<AccountValidationError | undefined>()
+    const [errors, setErrors] = useState<AccountValidationErrors | undefined>()
 
     //convert date object to string.
     const dateToString = (date: Date): string => {

@@ -13,7 +13,7 @@ import '@mantine/dates/styles.css'; //if using mantine date picker features
 import 'mantine-react-table/styles.css'; //import MRT styles
 import '@mantine/notifications/styles.css';
 import { Button, Title } from '@mantine/core';
-import { PlayerProvider } from './components/contexts/PlayerProvider';
+import { AccountProvider } from './components/contexts/AccountProvider';
 import PasswordResetConfirm from './components/PasswordResetConfirm';
 import PasswordResetRequest from './components/PasswordResetRequest';
 import Settings from './components/ProfileSettings';
@@ -89,7 +89,7 @@ function App() {
       >
         <Notifications />
         <BrowserRouter>
-          <PlayerProvider>
+          <AccountProvider>
             <Routes>
 
               {/* public routes */}
@@ -125,7 +125,7 @@ function App() {
               />
               
             </Routes>
-          </PlayerProvider>
+          </AccountProvider>
         </BrowserRouter>
       </MantineProvider>
     </React.StrictMode>

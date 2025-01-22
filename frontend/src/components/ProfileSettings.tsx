@@ -7,53 +7,51 @@ import {
     Avatar,
     Group,
     Stack,
-    Box,
     Title,
     Loader,
     Text,
 } from '@mantine/core';
-import { Player } from '../types';
-import { usePlayer } from './contexts/usePlayer';
+import { Account, AccountValidationErrors, defaultAccount } from '../types';
+import { useAccount } from './contexts/useAccount';
 import AppShell from './AppShell';
-import { updatePlayer } from '../api/authService';
+import { updateAccount } from '../api/authService';
 import { isEqual } from 'lodash';
 
 export default function ProfileSettings() {
     const [saving, setSaving] = useState(false);
-    const [playerData, setPlayerData] = useState<Player | null>(null);
+    const [form, setForm] = useState<Account>(defaultAccount);
     const [picture, setPicture] = useState<File | undefined>();
-    const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
-    const [successAlert, setSuccessAlert] = useState(false)
-    const { currentPlayer, setCurrentPlayer } = usePlayer();
-    const wasChanged = !isEqual(currentPlayer, playerData) || picture
+    const [errors, setErrors] = useState<AccountValidationErrors | undefined>()
+    const { currentAccount, setCurrentAccount } = useAccount();
+    const wasChanged = !isEqual(currentPlayer, form) || picture
 
     useEffect(() => {
-        setPlayerData(currentPlayer);
+        setForm(currentPlayer);
         console.log(currentPlayer);
     }, [currentPlayer]);
 
     const handleSave = async () => {
-        if (!playerData) return;
+        if (!form) return;
 
         setSaving(true);
         setErrors({}); // Clear previous errors
 
         const formData = new FormData();
-        formData.append('username', playerData.username);
-        formData.append('first_name', playerData.first_name);
-        formData.append('last_name', playerData.last_name);
+        formData.append('username', form.username);
+        formData.append('first_name', form.first_name);
+        formData.append('last_name', form.last_name);
 
         if (picture) {
             formData.append('profile_picture', picture);
         }
 
-        Object.entries(playerData.alert_preferences).forEach(([key, value]) => {
+        Object.entries(form.alert_preferences).forEach(([key, value]) => {
             formData.append(`alert_preferences.${key}`, String(value));
         });
 
         try {
-            const data = await updatePlayer(playerData.id, formData);
-            setPlayerData(data);
+            const data = await updateAccount(form.id, formData);
+            setForm(data);
             setCurrentPlayer(data);
             setPicture(undefined)
             alert('Profile updated successfully!');
@@ -73,7 +71,7 @@ export default function ProfileSettings() {
     };
 
     const discardChanges = () => {
-        setPlayerData(currentPlayer);
+        setForm(currentPlayer);
         setPicture(undefined)
         setErrors({});
     }
@@ -82,7 +80,7 @@ export default function ProfileSettings() {
         return <Loader />;
     }
 
-    if (!playerData) {
+    if (!form) {
         return <p>Failed to load user data</p>;
     }
 
@@ -95,7 +93,7 @@ export default function ProfileSettings() {
 
                 <Group>
                     <Avatar
-                        src={picture ? URL.createObjectURL(picture) : playerData.profile_picture}
+                        src={picture ? URL.createObjectURL(picture) : form.profile_picture}
                         radius="150"
                         size="300px"
                     />
@@ -109,34 +107,34 @@ export default function ProfileSettings() {
 
                 <TextInput
                     label="Username"
-                    value={playerData.username}
+                    value={form.username}
                     onChange={(e) =>
-                        setPlayerData({ ...playerData, username: e.currentTarget.value })
+                        setForm({ ...form, username: e.currentTarget.value })
                     }
                     error={errors.username?.[0]} // Display the first error for 'username'
                 />
 
                 <TextInput
                     label="First Name"
-                    value={playerData.first_name}
+                    value={form.first_name}
                     onChange={(e) =>
-                        setPlayerData({ ...playerData, first_name: e.currentTarget.value })
+                        setForm({ ...form, first_name: e.currentTarget.value })
                     }
                     error={errors.first_name?.[0]} // Display the first error for 'first_name'
                 />
 
                 <TextInput
                     label="Last Name"
-                    value={playerData.last_name}
+                    value={form.last_name}
                     onChange={(e) =>
-                        setPlayerData({ ...playerData, last_name: e.currentTarget.value })
+                        setForm({ ...form, last_name: e.currentTarget.value })
                     }
                     error={errors.last_name?.[0]} // Display the first error for 'last_name'
                 />
 
                 <TextInput
                     label="Email"
-                    value={playerData.email}
+                    value={form.email}
                     disabled
                 />
 
@@ -146,12 +144,12 @@ export default function ProfileSettings() {
 
                 <Checkbox
                     label="Weekly Summary"
-                    checked={playerData.alert_preferences.weekly_summary}
+                    checked={form.alert_preferences.weekly_summary}
                     onChange={(e) =>
-                        setPlayerData({
-                            ...playerData,
+                        setForm({
+                            ...form,
                             alert_preferences: {
-                                ...playerData.alert_preferences,
+                                ...form.alert_preferences,
                                 weekly_summary: e.currentTarget.checked,
                             },
                         })
@@ -161,12 +159,12 @@ export default function ProfileSettings() {
 
                 <Checkbox
                     label="Daily Summary"
-                    checked={playerData.alert_preferences.daily_summary}
+                    checked={form.alert_preferences.daily_summary}
                     onChange={(e) =>
-                        setPlayerData({
-                            ...playerData,
+                        setForm({
+                            ...form,
                             alert_preferences: {
-                                ...playerData.alert_preferences,
+                                ...form.alert_preferences,
                                 daily_summary: e.currentTarget.checked,
                             },
                         })
@@ -176,12 +174,12 @@ export default function ProfileSettings() {
 
                 <Checkbox
                     label="Contest Rank Change"
-                    checked={playerData.alert_preferences.contest_rank_change}
+                    checked={form.alert_preferences.contest_rank_change}
                     onChange={(e) =>
-                        setPlayerData({
-                            ...playerData,
+                        setForm({
+                            ...form,
                             alert_preferences: {
-                                ...playerData.alert_preferences,
+                                ...form.alert_preferences,
                                 contest_rank_change: e.currentTarget.checked,
                             },
                         })

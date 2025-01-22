@@ -90,7 +90,6 @@ export interface Contest extends ResourceWithMetadata {
  * Defaults
  */
 
-
 export const defaultAccount: Account = {
     id: 0,
     username: "",
@@ -155,4 +154,25 @@ export const defaultPortfolio: Portfolio = {
     holdings: [],
     cash: "0",
     holdings_total: "0"
+}
+
+
+/*
+ * Validation
+ */
+
+export interface AccountValidationErrors {
+    username?: string;
+    password?: string;
+    email?: string;
+    password2?: string;
+    first_name?: string;
+    last_name?: string;
+    birthday?: string;
+    city?: string;
+    state?: string;
+    here_for_the?: string;
+    location?: string;
+    education?: string;
+    gender?: string;
 }
