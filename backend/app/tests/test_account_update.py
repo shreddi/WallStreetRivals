@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from django.test import TestCase
 from rest_framework.exceptions import ValidationError
-from app.serializers import AccountSerializer
+from backend.app.serializers.misc_serializers import AccountSerializer
 from app.models import Player
 
 

@@ -1,7 +1,10 @@
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from .models import *
-from .serializers import *
+from .serializers.account_serializers import AccountSerializer, RegisterSerializer
+from .serializers.contest_serializers import ContestSerializer
+from .serializers.player_serializers import PlayerSerializer
+from .serializers.portfolio_serializers import PortfolioSerializer, HoldingSerializer, StockSerializer
 import os
 from app.services.alpaca_service import update_stock_prices_by_ticker
 from rest_framework.permissions import AllowAny
