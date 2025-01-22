@@ -10,6 +10,7 @@ from .views.portfolio_views import PortfolioViewSet, StockViewSet, HoldingViewSe
 from .views.player_views import PlayerViewSet
 from .views.account_views import AccountViewSet, RegisterView, LoginView, PasswordResetConfirmAPIView, PasswordResetRequestAPIView
 from .views.contest_views import ContestViewSet
+from .views.misc_views import NotificationViewSet
 
 router = DefaultRouter()
 router.register(r"portfolios", PortfolioViewSet, basename="portfolio")
@@ -18,6 +19,7 @@ router.register(r"holdings", HoldingViewSet, basename="holding")
 router.register(r"players", PlayerViewSet, basename="player")
 router.register(r"accounts", AccountViewSet, basename="account")
 router.register(r"contests", ContestViewSet, basename="contest")
+router.register(r"notifications", NotificationViewSet, basename="notifications")
 
 
 urlpatterns = [
