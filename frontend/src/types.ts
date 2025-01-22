@@ -28,6 +28,7 @@ export interface Holding extends ResourceWithMetadata {
 };
 
 export interface Portfolio extends ResourceWithMetadata {
+    active: boolean
     player: Player
     holdings: Holding[];
     holdings_total: string;

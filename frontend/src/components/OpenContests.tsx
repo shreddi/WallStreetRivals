@@ -34,9 +34,7 @@ export default function CreateLeague() {
 
     return (
         <AppShell>
-            <Box >
-                <ContestTable contests={contests} />
-            </Box>
+            <ContestTable contests={contests} />
         </AppShell>
     )
 
