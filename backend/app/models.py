@@ -12,7 +12,8 @@ class MetadataModel(models.Model):
         abstract = True
 
 
-class AccountSettings(models.Model):
+# Player Model: Users for Wall Street Rivals.
+class Player(AbstractUser):
     #User Info
     HERE_FOR_THE_CHOICES = [
         ("Competition", "Competition"),
@@ -44,21 +45,13 @@ class AccountSettings(models.Model):
     gender = models.CharField(max_length = 127, choices=GENDER_CHOICES, default='Male')
     investing_knowledge = models.CharField(max_length = 127, choices=INVESTING_KNOWLEDGE_CHOICES, default='Beginner')
     birthday = models.DateField()
+    location = models.CharField(max_length = 255)
+    profile_picture = models.ImageField(upload_to="profile_pictures/", null=True, blank=True)
 
     #Notifications
     weekly_summary = models.BooleanField(default=False)
     daily_summary = models.BooleanField(default=True)
     contest_rank_change = models.BooleanField(default=False)
-
-# Player Model: Users for Wall Street Rivals.
-class Player(AbstractUser):
-    location = models.CharField(max_length = 255)
-    profile_picture = models.ImageField(
-        upload_to="profile_pictures/", null=True, blank=True
-    )
-    account_settings = models.ForeignKey(
-        AccountSettings, null=True, on_delete=models.CASCADE, related_name="player"
-    )
 
 
 class Contest(MetadataModel):
