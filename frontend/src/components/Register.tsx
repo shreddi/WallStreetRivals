@@ -15,26 +15,14 @@ import { useNavigate } from 'react-router-dom';
 import { register } from '../api/apiService';
 import { defaultAccount, Account } from '../types';
 import { notifications } from '@mantine/notifications';
-import moment from 'moment';
 import citiesAndStates from './citiesAndStates';
 import { AccountValidationErrors } from '../types';
+import { dateToString, stringToDate } from './dateConversion';
 
 export default function Register() {
     const navigate = useNavigate();
     const [form, setForm] = useState<Account>(defaultAccount)
     const [errors, setErrors] = useState<AccountValidationErrors | undefined>()
-
-    //convert date object to string.
-    const dateToString = (date: Date): string => {
-        const formattedDate = moment(date).format("YYYY-MM-DD")
-        return formattedDate
-    };
-
-    //convert date to string object.
-    const stringToDate = (date: string): Date => {
-        const formattedDate = moment(date).toDate()
-        return formattedDate
-    }
 
     useEffect(() => {
         console.log(form.birthday)

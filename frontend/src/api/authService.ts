@@ -50,7 +50,7 @@ export const updateAccount = async (accountID: number, formData: FormData) => {
 
 export const getAccount = async (accountID: number) => {
     const headers = getAuthHeaders()
-    const response = await axios.get(`${API_BASE_URL}/api/players/${accountID}/`, { headers, withCredentials: true })
+    const response = await axios.get(`${API_BASE_URL}/api/accounts/${accountID}/`, { headers, withCredentials: true })
     if (response.status !== 200) {
         throw new Error('failed to get player');
     }

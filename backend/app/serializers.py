@@ -68,6 +68,9 @@ class AccountSerializer(serializers.ModelSerializer):
             "gender",
             "birthday",
             "location",
+            "weekly_summary",
+            "daily_summary",
+            "contest_rank_change",
         ]
     
     def validate_birthday(self, value):
@@ -77,6 +80,8 @@ class AccountSerializer(serializers.ModelSerializer):
 
     def validate_username(self, value):
         """Check if the username is already taken by another user."""
+        if self.instance and self.instance.username == value:
+            return value
         if value.strip() == "":
             raise serializers.ValidationError("Username is required.")
         user = self.instance
@@ -100,6 +105,8 @@ class AccountSerializer(serializers.ModelSerializer):
         return value
 
     def validate_email(self, value):
+        if self.instance and self.instance.email == value:
+            return value
         if Player.objects.filter(email=value).exists():
             raise serializers.ValidationError("A user with that email already exists.")
         try:

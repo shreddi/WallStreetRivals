@@ -47,7 +47,7 @@ export interface Player {
 }
 
 //interface for data for an user's account, visible for self, used for registration and changing profile settings
-export interface Account extends Player{
+export interface Account extends Player {
     //User Info
     here_for_the: string; //"Competition" | "Cash Prizes" | "Learning" | "Strategy Testing" | "Just Checking It Out";
     education: string; //"None" | "High School" | "College" | "Post-Grad";
@@ -175,4 +175,8 @@ export interface AccountValidationErrors {
     location?: string;
     education?: string;
     gender?: string;
+
+    weekly_summary?: string;
+    daily_summary?: string;
+    contest_rank_change?: string
 }
