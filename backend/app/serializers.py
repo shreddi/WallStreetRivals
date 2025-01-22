@@ -21,6 +21,12 @@ class PlayerSerializer(serializers.ModelSerializer):
             "location",
         ]
 
+    def get_profile_picture(self, obj):
+        request = self.context.get("request")
+        if obj.profile_picture and request:
+            return request.build_absolute_uri(obj.profile_picture.url)
+        return None
+
 class AccountSerializer(serializers.ModelSerializer):
     profile_picture = serializers.SerializerMethodField(read_only=True)
     birthday = serializers.DateField(
