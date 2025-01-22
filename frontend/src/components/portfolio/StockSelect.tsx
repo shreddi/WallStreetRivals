@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Stock } from '../types'
+import { Stock } from '../../types'
 import { Combobox, InputBase, useCombobox, Group, CloseButton, ScrollArea, Loader, Text } from '@mantine/core'
-import { stockApi } from '../api/apiService';
+import { stockApi } from '../../api/apiService';
 
 
 interface StockSelectProps {

@@ -1,5 +1,5 @@
 import { AppShell, Flex, Title, Stack, Button } from '@mantine/core'
-import { useAccount } from './contexts/useAccount';
+import { useAccount } from '../../contexts/useAccount';
 import UserDropdown from './UserDropdown';
 import { useNavigate } from 'react-router-dom';
 

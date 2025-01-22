@@ -1,15 +1,15 @@
 import { Group, Stack, TextInput, Title, Text, Checkbox, Flex, Avatar, Button, FileInput, Select, Slider, NumberInput } from "@mantine/core";
-import { Contest, defaultContest, Player } from "../types";
+import { Contest, defaultContest, Player } from "../../types";
 import { useState, useEffect, useRef } from "react";
-import AppShell from './AppShell'
-import { searchPlayers } from '../api/authService';
+import AppShell from '../appShell/AppShell'
+import { searchPlayers } from '../../api/authService';
 import { notifications } from '@mantine/notifications'
 import PlayerTable from "./PlayerTable";
-import { useAccount } from './contexts/useAccount';
+import { useAccount } from '../../contexts/useAccount';
 import AvatarEditor from 'react-avatar-editor'
-import placeholderImage from '../assets/placeholder.png';
+import placeholderImage from '../../assets/placeholder.png';
 import { DatePicker } from '@mantine/dates';
-import { createContest } from "../api/contestService";
+import { createContest } from "../../api/contestService";
 import { useNavigate } from "react-router-dom";
 
 

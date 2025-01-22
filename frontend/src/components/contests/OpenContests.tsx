@@ -1,8 +1,8 @@
 import { Box, Center, Flex, Loader } from "@mantine/core"
-import { Contest } from "../types"
+import { Contest } from "../../types"
 import { useEffect, useState } from "react"
-import { getOpenContests } from "../api/contestService"
-import AppShell from './AppShell'
+import { getOpenContests } from "../../api/contestService"
+import AppShell from '../appShell/AppShell'
 import ContestTable from './ContestTable'
 
 
