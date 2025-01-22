@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from django.test import TestCase
 from ..models import Player, Contest, Portfolio
-from ..serializers.misc_serializers import ContestSerializer
+from ..serializers.contest_serializers import ContestSerializer
 
 class ContestSerializerTestCase(TestCase):
     def setUp(self):
