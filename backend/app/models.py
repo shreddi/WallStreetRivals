@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 
 # Abstract model that tracks metadata. The other models used in this project extend MetadataModel
@@ -12,20 +12,46 @@ class MetadataModel(models.Model):
         abstract = True
 
 
-class AlertPreferences(models.Model):
-    weekly_summary = models.BooleanField(default=True)
-    daily_summary = models.BooleanField(default=False)
-    contest_rank_change = models.BooleanField(default=False)
-
-
-# Player Model: Users for Wall Street Rivals. P
+# Player Model: Users for Wall Street Rivals.
 class Player(AbstractUser):
-    profile_picture = models.ImageField(
-        upload_to="profile_pictures/", null=True, blank=True
-    )
-    alert_preferences = models.ForeignKey(
-        AlertPreferences, null=True, on_delete=models.CASCADE, related_name="player"
-    )
+    #User Info
+    HERE_FOR_THE_CHOICES = [
+        ("Competition", "Competition"),
+        ("Cash Prizes", "Cash Prizes"),
+        ("Learning", "Learning"),
+        ("Strategy Testing", "Strategy Testing"),
+        ("Just Checking It Out", "Just Checking It Out"),
+    ]
+    EDUCATION_CHOICES = [
+        ("None", "None"),
+        ("High School", "High School"),
+        ("College", "College"),
+        ("Post-Grad", "Post-Grad"),
+    ]
+    GENDER_CHOICES = [
+        ("Male", "Male"),
+        ("Female", "Female"),
+        ("Other", "Other"),
+        ("Prefer not to say", "Prefer not to say"),
+    ]
+    INVESTING_KNOWLEDGE_CHOICES = [
+        ("Beginner", "Beginner"),
+        ("Intermediate", "Intermediate"),
+        ("Advanced", "Advanced"),
+        ("Professional", "Professional"),
+    ]
+    here_for_the = models.CharField(max_length = 127, choices=HERE_FOR_THE_CHOICES, default='Competition')
+    education = models.CharField(max_length = 127, choices=EDUCATION_CHOICES, default='None')
+    gender = models.CharField(max_length = 127, choices=GENDER_CHOICES, default='Male')
+    investing_knowledge = models.CharField(max_length = 127, choices=INVESTING_KNOWLEDGE_CHOICES, default='Beginner')
+    birthday = models.DateField(default=((date.today() - timedelta(days=365 * 20))))
+    location = models.CharField(max_length = 255)
+    profile_picture = models.ImageField(upload_to="profile_pictures/", null=True, blank=True)
+
+    #Notifications
+    weekly_summary = models.BooleanField(default=False)
+    daily_summary = models.BooleanField(default=True)
+    contest_rank_change = models.BooleanField(default=False)
 
 
 class Contest(MetadataModel):

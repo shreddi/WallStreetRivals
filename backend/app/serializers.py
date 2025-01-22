@@ -6,123 +6,147 @@ from django.contrib.auth.password_validation import validate_password
 from datetime import date, timedelta, time
 import pytz
 
-
-class AlertPreferencesSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = AlertPreferences
-        fields = "__all__"
-
-
 class PlayerSerializer(serializers.ModelSerializer):
-    alert_preferences = AlertPreferencesSerializer(required=False)
     profile_picture = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Player
         fields = [
-            "alert_preferences",
             "username",
             "id",
             "email",
             "first_name",
             "last_name",
             "profile_picture",
-            "password",
+            "location",
         ]
-        extra_kwargs = {
-            "password": {"write_only": True},
-        }
-
-    def validate_username(self, value):
-        """
-        Check if the username is already taken by another user.
-        """
-        if value.strip() == "":
-            raise serializers.ValidationError("Username is required.")
-        user = self.instance  # The current user instance
-        if user:
-            if Player.objects.exclude(pk=user.pk).filter(username=value).exists():
-                raise serializers.ValidationError("This username is already taken.")
-        return value
-
-    def validate(self, data):
-        # Check username uniqueness
-
-        if data["first_name"].strip() == "":
-            raise serializers.ValidationError({"first_name": "First name is required."})
-
-        if len(data["first_name"]) > 25:
-            raise serializers.ValidationError(
-                {"first_name": "Name must be fewer than 25 characters."}
-            )
-
-        if data["last_name"].strip() == "":
-            raise serializers.ValidationError({"last_name": "Last name is required."})
-
-        if len(data["last_name"]) > 25:
-            raise serializers.ValidationError(
-                {"last_name": "Name must be fewer than 25 characters."}
-            )
-
-        email = data.get("email")
-        if email:
-            try:
-                validate_email(email)
-            except DjangoValidationError:
-                raise serializers.ValidationError({"email": "Invalid email format."})
-            # Check email uniqueness
-            if Player.objects.filter(email=data["email"]).exists():
-                raise serializers.ValidationError(
-                    {"email": "An user with that email already exists."}
-                )
-
-        return super().validate(data)
-
-    def create(self, validated_data):
-        # Extract nested data
-        alert_preferences_data = validated_data.pop("alert_preferences", None)
-
-        # Create alert preferences object based on if data was included in request, or default if not.
-        if alert_preferences_data:
-            alert_preferences = AlertPreferences.objects.create(
-                **alert_preferences_data
-            )
-        else:
-            alert_preferences = AlertPreferences.objects.create()  # Create default
-
-        # Create the player instance using the alert preference object
-        player = Player.objects.create_user(
-            alert_preferences=alert_preferences, **validated_data
-        )
-
-        return player
-
-    def update(self, instance, validated_data):
-        # Extract nested data
-        alert_preferences_data = validated_data.pop("alert_preferences", None)
-
-        # Update the player instance
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-
-        # Handle the nested alert preferences
-        if alert_preferences_data:
-            alert_preferences, created = AlertPreferences.objects.get_or_create(
-                player=instance
-            )
-            for attr, value in alert_preferences_data.items():
-                setattr(alert_preferences, attr, value)
-            alert_preferences.save()
-
-        return instance
 
     def get_profile_picture(self, obj):
         request = self.context.get("request")
         if obj.profile_picture and request:
             return request.build_absolute_uri(obj.profile_picture.url)
         return None
+
+class AccountSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.SerializerMethodField(read_only=True)
+    birthday = serializers.DateField(
+        required=True,
+        error_messages={
+            "invalid": "Please select a birthday.",
+            "blank": "Please select a birthday.",
+            "null": "Please select a birthday.",
+        },
+    )
+    education = serializers.CharField(
+        required=True,
+        error_messages={"blank": "Please select an education level.", "null": "Please select an education level."},
+    )
+    gender = serializers.CharField(
+        required=True,
+        error_messages={"blank": "Please select a gender.", "null": "Please select a gender."},
+    )
+    location = serializers.CharField(
+        required=True,
+        error_messages={"blank": "Please select a location.", "null": "Please select a location."},
+    )
+    here_for_the = serializers.CharField(
+        required=True,
+        error_messages={"blank": "Please select a reason.", "null": "Please select a reason."},
+    )
+
+    class Meta:
+        model = Player
+        fields = [
+            "username",
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "profile_picture",
+            "here_for_the",
+            "education",
+            "gender",
+            "birthday",
+            "location",
+            "weekly_summary",
+            "daily_summary",
+            "contest_rank_change",
+        ]
+    
+    def validate_birthday(self, value):
+        if value >= date.today():
+            raise serializers.ValidationError("Birthday must be in the past.")
+        return value
+
+    def validate_username(self, value):
+        """Check if the username is already taken by another user."""
+        if self.instance and self.instance.username == value:
+            return value
+        if value.strip() == "":
+            raise serializers.ValidationError("Username is required.")
+        user = self.instance
+        if user:
+            if Player.objects.exclude(pk=user.pk).filter(username=value).exists():
+                raise serializers.ValidationError("This username is already taken.")
+        return value
+
+    def validate_first_name(self, value):
+        if value.strip() == "":
+            raise serializers.ValidationError("First name is required.")
+        if len(value) > 25:
+            raise serializers.ValidationError("First name must be fewer than 25 characters.")
+        return value
+
+    def validate_last_name(self, value):
+        if value.strip() == "":
+            raise serializers.ValidationError("Last name is required.")
+        if len(value) > 25:
+            raise serializers.ValidationError("Last name must be fewer than 25 characters.")
+        return value
+
+    def validate_email(self, value):
+        if self.instance and self.instance.email == value:
+            return value
+        if Player.objects.filter(email=value).exists():
+            raise serializers.ValidationError("A user with that email already exists.")
+        try:
+            validate_email(value)
+        except:
+            raise serializers.ValidationError("Invalid email format.")
+        return value
+
+    def get_profile_picture(self, obj):
+        request = self.context.get("request")
+        if obj.profile_picture and request:
+            return request.build_absolute_uri(obj.profile_picture.url)
+        return None
+
+
+class RegisterSerializer(AccountSerializer):
+    password = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True)
+
+    # Inherit fields and extra_kwargs from AccountSerializer.Meta
+    class Meta(AccountSerializer.Meta):
+        fields = AccountSerializer.Meta.fields + ["password", "password2"]
+
+    def validate_password(self, value):
+        try:
+            validate_password(value)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(list(e.messages))
+        return value
+
+    def validate(self, data):
+        if data["password"] != data["password2"]:
+            raise serializers.ValidationError({"password2": "The two passwords must match."})
+        data = super().validate(data)
+        return data
+
+    def create(self, validated_data):
+        validated_data.pop("password2")
+        player = Player.objects.create_user(**validated_data)
+        return player
 
 
 class StockSerializer(serializers.ModelSerializer):
@@ -132,9 +156,7 @@ class StockSerializer(serializers.ModelSerializer):
 
 
 class HoldingSerializer(serializers.ModelSerializer):
-    stock = serializers.PrimaryKeyRelatedField(
-        queryset=Stock.objects.all(), required=False
-    )
+    stock = serializers.PrimaryKeyRelatedField(queryset=Stock.objects.all(), required=False)
     stock_data = StockSerializer(read_only=True, source="stock")
     total_value = serializers.SerializerMethodField()
     # portfolio_percentage = serializers.SerializerMethodField()
@@ -145,11 +167,7 @@ class HoldingSerializer(serializers.ModelSerializer):
 
     def get_total_value(self, obj):
         # Calculate the total value as shares * trade_price of the stock
-        return (
-            obj.shares * obj.stock.trade_price
-            if obj.stock and obj.stock.trade_price
-            else 0
-        )
+        return obj.shares * obj.stock.trade_price if obj.stock and obj.stock.trade_price else 0
 
     def get_portfolio_percentage(self, obj):
         return (obj.portfolio.total / self.get_total_value(obj)) * 100
@@ -176,9 +194,7 @@ class HoldingSerializer(serializers.ModelSerializer):
 
             # Deduct the cost of the additional shares from the portfolio's cash
             if portfolio.cash < additional_value:
-                raise serializers.ValidationError(
-                    "Insufficient cash in the portfolio to buy additional shares."
-                )
+                raise serializers.ValidationError("Insufficient cash in the portfolio to buy additional shares.")
             portfolio.cash -= additional_value
             portfolio.save()
 
@@ -191,9 +207,7 @@ class HoldingSerializer(serializers.ModelSerializer):
             # Deduct the cost of the new holding from the portfolio's cash
             total_value = self.get_total_value(holding)
             if portfolio.cash < total_value:
-                raise serializers.ValidationError(
-                    "Insufficient cash in the portfolio to buy this holding."
-                )
+                raise serializers.ValidationError("Insufficient cash in the portfolio to buy this holding.")
             portfolio.cash -= total_value
             portfolio.save()
 
@@ -201,7 +215,7 @@ class HoldingSerializer(serializers.ModelSerializer):
 
 
 class PortfolioSerializer(serializers.ModelSerializer):
-    player = PlayerSerializer(read_only=True)
+    player = AccountSerializer(read_only=True)
     holdings = HoldingSerializer(many=True, read_only=True)
     holdings_total = serializers.SerializerMethodField()
     total = serializers.SerializerMethodField()
@@ -226,9 +240,7 @@ class ContestSerializer(serializers.ModelSerializer):
     # portfolios = PortfolioSerializer(many=True, read_only=True)
     portfolios = serializers.SerializerMethodField()
     time_left = serializers.SerializerMethodField(read_only=True)
-    players = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Player.objects.all(), write_only=True
-    )
+    players = serializers.PrimaryKeyRelatedField(many=True, queryset=Player.objects.all(), write_only=True)
     num_active_players = serializers.SerializerMethodField(read_only=True)
     rank = serializers.SerializerMethodField(read_only=True)
     balance = serializers.SerializerMethodField(read_only=True)
@@ -285,45 +297,33 @@ class ContestSerializer(serializers.ModelSerializer):
                 )
             if data["start_date"] > one_year_from_now:
                 raise serializers.ValidationError(
-                    {
-                        "start_date": "The start date cannot be more than one year from today."
-                    }
+                    {"start_date": "The start date cannot be more than one year from today."}
                 )
 
         # Validate the name is not taken
         if "name" in data:
             if Contest.objects.filter(name=data["name"]).exists():
                 raise serializers.ValidationError(
-                    {
-                        "name": "This contest name is already taken. Please choose another name."
-                    }
+                    {"name": "This contest name is already taken. Please choose another name."}
                 )
 
             # Validate the name has a minimum length
             if len(data["name"]) < 3:
-                raise serializers.ValidationError(
-                    {"name": "The name must be at least 3 characters long."}
-                )
+                raise serializers.ValidationError({"name": "The name must be at least 3 characters long."})
 
             # Validate the name has a maximum length
             if len(data["name"]) > 50:  # Adjust the limit as needed
-                raise serializers.ValidationError(
-                    {"name": "The name must not exceed 50 characters."}
-                )
+                raise serializers.ValidationError({"name": "The name must not exceed 50 characters."})
 
         # Validate player count does not exceed player_limit
         if "players" in data and "player_limit" in data:
             if len(data["players"]) > data["player_limit"]:
-                raise serializers.ValidationError(
-                    {"players": "The number of players exceeds the player limit."}
-                )
+                raise serializers.ValidationError({"players": "The number of players exceeds the player limit."})
 
         # Validate that at least one marketplace is enabled
         if not (data.get("nyse") or data.get("nasdaq") or data.get("crypto")):
             raise serializers.ValidationError(
-                {
-                    "marketplaces": "At least one marketplace (NYSE, NASDAQ, or Crypto) must be enabled."
-                }
+                {"marketplaces": "At least one marketplace (NYSE, NASDAQ, or Crypto) must be enabled."}
             )
 
         return data
@@ -331,9 +331,7 @@ class ContestSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         """Customize the representation to include players as IDs."""
         representation = super().to_representation(instance)
-        representation["players"] = [
-            portfolio.player.id for portfolio in instance.portfolios.all()
-        ]
+        representation["players"] = [portfolio.player.id for portfolio in instance.portfolios.all()]
         return representation
 
     def get_time_left(self, obj):
@@ -358,14 +356,10 @@ class ContestSerializer(serializers.ModelSerializer):
         request = self.context.get("request", None)
         user_id = request.user.id
 
-        serialized_portfolios = PortfolioSerializer(
-            obj.portfolios.all(), many=True, context=self.context
-        ).data
+        serialized_portfolios = PortfolioSerializer(obj.portfolios.all(), many=True, context=self.context).data
 
         rank = 1
-        sorted_portfolios = sorted(
-            serialized_portfolios, key=lambda p: p.get("total", 0), reverse=True
-        )
+        sorted_portfolios = sorted(serialized_portfolios, key=lambda p: p.get("total", 0), reverse=True)
 
         for portfolio in sorted_portfolios:
             if portfolio.get("player").get("id") == user_id:
@@ -379,12 +373,8 @@ class ContestSerializer(serializers.ModelSerializer):
 
     def get_portfolios(self, obj):
         # Order the portfolios by total_value
-        serialized_portfolios = PortfolioSerializer(
-            obj.portfolios.all(), many=True, context=self.context
-        ).data
-        sorted_portfolios = sorted(
-            serialized_portfolios, key=lambda p: p.get("total", 0), reverse=True
-        )
+        serialized_portfolios = PortfolioSerializer(obj.portfolios.all(), many=True, context=self.context).data
+        sorted_portfolios = sorted(serialized_portfolios, key=lambda p: p.get("total", 0), reverse=True)
         return sorted_portfolios
 
     def get_balance(self, obj):
@@ -396,55 +386,3 @@ class ContestSerializer(serializers.ModelSerializer):
                 serialized_portfolio = PortfolioSerializer(portfolio).data
                 return serialized_portfolio.get("total")
         return -1
-
-
-class RegisterSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(
-        write_only=True
-    )  # Add password2 field for confirmation
-
-    class Meta:
-        model = Player
-        fields = (
-            "username",
-            "email",
-            "password",
-            "password2",
-            "first_name",
-            "last_name",
-        )
-        extra_kwargs = {
-            "password": {"write_only": True},  # Make password write-only
-            "password2": {"write_only": True},  # Make password2 write-only
-        }
-
-    def validate(self, data):
-        # Check that the two password entries match
-        if data["password"] != data["password2"]:
-            raise serializers.ValidationError(
-                {"password2": "The two passwords must match."}
-            )
-
-        # Validate email format
-        try:
-            validate_email(data["email"])
-        except DjangoValidationError:
-            raise serializers.ValidationError({"email": "Invalid email format."})
-
-        # Validate the password against Django's validators
-        try:
-            validate_password(data["password"])
-        except DjangoValidationError as e:
-            raise serializers.ValidationError({"password": list(e.messages)})
-
-        return data
-
-    def create(self, validated_data):
-        # Remove password2 from validated data since it's not needed for user creation
-        validated_data.pop("password2")
-        user_serializer = PlayerSerializer(data=validated_data)
-        if user_serializer.is_valid():
-            user = user_serializer.save()
-            return user
-        else:
-            raise serializers.ValidationError(user_serializer.errors)

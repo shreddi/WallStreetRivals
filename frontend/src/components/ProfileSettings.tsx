@@ -1,211 +1,297 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
-    TextInput,
-    Button,
-    Checkbox,
-    FileInput,
-    Avatar,
-    Group,
-    Stack,
-    Box,
-    Title,
-    Loader,
-    Text,
-} from '@mantine/core';
-import { Player } from '../types';
-import { usePlayer } from './contexts/usePlayer';
-import AppShell from './AppShell';
-import { updatePlayer } from '../api/authService';
-import { isEqual } from 'lodash';
+  TextInput,
+  Button,
+  Checkbox,
+  FileInput,
+  Avatar,
+  Group,
+  Stack,
+  Title,
+  Loader,
+  Text,
+  Select,
+} from "@mantine/core";
+import { Account, AccountValidationErrors, defaultAccount } from "../types";
+import { useAccount } from "./contexts/useAccount";
+import AppShell from "./AppShell";
+import { updateAccount } from "../api/authService";
+import { isEqual } from "lodash";
+import { notifications } from "@mantine/notifications";
+import citiesAndStates from "./citiesAndStates";
+import { DatePicker } from "@mantine/dates";
+import { dateToString, stringToDate } from "./dateConversion";
 
 export default function ProfileSettings() {
-    const [saving, setSaving] = useState(false);
-    const [playerData, setPlayerData] = useState<Player | null>(null);
-    const [picture, setPicture] = useState<File | undefined>();
-    const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
-    const [successAlert, setSuccessAlert] = useState(false)
-    const { currentPlayer, setCurrentPlayer } = usePlayer();
-    const wasChanged = !isEqual(currentPlayer, playerData) || picture
+  const { currentAccount, setCurrentAccount } = useAccount();
 
-    useEffect(() => {
-        setPlayerData(currentPlayer);
-        console.log(currentPlayer);
-    }, [currentPlayer]);
+  if (!currentAccount) {
+    return <Loader />;
+  }
 
-    const handleSave = async () => {
-        if (!playerData) return;
+  console.log(currentAccount);
 
-        setSaving(true);
-        setErrors({}); // Clear previous errors
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState<Account>(currentAccount);
+  const [picture, setPicture] = useState<File | undefined>();
+  const [errors, setErrors] = useState<AccountValidationErrors | undefined>();
+  const wasChanged = !isEqual(currentAccount, form) || picture;
 
-        const formData = new FormData();
-        formData.append('username', playerData.username);
-        formData.append('first_name', playerData.first_name);
-        formData.append('last_name', playerData.last_name);
+  const handleSave = async () => {
+    setSaving(true);
+    setErrors(undefined); // Clear previous errors
 
-        if (picture) {
-            formData.append('profile_picture', picture);
-        }
+    const formData = new FormData();
+    if (picture) {
+      formData.append("profile_picture", picture);
+    }
+    Object.entries(form).forEach(([key, value]) => {
+      formData.append(`${key}`, String(value));
+    });
 
-        Object.entries(playerData.alert_preferences).forEach(([key, value]) => {
-            formData.append(`alert_preferences.${key}`, String(value));
+    console.log(formData);
+    updateAccount(form.id, formData)
+      .then((data) => {
+        setForm(data);
+        setCurrentAccount(data);
+        setPicture(undefined);
+        notifications.show({
+          color: "green",
+          message: "Profile updated.",
+          position: "top-center",
+          autoClose: 1500,
         });
+      })
+      .catch((error) => {
+        notifications.show({
+          color: "red",
+          message: "Please fix errors and try again.",
+          position: "top-center",
+          autoClose: 1500,
+        });
+        setErrors(error.response.data);
+      })
+      .finally(() => {
+        setSaving(false);
+      });
+  };
 
-        try {
-            const data = await updatePlayer(playerData.id, formData);
-            setPlayerData(data);
-            setCurrentPlayer(data);
-            setPicture(undefined)
-            alert('Profile updated successfully!');
-        } catch (e) {
-            const error = e as unknown
-            console.error('Error updating profile:', error);
+  const discardChanges = () => {
+    setForm(currentAccount);
+    setPicture(undefined);
+    setErrors({});
+  };
 
-            // Extract error details from the response
-            if (error.response?.data) {
-                setErrors(error.response.data); // Assume error response contains field-specific errors
-            } else {
-                alert('An unexpected error occurred. Please try again.');
-            }
-        } finally {
-            setSaving(false);
-        }
-    };
+  return (
+    <AppShell>
+      <Stack w={600} align="center">
+        <Title tt="uppercase" order={2} mb="lg">
+          Profile Settings
+        </Title>
+        {wasChanged && (
+          <Stack mb="lg">
+            <Button onClick={handleSave} loading={saving} fullWidth>
+              Save Changes
+            </Button>
+            <Button
+              onClick={() => {
+                discardChanges();
+              }}
+              fullWidth
+            >
+              Discard changes
+            </Button>
+          </Stack>
+        )}
+        <Group>
+          <Avatar
+            src={picture ? URL.createObjectURL(picture) : form.profile_picture}
+            radius="150"
+            size="300px"
+          />
+          <FileInput
+            label="Change Profile Picture"
+            placeholder="Choose file"
+            onChange={(file) => file && setPicture(file)}
+            accept="image/*"
+          />
+        </Group>
 
-    const discardChanges = () => {
-        setPlayerData(currentPlayer);
-        setPicture(undefined)
-        setErrors({});
-    }
+        <TextInput
+          label="Username"
+          value={form.username ?? ""}
+          onChange={(e) => {
+            setForm({ ...form, username: e.currentTarget.value });
+            setErrors({ ...errors, username: undefined });
+          }}
+          error={wasChanged && errors?.username} // Display the first error for 'username'
+        />
 
-    if (!currentPlayer) {
-        return <Loader />;
-    }
+        <TextInput
+          label="First Name"
+          value={form.first_name}
+          onChange={(e) => {
+            setForm({ ...form, first_name: e.currentTarget.value });
+            setErrors({ ...errors, first_name: undefined });
+          }}
+          error={wasChanged && errors?.first_name} // Display the first error for 'first_name'
+        />
 
-    if (!playerData) {
-        return <p>Failed to load user data</p>;
-    }
+        <TextInput
+          label="Last Name"
+          value={form.last_name}
+          onChange={(e) => {
+            setForm({ ...form, last_name: e.currentTarget.value });
+            setErrors({ ...errors, last_name: undefined });
+          }}
+          error={wasChanged && errors?.last_name} // Display the first error for 'last_name'
+        />
 
-    return (
-        <AppShell>
-            <Stack w={600} >
-                <Title tt="uppercase" order={2} mb="lg">
-                    Profile Settings
-                </Title>
+        <TextInput label="Email" value={form.email} disabled />
 
-                <Group>
-                    <Avatar
-                        src={picture ? URL.createObjectURL(picture) : playerData.profile_picture}
-                        radius="150"
-                        size="300px"
-                    />
-                    <FileInput
-                        label="Change Profile Picture"
-                        placeholder="Choose file"
-                        onChange={(file) => file && setPicture(file)}
-                        accept="image/*"
-                    />
-                </Group>
+        <Title mt="20px" tt="uppercase" order={2} mb="lg">
+          Notification Settings
+        </Title>
 
-                <TextInput
-                    label="Username"
-                    value={playerData.username}
-                    onChange={(e) =>
-                        setPlayerData({ ...playerData, username: e.currentTarget.value })
-                    }
-                    error={errors.username?.[0]} // Display the first error for 'username'
-                />
+        <Stack w='50%'>
+          <Checkbox
+            mb="md"
+            label="Toggle all notifications"
+            checked={form.weekly_summary}
+            onChange={(e) => {
+              setForm({
+                ...form,
+                weekly_summary: e.currentTarget.checked,
+                daily_summary: e.currentTarget.checked,
+                contest_rank_change: e.currentTarget.checked,
+              });
+              setErrors({
+                ...errors,
+                weekly_summary: undefined,
+                daily_summary: undefined,
+                contest_rank_change: undefined,
+              });
+            }}
+            error={errors?.weekly_summary}
+          />
 
-                <TextInput
-                    label="First Name"
-                    value={playerData.first_name}
-                    onChange={(e) =>
-                        setPlayerData({ ...playerData, first_name: e.currentTarget.value })
-                    }
-                    error={errors.first_name?.[0]} // Display the first error for 'first_name'
-                />
+          <Checkbox
+            label="Weekly Summary"
+            checked={form.weekly_summary}
+            onChange={(e) => {
+              setForm({ ...form, weekly_summary: e.currentTarget.checked });
+              setErrors({ ...errors, weekly_summary: undefined });
+            }}
+            error={errors?.weekly_summary}
+          />
 
-                <TextInput
-                    label="Last Name"
-                    value={playerData.last_name}
-                    onChange={(e) =>
-                        setPlayerData({ ...playerData, last_name: e.currentTarget.value })
-                    }
-                    error={errors.last_name?.[0]} // Display the first error for 'last_name'
-                />
+          <Checkbox
+            label="Daily Summary"
+            checked={form.daily_summary}
+            onChange={(e) => {
+              setForm({ ...form, daily_summary: e.currentTarget.checked });
+              setErrors({ ...errors, daily_summary: undefined });
+            }}
+            error={errors?.daily_summary}
+          />
 
-                <TextInput
-                    label="Email"
-                    value={playerData.email}
-                    disabled
-                />
+          <Checkbox
+            label="Contest Rank Change"
+            checked={form.contest_rank_change}
+            onChange={(e) => {
+              setForm({
+                ...form,
+                contest_rank_change: e.currentTarget.checked,
+              });
+              setErrors({ ...errors, contest_rank_change: undefined });
+            }}
+            error={errors?.contest_rank_change} // Error for contest rank change
+          />
+        </Stack>
 
-                <Title mt='20px' tt="uppercase" order={2} mb="lg">
-                    Notification Settings
-                </Title>
-
-                <Checkbox
-                    label="Weekly Summary"
-                    checked={playerData.alert_preferences.weekly_summary}
-                    onChange={(e) =>
-                        setPlayerData({
-                            ...playerData,
-                            alert_preferences: {
-                                ...playerData.alert_preferences,
-                                weekly_summary: e.currentTarget.checked,
-                            },
-                        })
-                    }
-                    error={errors['alert_preferences.weekly_summary']?.[0]} // Error for weekly summary
-                />
-
-                <Checkbox
-                    label="Daily Summary"
-                    checked={playerData.alert_preferences.daily_summary}
-                    onChange={(e) =>
-                        setPlayerData({
-                            ...playerData,
-                            alert_preferences: {
-                                ...playerData.alert_preferences,
-                                daily_summary: e.currentTarget.checked,
-                            },
-                        })
-                    }
-                    error={errors['alert_preferences.daily_summary']?.[0]} // Error for daily summary
-                />
-
-                <Checkbox
-                    label="Contest Rank Change"
-                    checked={playerData.alert_preferences.contest_rank_change}
-                    onChange={(e) =>
-                        setPlayerData({
-                            ...playerData,
-                            alert_preferences: {
-                                ...playerData.alert_preferences,
-                                contest_rank_change: e.currentTarget.checked,
-                            },
-                        })
-                    }
-                    error={errors['alert_preferences.contest_rank_change']?.[0]} // Error for contest rank change
-                />
-
-
-                {/* General Error Message */}
-                {Object.keys(errors).length > 0 && (
-                    <Text c="red">Please fix the errors above and try again.</Text>
-                )}
-
-                {wasChanged &&
-                    <>
-                        <Button mt='md' onClick={handleSave} loading={saving} fullWidth>
-                            Save Changes
-                        </Button>
-                        <Button onClick={() => { discardChanges() }} fullWidth>
-                            Discard changes
-                        </Button>
-                    </>
-                }
-            </Stack>
-        </AppShell>
-    );
+        <Stack align="center">
+          <Text size="sm">Choose Birthday</Text>
+          {errors?.birthday && <Text c="red">{errors.birthday}</Text>}
+          <DatePicker
+            date={stringToDate(form.birthday)}
+            onDateChange={(date) => {
+              const formattedDate = dateToString(date!);
+              setForm({ ...form, birthday: formattedDate });
+            }}
+            value={stringToDate(form.birthday)}
+            onChange={(date) => {
+              const formattedDate = dateToString(date!);
+              setForm({ ...form, birthday: formattedDate });
+            }}
+            mt="md"
+            maxDate={new Date()}
+            weekendDays={[]}
+          />
+        </Stack>
+        <Select
+          label="Location"
+          placeholder="Enter your location"
+          data={citiesAndStates}
+          value={form.location ?? ""}
+          onChange={(value) => setForm({ ...form, location: value ?? "" })}
+          error={errors?.location}
+          searchable
+        />
+        <Select
+          label="Here for the:"
+          value={form.here_for_the}
+          onChange={(value) =>
+            setForm({ ...form, here_for_the: value ?? "Competition" })
+          }
+          data={[
+            { value: "Competition", label: "Competition" },
+            { value: "Cash Prizes", label: "Cash Prizes" },
+            { value: "Learning", label: "Learning" },
+            { value: "Strategy Testing", label: "Strategy Testing" },
+            { value: "Just Checking It Out", label: "Just Checking It Out" },
+          ]}
+          error={errors?.here_for_the}
+        />
+        <Select
+          label="Education"
+          value={form.education}
+          onChange={(value) => setForm({ ...form, education: value ?? "None" })}
+          data={[
+            { value: "None", label: "None" },
+            { value: "High School", label: "High School" },
+            { value: "College", label: "College" },
+            { value: "Post-Grad", label: "Post-Grad" },
+          ]}
+          error={errors?.education}
+        />
+        <Select
+          label="Gender"
+          value={form.gender}
+          onChange={(value) => setForm({ ...form, gender: value ?? "Male" })}
+          data={[
+            { value: "Male", label: "Male" },
+            { value: "Female", label: "Female" },
+            { value: "Other", label: "Other" },
+            { value: "Prefer not to say", label: "Prefer not to say" },
+          ]}
+          error={errors?.gender}
+        />
+        {wasChanged && (
+          <Stack mt="lg">
+            <Button onClick={handleSave} loading={saving} fullWidth>
+              Save Changes
+            </Button>
+            <Button
+              onClick={() => {
+                discardChanges();
+              }}
+              fullWidth
+            >
+              Discard changes
+            </Button>
+          </Stack>
+        )}
+      </Stack>
+    </AppShell>
+  );
 }

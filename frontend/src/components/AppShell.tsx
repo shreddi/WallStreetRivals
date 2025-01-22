@@ -1,5 +1,5 @@
 import { AppShell, Flex, Title, Stack, Button } from '@mantine/core'
-import { usePlayer } from './contexts/usePlayer';
+import { useAccount } from './contexts/useAccount';
 import UserDropdown from './UserDropdown';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 // This component provides the structure of the app including the header.
 
 export default function BasicAppShell({ children }: { children: React.ReactNode }) {
-  const { currentPlayer } = usePlayer()
+  const { currentAccount } = useAccount()
   const navigate = useNavigate();
 
   return (
@@ -17,7 +17,7 @@ export default function BasicAppShell({ children }: { children: React.ReactNode 
       <AppShell.Header bg='black' p="md">
         <Stack>
           <Flex align="center" justify="Flex-end" gap='md'>
-            <Title order={6} c='white' fw={700} tt='uppercase'>welcome, {currentPlayer?.username}</Title>
+            <Title order={6} c='white' fw={700} tt='uppercase'>welcome, {currentAccount?.username}</Title>
             <UserDropdown />
           </Flex>
           <Flex align="center" justify="Flex-end" gap='md'>

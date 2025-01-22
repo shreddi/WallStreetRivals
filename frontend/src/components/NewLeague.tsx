@@ -5,7 +5,7 @@ import AppShell from './AppShell'
 import { searchPlayers } from '../api/authService';
 import { notifications } from '@mantine/notifications'
 import PlayerTable from "./PlayerTable";
-import { usePlayer } from './contexts/usePlayer';
+import { useAccount } from './contexts/useAccount';
 import AvatarEditor from 'react-avatar-editor'
 import placeholderImage from '../assets/placeholder.png';
 import { DatePicker } from '@mantine/dates';
@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 
 export default function NewLeague() {
-    const { currentPlayer } = usePlayer()
+    const { currentAccount: currentPlayer } = useAccount()
     const [players, setPlayers] = useState<Player[]>([])
     const [invitedPlayers, setInvitedPlayers] = useState<Player[]>([]);
     const [loading, setLoading] = useState(false)

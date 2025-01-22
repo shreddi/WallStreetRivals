@@ -1,5 +1,5 @@
 import { Avatar, Menu, rem } from "@mantine/core"
-import { usePlayer } from "./contexts/usePlayer"
+import { useAccount } from "./contexts/useAccount"
 import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,7 +11,7 @@ import {
 export default function UserDropdown() {
     const navigate = useNavigate()
     const [opened, setOpened] = useState(false);
-    const { logout, currentPlayer } = usePlayer()
+    const { logout, currentAccount: currentPlayer } = useAccount()
 
     return (
         <Menu

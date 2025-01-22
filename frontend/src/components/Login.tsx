@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { login as apiLogin } from '../api/apiService';
 import { TextInput, Button, Title, Text, Anchor, Group, Alert, Stack, Center } from '@mantine/core';
-import { usePlayer } from './contexts/usePlayer';
+import { useAccount } from './contexts/useAccount';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const kickedOut = !!localStorage.getItem('kicked_out')
-  const { login } = usePlayer()
+  const { login } = useAccount()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
