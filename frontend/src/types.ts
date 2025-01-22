@@ -4,7 +4,7 @@
 
 //Parent interface that defines common properties shared by all other interfaces in this file.
 //These properties include universally applicable fields such as 'id', 'time_created', and 'time_updated'.
-export interface ResourceWithMetadata{
+export interface ResourceWithMetadata {
     id?: number;
     time_created?: string;
     time_updated?: string;
@@ -12,13 +12,13 @@ export interface ResourceWithMetadata{
 
 
 //Interfaces to represent serialized data in backend
-export interface Stock extends ResourceWithMetadata{
+export interface Stock extends ResourceWithMetadata {
     ticker: string;
     name: string;
     trade_price: string;
 };
 
-export interface Holding extends ResourceWithMetadata{
+export interface Holding extends ResourceWithMetadata {
     stock: number; //numerical id of associated stock. Can be undefined if a holding has a stock added in frontend that is not yet created in backend.
     stock_data?: Stock;
     shares: number;
@@ -26,14 +26,23 @@ export interface Holding extends ResourceWithMetadata{
     portfolio: number //numerical id of associated portfolio
 };
 
-export interface Portfolio extends ResourceWithMetadata{
+export interface Portfolio extends ResourceWithMetadata {
     player: Player
     holdings: Holding[];
     holdings_total: string;
     cash: string;
 };
 
-export interface AlertPreferences {
+export interface AccountSettings {
+    //User Info
+    here_for_the: string; //"Competition" | "Cash Prizes" | "Learning" | "Strategy Testing" | "Just Checking It Out";
+    education: string; //"None" | "High School" | "College" | "Post-Grad";
+    gender: string; //"Male" | "Female" | "Other" | "Prefer not to say";
+    birthday: string;
+    password?: string 
+    password2?: string
+
+    //Notifications
     weekly_summary: boolean;
     daily_summary: boolean;
     contest_rank_change: boolean;
@@ -46,23 +55,17 @@ export interface Player {
     last_name: string;
     email: string;
     profile_picture?: string; // URL of static image for user's profile pic
-    alert_preferences?: AlertPreferences;
     is_owner?: boolean;
-    here_for_the: string; //"Competition" | "Cash Prizes" | "Learning" | "Strategy Testing" | "Just Checking It Out";
-    education: string; //"None" | "High School" | "College" | "Post-Grad";
-    gender: string; //"Male" | "Female" | "Other" | "Prefer not to say";
-    birthday: string; 
     location: string;
-    password?: string
-    password2?: string
+    alert_preferences?: AccountSettings;
 }
 
-export interface Contest extends ResourceWithMetadata{
+export interface Contest extends ResourceWithMetadata {
     id?: number;
     name: string;
     owner?: number; //fk
     picture?: string //static image url
-    is_tournament: boolean; 
+    is_tournament: boolean;
     league_type: string;
     cash_interest_rate: number;
     duration: string;
@@ -81,17 +84,17 @@ export interface Contest extends ResourceWithMetadata{
 }
 
 export const defaultPlayer: Player = {
-    id: 0, 
+    id: 0,
     username: "",
     first_name: "",
     last_name: "",
     email: "",
-    profile_picture: undefined, 
-    is_owner: false, 
-    here_for_the: "Competition", 
-    education: "None", 
-    gender: "Prefer not to say", 
-    birthday: "2000-01-01", 
+    profile_picture: undefined,
+    is_owner: false,
+    here_for_the: "Competition",
+    education: "None",
+    gender: "Prefer not to say",
+    birthday: "2000-01-01",
     city: "",
     state: "",
 };
@@ -100,22 +103,22 @@ export const defaultContest: Contest = {
     id: undefined, // Optional ID, can be undefined for a new contest
     name: "",
     owner: undefined, // Will be assigned when the contest is created
-    is_tournament: false, 
+    is_tournament: false,
     league_type: "public",
-    cash_interest_rate: 0.0, 
-    duration: "day", 
+    cash_interest_rate: 0.0,
+    duration: "day",
     start_date: new Date(), // Default start date is today
     end_date: new Date(new Date().setDate(new Date().getDate() + 7)), // Default to 1 week later
-    player_limit: 10, 
-    nyse: true, 
-    nasdaq: true, 
-    crypto: true, 
-    portfolios: [], 
-    players: [], 
-    state: "upcoming", 
+    player_limit: 10,
+    nyse: true,
+    nasdaq: true,
+    crypto: true,
+    portfolios: [],
+    players: [],
+    state: "upcoming",
     rank: 0,
-    time_left: "", 
-    num_active_players: 0 
+    time_left: "",
+    num_active_players: 0
 };
 
 //defaults for each interface
@@ -136,7 +139,7 @@ export const defaultStock: Stock = {
 
 export const defaultHolding: Holding = {
     stock: 0,
-    shares: 0, 
+    shares: 0,
     portfolio: 0
 }
 

@@ -10,7 +10,7 @@ import pytz
 class AlertPreferencesSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = AlertPreferences
+        model = AccountSettings
         fields = "__all__"
 
 
@@ -111,11 +111,11 @@ class PlayerSerializer(serializers.ModelSerializer):
 
         # Create alert preferences object based on if data was included in request, or default if not.
         if alert_preferences_data:
-            alert_preferences = AlertPreferences.objects.create(
+            alert_preferences = AccountSettings.objects.create(
                 **alert_preferences_data
             )
         else:
-            alert_preferences = AlertPreferences.objects.create()  # Create default
+            alert_preferences = AccountSettings.objects.create()  # Create default
 
         # Create the player instance using the alert preference object
         player = Player.objects.create_user(
@@ -135,7 +135,7 @@ class PlayerSerializer(serializers.ModelSerializer):
 
         # Handle the nested alert preferences
         if alert_preferences_data:
-            alert_preferences, created = AlertPreferences.objects.get_or_create(
+            alert_preferences, created = AccountSettings.objects.get_or_create(
                 player=instance
             )
             for attr, value in alert_preferences_data.items():
