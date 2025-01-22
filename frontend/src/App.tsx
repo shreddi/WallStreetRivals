@@ -91,14 +91,39 @@ function App() {
         <BrowserRouter>
           <PlayerProvider>
             <Routes>
+
+              {/* public routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/" element={<PrivateRoute><PortfolioDashboard /></PrivateRoute>} />
-              <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
-              <Route path="/open_contests" element={<PrivateRoute><OpenContests /></PrivateRoute>} />
-              <Route path="/new_league" element={<PrivateRoute><NewLeague /></PrivateRoute>} />
               <Route path="/reset_password" element={<PasswordResetRequest />} />
               <Route path="/reset_password_confirm/:uidb64/:token" element={<PasswordResetConfirm />} />
+
+              {/* protected routes */}
+              <Route path="/" element={
+                <PrivateRoute>
+                  <PortfolioDashboard />
+                </PrivateRoute>
+              }
+              />
+              <Route path="/settings" element={
+                <PrivateRoute>
+                  <Settings />
+                </PrivateRoute>
+              }
+              />
+              <Route path="/open_contests" element={
+                <PrivateRoute>
+                  <OpenContests />
+                </PrivateRoute>
+              }
+              />
+              <Route path="/new_league" element={
+                <PrivateRoute>
+                  <NewLeague />
+                </PrivateRoute>
+              }
+              />
+              
             </Routes>
           </PlayerProvider>
         </BrowserRouter>

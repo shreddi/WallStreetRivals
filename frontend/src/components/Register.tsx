@@ -1,145 +1,213 @@
-// import { useState } from 'react'
-import { Alert, Anchor, Box, Stack, Button, Container, Group, PasswordInput, Text, TextInput, Title } from '@mantine/core';
-import { useState } from 'react';
+import {
+    Anchor,
+    Stack,
+    Button,
+    Group,
+    PasswordInput,
+    Text,
+    TextInput,
+    Title,
+    Select,
+} from '@mantine/core';
+import { DatePicker } from '@mantine/dates';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { register } from '../api/apiService'
-// import { useNavigate } from 'react-router-dom';
+import { register } from '../api/apiService';
+import { defaultPlayer, Player } from '../types';
+import { notifications } from '@mantine/notifications';
+import moment from 'moment';
 
 interface RegisterValidationError {
-    username: string
-    password: string
-    email: string
-    password2: string
-    first_name: string
-    last_name: string
-    response: {
-        data: {
-            non_field_errors: string
-        }
-    }
+    username?: string;
+    password?: string;
+    email?: string;
+    password2?: string;
+    first_name?: string;
+    last_name?: string;
+    birthday?: string;
+    city?: string;
+    state?: string;
+    here_for_the?: string;
+    education?: string;
+    gender?: string;
+    response?: {
+        data?: {
+            non_field_errors: string;
+        };
+    };
 }
 
-function Register() {
-
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [password2, setPassword2] = useState('');
-    const [firstname, setFirstname] = useState('');
-    const [lastname, setLastname] = useState('');
-    const [email, setEmail] = useState('');
-
-    // Separate error states for each field
-    const [error, setError] = useState<string | null>(null);
-    const [fieldErrors, setFieldErrors] = useState<Record<string, string | undefined>>({});
-
+export default function Register() {
     const navigate = useNavigate();
+    const [form, setForm] = useState<Player>(defaultPlayer)
+    const [errors, setErrors] = useState<RegisterValidationError | undefined>()
+
+    //convert date object to string.
+    const dateToString = (date: Date): string => {
+        const formattedDate = moment(date).format("YYYY-MM-DD")
+        return formattedDate
+    };
+
+    //convert date to string object.
+    const stringToDate = (date: string): Date => {
+        const formattedDate = moment(date).toDate()
+        return formattedDate
+    }
+
+    useEffect(() => {
+        console.log(form.birthday)
+    }, [form.birthday])
 
     const handleSubmit = async () => {
-        setError(null);
-        setFieldErrors({}); // Clear previous field-specific errors
-
-        try {
-            await register(username, email, password, password2, firstname, lastname);
-            navigate('/login');
-        } catch (e: unknown) {
-            const err = e as RegisterValidationError
-            // Detailed field-specific errors
-            if (err?.username) {
-                setFieldErrors((prev) => ({ ...prev, username: err.username }));
-            }
-            if (err?.email) {
-                setFieldErrors((prev) => ({ ...prev, email: err.email }));
-            }
-            if (err?.password) {
-                setFieldErrors((prev) => ({ ...prev, password: err.password }));
-            }
-            if (err?.password2) {
-                setFieldErrors((prev) => ({ ...prev, password2: err.password2 }));
-            }
-            if (err?.first_name) {
-                setFieldErrors((prev) => ({ ...prev, first_name: err.first_name }));
-            }
-            if (err?.last_name) {
-                setFieldErrors((prev) => ({ ...prev, last_name: err.last_name }));
-            }
-
-            // Fallback for general error
-            setError(err.response?.data?.non_field_errors || 'Registration failed');
-        }
+        setErrors(undefined); // Clear previous field-specific errors
+        
+        register(form)
+        .then(() => {
+            navigate('/login')
+        })
+        .catch((err) => {
+            notifications.show({
+                color: 'red',
+                message: 'Please fix errors and try again.',
+                position: 'top-center',
+                autoClose: 1500
+            })
+            setErrors(err.response.data)
+            console.log(err)
+        })
     };
 
     return (
-            <Stack w='600'>
-            <Title order={1} mt="md" style={{ textAlign: 'center' }}>Register</Title>
-            <Text mt="sm" style={{ textAlign: 'center' }}>Create a new account</Text>
-
-            {error && <Alert title="Error" color="red" mt="md">{error}</Alert>}
+        <Stack w="600">
+            <Title order={1} mt="md" style={{ textAlign: 'center' }}>
+                Register
+            </Title>
+            <Text mt="sm" style={{ textAlign: 'center' }}>
+                Create a new account
+            </Text>
 
             <TextInput
                 label="Username"
                 placeholder="Enter your username"
-                value={username}
-                onChange={(event) => setUsername(event.currentTarget.value)}
-                required
-                mt="md"
-                error={fieldErrors.username} // Display error under the username field
+                value={form.username ?? ""}
+                onChange={(event) => setForm({...form, username: event.currentTarget.value})}
+                error={errors?.username}
+                autoComplete="off"
             />
             <TextInput
                 label="First Name"
                 placeholder="Enter your first name"
-                value={firstname}
-                onChange={(event) => setFirstname(event.currentTarget.value)}
-                required
-                mt="md"
-                error={fieldErrors.first_name} // Display error under the first name field
+                value={form.first_name ?? ""}
+                onChange={(event) => setForm({...form, first_name: event.currentTarget.value})}
+                error={errors?.first_name}
             />
             <TextInput
                 label="Last Name"
                 placeholder="Enter your last name"
-                value={lastname}
-                onChange={(event) => setLastname(event.currentTarget.value)}
-                required
-                mt="md"
-                error={fieldErrors.last_name} // Display error under the last name field
+                value={form.last_name ?? ""} 
+                onChange={(event) => setForm({...form, last_name: event.currentTarget.value})}
+                error={errors?.last_name}
             />
             <TextInput
                 label="Email"
                 placeholder="Enter your email"
-                value={email}
-                onChange={(event) => setEmail(event.currentTarget.value)}
-                required
-                mt="md"
-                error={fieldErrors.email} // Display error under the email field
+                value={form.email}
+                onChange={(event) => setForm({...form, email: event.currentTarget.value})}
+                error={errors?.email}
             />
             <PasswordInput
                 label="Password"
                 placeholder="Enter your password"
-                value={password}
-                onChange={(event) => setPassword(event.currentTarget.value)}
-                required
-                mt="md"
-                error={fieldErrors.password} // Display error under the password field
+                value={form.password ?? ""}
+                onChange={(event) => setForm({...form, password: event.currentTarget.value})}
+                error={errors?.password}
             />
             <PasswordInput
                 label="Confirm Password"
                 placeholder="Confirm your password"
-                value={password2}
-                onChange={(event) => setPassword2(event.currentTarget.value)}
-                required
-                mt="md"
-                error={fieldErrors.password2} // Display error under the confirm password field
+                value={form.password2 ?? ""}
+                onChange={(event) => setForm({...form, password2: event.currentTarget.value})}
+                error={errors?.password2}
             />
-            <Button fullWidth mt="xl" onClick={handleSubmit}>Register</Button>
-            <Group style={{ justifyContent: 'center' }} mt="md">
+            <Stack align='center'>
+                <Text size='sm'>Choose Birthday</Text>
+                {errors?.birthday && <Text c='red'>{errors.birthday}</Text>}
+                <DatePicker
+                    value={stringToDate(form.birthday)}
+                    onChange={(date) => {
+                        const formattedDate = dateToString(date!)
+                        setForm({...form, birthday: formattedDate})
+                    }}
+                    mt="md"
+                    maxDate={new Date()}
+                    weekendDays={[]}
+                />
+            </Stack>
+            <TextInput
+                label="City"
+                placeholder="Enter your city"
+                value={form.city}
+                onChange={(event) => setForm({...form, city: event.currentTarget.value})}
+                error={errors?.city}
+            />
+            <TextInput
+                label="State"
+                placeholder="Enter your state"
+                value={form.state}
+                onChange={(event) => setForm({...form, state: event.currentTarget.value})}
+                error={errors?.state}
+            />
+            <Select
+                label="Here for the"
+                value={form.here_for_the}
+                onChange={(value) => setForm({...form, here_for_the: value ?? 'Competition'})}
+                data={[
+                    { value: 'Competition', label: 'Competition' },
+                    { value: 'Cash Prizes', label: 'Cash Prizes' },
+                    { value: 'Learning', label: 'Learning' },
+                    { value: 'Strategy Testing', label: 'Strategy Testing' },
+                    { value: 'Just Checking It Out', label: 'Just Checking It Out' },
+                ]}
+                mt="md"
+                error={errors?.here_for_the}
+            />
+            <Select
+                label="Education"
+                value={form.education}
+                onChange={(value) => setForm({...form, education: value ?? 'None'})}
+                data={[
+                    { value: 'None', label: 'None' },
+                    { value: 'High School', label: 'High School' },
+                    { value: 'College', label: 'College' },
+                    { value: 'Post-Grad', label: 'Post-Grad' },
+                ]}
+                mt="md"
+                error={errors?.education}
+            />
+            <Select
+                label="Gender"
+                value={form.gender}
+                onChange={(value) => setForm({...form, gender: value ?? 'Male'})}
+                data={[
+                    { value: 'Male', label: 'Male' },
+                    { value: 'Female', label: 'Female' },
+                    { value: 'Other', label: 'Other' },
+                    { value: 'Prefer not to say', label: 'Prefer not to say' },
+                ]}
+                mt="md"
+                error={errors?.gender}
+            />
+            <Button fullWidth mt="xl" onClick={() => handleSubmit()}>
+                Register
+            </Button>
+            <Group justify='center' >
                 <Text size="sm">
                     Have an account already?{' '}
-                    <Anchor href="/login" style={{ fontWeight: 500 }}>
+                    <Anchor href="/login" fw={500}>
                         Login
                     </Anchor>
                 </Text>
             </Group>
         </Stack>
     );
-};
-
-export default Register
+}

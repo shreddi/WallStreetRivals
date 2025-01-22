@@ -45,10 +45,34 @@ export interface Player {
     first_name: string;
     last_name: string;
     email: string;
-    profile_picture?: string; //url of static image for user's profile pic
-    alert_preferences: AlertPreferences
-    is_owner?: boolean
+    profile_picture?: string; // URL of static image for user's profile pic
+    alert_preferences?: AlertPreferences;
+    is_owner?: boolean;
+    here_for_the: string; //"Competition" | "Cash Prizes" | "Learning" | "Strategy Testing" | "Just Checking It Out";
+    education: string; //"None" | "High School" | "College" | "Post-Grad";
+    gender: string; //"Male" | "Female" | "Other" | "Prefer not to say";
+    birthday: string; // ISO date format: YYYY-MM-DD
+    city: string;
+    state: string;
+    password?: string
+    password2?: string
 }
+
+export const defaultPlayer: Player = {
+    id: 0, 
+    username: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    profile_picture: undefined, 
+    is_owner: false, 
+    here_for_the: "Competition", 
+    education: "None", 
+    gender: "Prefer not to say", 
+    birthday: "2000-01-01", 
+    city: "",
+    state: "",
+};
 
 export interface Contest extends ResourceWithMetadata{
     id?: number;
@@ -95,6 +119,8 @@ export const defaultContest: Contest = {
     num_active_players: 0 
 };
 
+//defaults for each interface
+
 // export const defaultContest: Contest = {
 //     is_tournament: false,
 //     league_type: 'public',
@@ -103,7 +129,6 @@ export const defaultContest: Contest = {
 //     start_date: 2025/01/20
 // }
 
-//defaults for each interface
 export const defaultStock: Stock = {
     ticker: '',
     name: '',
