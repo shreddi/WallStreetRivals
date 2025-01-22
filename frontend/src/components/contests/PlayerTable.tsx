@@ -1,5 +1,5 @@
 import { MantineReactTable, MRT_ColumnDef, useMantineReactTable } from 'mantine-react-table';
-import { Player } from "../types";
+import { Player } from "../../types";
 import { Group, Text, Box, Avatar, ActionIcon, ThemeIcon, Tooltip, Center } from '@mantine/core';
 import { useMemo } from 'react';
 import { IconPlus, IconX, IconCrown } from '@tabler/icons-react'

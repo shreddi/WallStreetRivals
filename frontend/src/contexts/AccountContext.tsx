@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { Account } from '../../types';
+import { Account } from '../types';
 
 interface AccountContextType {
     currentAccount: Account | null;

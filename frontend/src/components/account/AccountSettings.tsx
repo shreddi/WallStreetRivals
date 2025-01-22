@@ -12,17 +12,17 @@ import {
   Text,
   Select,
 } from "@mantine/core";
-import { Account, AccountValidationErrors, defaultAccount } from "../types";
-import { useAccount } from "./contexts/useAccount";
-import AppShell from "./AppShell";
-import { updateAccount } from "../api/authService";
+import { Account, AccountValidationErrors } from "../../types";
+import { useAccount } from "../../contexts/useAccount";
+import AppShell from "../appShell/AppShell";
+import { updateAccount } from "../../api/authService";
 import { isEqual } from "lodash";
 import { notifications } from "@mantine/notifications";
-import citiesAndStates from "./citiesAndStates";
+import citiesAndStates from "../../utils/citiesAndStates";
 import { DatePicker } from "@mantine/dates";
-import { dateToString, stringToDate } from "./dateConversion";
+import { dateToString, stringToDate } from "../../utils/dateConversion";
 
-export default function ProfileSettings() {
+export default function AccountSettings() {
   const { currentAccount, setCurrentAccount } = useAccount();
 
   if (!currentAccount) {

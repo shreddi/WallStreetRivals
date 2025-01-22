@@ -2,23 +2,23 @@ import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css'; // Import Mantine core styles
 import React from 'react';
 import { BrowserRouter, Route, Routes, } from 'react-router-dom';
-import './App.css';
-import Login from './components/Login';
-import PortfolioDashboard from './components/PortfolioDashboard';
-import PrivateRoute from './components/PrivateRoute';
-import Register from './components/Register';
-import './index.css';
+import './styles/App.css';
+import Login from './components/authentication/Login';
+import PortfolioDashboard from './components/portfolio/PortfolioDashboard';
+import PrivateRoute from './components/authentication/PrivateRoute';
+import Register from './components/authentication/Register';
+import './styles/index.css';
 import '@mantine/core/styles.css'; //import Mantine V7 styles needed by MRT
 import '@mantine/dates/styles.css'; //if using mantine date picker features
 import 'mantine-react-table/styles.css'; //import MRT styles
 import '@mantine/notifications/styles.css';
 import { Button, Title } from '@mantine/core';
-import { AccountProvider } from './components/contexts/AccountProvider';
-import PasswordResetConfirm from './components/PasswordResetConfirm';
-import PasswordResetRequest from './components/PasswordResetRequest';
-import Settings from './components/ProfileSettings';
-import OpenContests from './components/OpenContests'
-import NewLeague from './components/NewLeague';
+import { AccountProvider } from './contexts/AccountProvider';
+import PasswordResetConfirm from './components/authentication/PasswordResetConfirm';
+import PasswordResetRequest from './components/authentication/PasswordResetRequest';
+import Settings from './components/account/AccountSettings';
+import OpenContests from './components/contests/OpenContests'
+import NewLeague from './components/contests/NewLeague';
 import { Notifications } from '@mantine/notifications';
 
 

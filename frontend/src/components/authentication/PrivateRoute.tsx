@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import { useAccount } from './contexts/useAccount';
+import { useAccount } from '../../contexts/useAccount';
 
 // This wrapper component redirects to the login page if the token is expired or not present.
 

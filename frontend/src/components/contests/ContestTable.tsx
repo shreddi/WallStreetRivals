@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { Contest } from '../types'
+import { Contest } from '../../types'
 import { MRT_Table, MRT_ColumnDef, useMantineReactTable } from 'mantine-react-table';
 import { AspectRatio, Badge, Box, Flex, Group, NumberFormatter, Text } from '@mantine/core';
 import moment from 'moment'
-import placeholderImage from '../assets/placeholder.png';
+import placeholderImage from '../../assets/placeholder.png';
 
 
 interface ContestTableProps {
