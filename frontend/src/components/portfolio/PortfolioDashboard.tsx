@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Flex, Box, Text, Stack, NumberInput, Button, Table, Loader, ScrollArea, Title } from '@mantine/core';
-import { Portfolio, defaultPortfolio, Holding, Stock } from '../types';
-import { portfolioApi, holdingApi } from '../api/apiService';
+import { Portfolio, defaultPortfolio, Holding, Stock } from '../../types';
+import { portfolioApi, holdingApi } from '../../api/apiService';
 import StockSelect from './StockSelect'
-import AppShell from './AppShell';
+import AppShell from '../appShell/AppShell'
 
 const PortfolioDashboard: React.FC = () => {
     // **State**

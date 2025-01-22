@@ -1,8 +1,8 @@
 import { ReactNode, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Account } from "../../types";
+import { Account } from "../types";
 import { AccountContext } from "./AccountContext";
-import { getAccount } from "../../api/authService";
+import { getAccount } from "../api/authService";
 
 export const AccountProvider = ({ children }: { children: ReactNode }) => {
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);

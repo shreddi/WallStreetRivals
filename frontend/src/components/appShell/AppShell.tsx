@@ -1,15 +1,8 @@
-import {
-  AppShell,
-  Flex,
-  Title,
-  Stack,
-  Button,
-  Box,
-  Container,
-} from "@mantine/core";
-import { useAccount } from "./contexts/useAccount";
-import UserDropdown from "./UserDropdown";
-import { useNavigate } from "react-router-dom";
+import { AppShell, Flex, Title, Stack, Button } from '@mantine/core'
+import { useAccount } from '../../contexts/useAccount';
+import UserDropdown from './UserDropdown';
+import { useNavigate } from 'react-router-dom';
+
 
 // This component provides the structure of the app including the header.
 

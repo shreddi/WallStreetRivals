@@ -4,7 +4,7 @@ import {
   MRT_Table,
   useMantineReactTable,
 } from "mantine-react-table";
-import { Player } from "../types";
+import { Player } from "../../types";
 import {
   Group,
   Text,

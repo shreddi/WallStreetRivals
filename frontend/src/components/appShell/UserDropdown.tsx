@@ -1,5 +1,5 @@
 import { Avatar, Menu, rem } from "@mantine/core"
-import { useAccount } from "./contexts/useAccount"
+import { useAccount } from "../../contexts/useAccount"
 import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import {

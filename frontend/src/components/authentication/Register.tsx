@@ -12,12 +12,12 @@ import {
 import { DatePicker } from '@mantine/dates';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { register } from '../api/apiService';
-import { defaultAccount, Account } from '../types';
+import { register } from '../../api/apiService';
+import { defaultAccount, Account } from '../../types';
 import { notifications } from '@mantine/notifications';
-import citiesAndStates from './citiesAndStates';
-import { AccountValidationErrors } from '../types';
-import { dateToString, stringToDate } from './dateConversion';
+import citiesAndStates from '../../utils/citiesAndStates';
+import { AccountValidationErrors } from '../../types';
+import { dateToString, stringToDate } from '../../utils/dateConversion';
 
 export default function Register() {
     const navigate = useNavigate();

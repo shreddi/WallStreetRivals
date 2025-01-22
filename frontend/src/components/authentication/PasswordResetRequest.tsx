@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { resetPassword } from '../api/authService';
+import { resetPassword } from '../../api/authService';
 import { Button, Title, Text, TextInput, Stack } from '@mantine/core';
 
 export default function PasswordResetRequest() {

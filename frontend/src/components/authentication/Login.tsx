@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { login as apiLogin } from '../api/apiService';
+import { login as apiLogin } from '../../api/apiService';
 import { TextInput, Button, Title, Text, Anchor, Group, Alert, Stack, Center } from '@mantine/core';
-import { useAccount } from './contexts/useAccount';
+import { useAccount } from '../../contexts/useAccount';
 
 function Login() {
   const [username, setUsername] = useState('');
