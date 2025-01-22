@@ -16,6 +16,7 @@ import { register } from '../api/apiService';
 import { defaultPlayer, Player } from '../types';
 import { notifications } from '@mantine/notifications';
 import moment from 'moment';
+import citiesAndStates from './citiesAndStates';
 
 interface RegisterValidationError {
     username?: string;
@@ -143,19 +144,14 @@ export default function Register() {
                     weekendDays={[]}
                 />
             </Stack>
-            <TextInput
-                label="City"
-                placeholder="Enter your city"
-                value={form.city}
-                onChange={(event) => setForm({...form, city: event.currentTarget.value})}
-                error={errors?.city}
-            />
-            <TextInput
-                label="State"
-                placeholder="Enter your state"
-                value={form.state}
-                onChange={(event) => setForm({...form, state: event.currentTarget.value})}
+            <Select
+                label="Location"
+                placeholder='Enter your location'
+                data={citiesAndStates}
+                value={form.location ?? ''}
+                onChange={(value) => setForm({...form, location: value ?? ''})}
                 error={errors?.state}
+                searchable
             />
             <Select
                 label="Here for the"

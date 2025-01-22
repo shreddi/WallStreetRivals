@@ -51,28 +51,11 @@ export interface Player {
     here_for_the: string; //"Competition" | "Cash Prizes" | "Learning" | "Strategy Testing" | "Just Checking It Out";
     education: string; //"None" | "High School" | "College" | "Post-Grad";
     gender: string; //"Male" | "Female" | "Other" | "Prefer not to say";
-    birthday: string; // ISO date format: YYYY-MM-DD
-    city: string;
-    state: string;
+    birthday: string; 
+    location: string;
     password?: string
     password2?: string
 }
-
-export const defaultPlayer: Player = {
-    id: 0, 
-    username: "",
-    first_name: "",
-    last_name: "",
-    email: "",
-    profile_picture: undefined, 
-    is_owner: false, 
-    here_for_the: "Competition", 
-    education: "None", 
-    gender: "Prefer not to say", 
-    birthday: "2000-01-01", 
-    city: "",
-    state: "",
-};
 
 export interface Contest extends ResourceWithMetadata{
     id?: number;
@@ -96,6 +79,22 @@ export interface Contest extends ResourceWithMetadata{
     time_left: string
     num_active_players: number
 }
+
+export const defaultPlayer: Player = {
+    id: 0, 
+    username: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    profile_picture: undefined, 
+    is_owner: false, 
+    here_for_the: "Competition", 
+    education: "None", 
+    gender: "Prefer not to say", 
+    birthday: "2000-01-01", 
+    city: "",
+    state: "",
+};
 
 export const defaultContest: Contest = {
     id: undefined, // Optional ID, can be undefined for a new contest

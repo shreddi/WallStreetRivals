@@ -50,8 +50,7 @@ class Player(AbstractUser):
     gender = models.CharField(max_length = 127, choices=GENDER_CHOICES, default='Male')
     investing_knowledge = models.CharField(max_length = 127, choices=INVESTING_KNOWLEDGE_CHOICES, default='Beginner')
     birthday = models.DateField()
-    city = models.CharField(max_length = 127)
-    state = models.CharField(max_length = 30)
+    location = models.CharField(max_length = 255)
     profile_picture = models.ImageField(
         upload_to="profile_pictures/", null=True, blank=True
     )

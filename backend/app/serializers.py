@@ -33,8 +33,7 @@ class PlayerSerializer(serializers.ModelSerializer):
             "education",
             "gender",
             "birthday",
-            "city",
-            "state",
+            "location",
             "investing_knowledge",
         ]
         extra_kwargs = {
@@ -57,18 +56,10 @@ class PlayerSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Birthday must be in the past.")
         return value
 
-    def validate_city(self, value):
-        """Ensure city is not empty."""
+    def validate_location(self, value):
+        """Ensure location is not empty and valid."""
         if value.strip() == "":
-            raise serializers.ValidationError("City is required.")
-        return value
-
-    def validate_state(self, value):
-        """Ensure state is not empty and valid."""
-        if value.strip() == "":
-            raise serializers.ValidationError("State is required.")
-        if len(value) > 30:
-            raise serializers.ValidationError("State must not exceed 30 characters.")
+            raise serializers.ValidationError("Location is required.")
         return value
 
     def validate(self, data):
@@ -453,8 +444,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "education",
             "gender",
             "birthday",
-            "city",
-            "state",
+            "location",
             "password",
             "password2",
         ]
