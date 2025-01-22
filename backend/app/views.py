@@ -28,7 +28,7 @@ from rest_framework.filters import SearchFilter
 
 class PlayerViewSet(viewsets.ModelViewSet):
     queryset = Player.objects.all()
-    serializer_class = PlayerSerializer
+    serializer_class = AccountSerializer
     filter_backends = [SearchFilter]
     search_fields = ['username', 'first_name', 'last_name']  # Add searchable fields
     
@@ -139,9 +139,8 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
-
-            return Response({"user": serializer.data}, status=201)
+            serializer.save()
+            return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
     
     
@@ -157,7 +156,7 @@ class LoginView(APIView):
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         
         refresh = RefreshToken.for_user(user)
-        serialized_user = PlayerSerializer(user, context={'request': request}).data
+        serialized_user = AccountSerializer(user, context={'request': request}).data
 
         return Response({
             'access': str(refresh.access_token),

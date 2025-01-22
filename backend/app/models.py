@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 
 # Abstract model that tracks metadata. The other models used in this project extend MetadataModel
@@ -44,7 +44,7 @@ class Player(AbstractUser):
     education = models.CharField(max_length = 127, choices=EDUCATION_CHOICES, default='None')
     gender = models.CharField(max_length = 127, choices=GENDER_CHOICES, default='Male')
     investing_knowledge = models.CharField(max_length = 127, choices=INVESTING_KNOWLEDGE_CHOICES, default='Beginner')
-    birthday = models.DateField()
+    birthday = models.DateField(default=((date.today() - timedelta(days=365 * 20))))
     location = models.CharField(max_length = 255)
     profile_picture = models.ImageField(upload_to="profile_pictures/", null=True, blank=True)
 
