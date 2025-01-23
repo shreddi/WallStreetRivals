@@ -200,7 +200,7 @@ export default function ContestTable({
             );
 
             return (
-                <ContestDetailPanel players={players} contest={row.original} />
+                <ContestDetailPanel players={players} contest={row.original} detailed={detailed}/>
             );
         },
     });

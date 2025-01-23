@@ -1,7 +1,7 @@
 import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css'; // Import Mantine core styles
 import React from 'react';
-import { BrowserRouter, Route, Routes, } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, } from 'react-router-dom';
 import './styles/App.css';
 import Login from './components/authentication/Login';
 import PortfolioDashboard from './components/portfolio/PortfolioDashboard';
@@ -18,6 +18,7 @@ import PasswordResetConfirm from './components/authentication/PasswordResetConfi
 import PasswordResetRequest from './components/authentication/PasswordResetRequest';
 import Settings from './components/account/AccountSettings';
 import OpenContests from './components/contests/OpenContests'
+import MyContests from './components/contests/MyContests'
 import NewLeague from './components/contests/NewLeague';
 import { Notifications } from '@mantine/notifications';
 
@@ -97,14 +98,9 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/reset_password" element={<PasswordResetRequest />} />
               <Route path="/reset_password_confirm/:uidb64/:token" element={<PasswordResetConfirm />} />
+              <Route path="/" element={<Navigate to="/my_contests" replace />} />
 
               {/* protected routes */}
-              <Route path="/" element={
-                <PrivateRoute>
-                  <PortfolioDashboard />
-                </PrivateRoute>
-              }
-              />
               <Route path="/settings" element={
                 <PrivateRoute>
                   <Settings />
@@ -114,6 +110,12 @@ function App() {
               <Route path="/open_contests" element={
                 <PrivateRoute>
                   <OpenContests />
+                </PrivateRoute>
+              }
+              />
+              <Route path="/my_contests" element={
+                <PrivateRoute>
+                  <MyContests />
                 </PrivateRoute>
               }
               />
