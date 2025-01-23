@@ -53,32 +53,31 @@ class ContestSerializer(serializers.ModelSerializer):
 
         return contest
 
-    def validate(self, data):
+    def validate_start_date(self, value):
         today = date.today()
         one_year_from_now = today + timedelta(days=365)
 
-        # Ensure the start date is at least one day in the future
-        if "start_date" in data:
-            if data["start_date"] <= today:
-                raise serializers.ValidationError(
-                    {"start_date": "Please include a start date. The start date must be at least one day in the future."}
-                )
-            if data["start_date"] > one_year_from_now:
-                raise serializers.ValidationError({"start_date": "The start date cannot be more than one year from today."})
+        if value <= today:
+            raise serializers.ValidationError("Please include a start date. The start date must be at least one day in the future.")
+        if value > one_year_from_now:
+            raise serializers.ValidationError("The start date cannot be more than one year from today.")
 
+        return value
+
+    def validate_name(self, value):
         # Validate the name is not taken
-        if "name" in data:
-            if Contest.objects.filter(name=data["name"]).exists():
-                raise serializers.ValidationError({"name": "This contest name is already taken. Please choose another name."})
+        if Contest.objects.filter(name=value).exists():
+            raise serializers.ValidationError("This contest name is already taken. Please choose another name.")
+        # Validate the name has a minimum length
+        if len(value) < 3:
+            raise serializers.ValidationError("The name must be at least 3 characters long.")
+        # Validate the name has a maximum length
+        if len(value) > 50:  # Adjust the limit as needed
+            raise serializers.ValidationError("The name must not exceed 50 characters.")
+        
+        return value
 
-            # Validate the name has a minimum length
-            if len(data["name"]) < 3:
-                raise serializers.ValidationError({"name": "The name must be at least 3 characters long."})
-
-            # Validate the name has a maximum length
-            if len(data["name"]) > 50:  # Adjust the limit as needed
-                raise serializers.ValidationError({"name": "The name must not exceed 50 characters."})
-
+    def validate(self, data):
         # Validate player count does not exceed player_limit
         if "players" in data and "player_limit" in data:
             if len(data["players"]) > data["player_limit"]:

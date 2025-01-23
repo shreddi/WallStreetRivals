@@ -121,13 +121,9 @@ class Notification(MetadataModel):
         super().save(*args, **kwargs)
 
         #Send emails based on player's notification preferences
-        print("player: ", self.player)
-        print(self.type)
         match self.type:
             case "contest_invite":
-                print("bruh")
                 if(self.player.contest_invite):
-                    print("bro")
                     send_invitation_email(player=self.player, contest=self.contest)
 
 

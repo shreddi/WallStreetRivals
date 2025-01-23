@@ -16,6 +16,7 @@ class ContestSerializerTestCase(TestCase):
 
         # Use IDs instead of Player objects for the players field
         self.valid_data = {
+            "name": "New Contest Name",
             "owner": self.owner.id,
             "picture": None,
             "is_tournament": False,
@@ -53,7 +54,7 @@ class ContestSerializerTestCase(TestCase):
 
         serializer = ContestSerializer(data=invalid_data)
         self.assertFalse(serializer.is_valid())
-        self.assertIn("The start date must be at least one day in the future.", serializer.errors['start_date'])
+        self.assertIn('Please include a start date. The start date must be at least one day in the future.', serializer.errors['start_date'])
 
     def test_serializer_invalid_far_future_start_date(self):
         invalid_data = self.valid_data.copy()
