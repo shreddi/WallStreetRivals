@@ -16,7 +16,11 @@ export const AccountProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('accountID', (accountData.id).toString());
     console.log(accountData)
     setCurrentAccount(accountData);
-    navigate('/')
+    const redirect_url = localStorage.getItem('redirect_url')
+    if(redirect_url)
+        navigate(redirect_url)
+    else
+        navigate('/')
   };
 
   // Logout function
