@@ -109,9 +109,6 @@ class PasswordResetRequestAPIView(APIView):
             email_template_name = 'users/password_reset_email.txt'
             email_body = render_to_string(email_template_name, context)
 
-            # Debugging: Print the email body to ensure correctness
-            print(email_body)
-
             # Send email
             send_mail(
                 subject,

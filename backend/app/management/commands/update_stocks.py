@@ -10,7 +10,6 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         """Fetch the latest stock prices for all stocks in the database and update their prices."""
         # Load API credentials
-        print("woohoo")
         ALPACA_API_KEY = os.getenv('ALPACA_API_KEY')
         ALPACA_SECRET_KEY = os.getenv('ALPACA_SECRET_KEY')
 

@@ -97,7 +97,6 @@ class ContestSerializer(serializers.ModelSerializer):
 
     def get_time_left(self, obj):
         now = datetime.now(pytz.utc)
-        print(obj.state)
         till_date = obj.end_date if obj.state == "active" else obj.start_date
         till_time = time(16, 30)
         till_datetime = datetime.combine(till_date, till_time)
@@ -142,7 +141,6 @@ class ContestSerializer(serializers.ModelSerializer):
         request = self.context.get("request", None)
         user = request.user
         for portfolio in obj.portfolios.all():
-            print(portfolio.player)
             if portfolio.player == user:
                 serialized_portfolio = PortfolioSerializer(portfolio).data
                 return serialized_portfolio.get("total")
