@@ -12,6 +12,8 @@ import {
     Select,
     Slider,
     NumberInput,
+    Loader,
+    Center,
 } from "@mantine/core";
 import { Contest, defaultContest, Player } from "../../types";
 import { useState, useEffect, useRef } from "react";
@@ -32,7 +34,8 @@ export default function NewLeague() {
     const { currentAccount: currentPlayer } = useAccount();
     const [players, setPlayers] = useState<Player[]>([]);
     const [invitedPlayers, setInvitedPlayers] = useState<Player[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [createLoading, setCreateLoading] = useState(false);
     const [contest, setContest] = useState<Contest>(defaultContest);
     const [searchQuery, setSearchQuery] = useState("");
     const [picture, setPicture] = useState<File | null>(null);
@@ -75,10 +78,6 @@ export default function NewLeague() {
         const contestToCreate: Contest = {
             ...contest,
             players: playerIds,
-            start_date:
-                contest.start_date instanceof Date
-                    ? contest.start_date.toISOString().split("T")[0]
-                    : contest.start_date, // Format date if it's a Date
         };
 
         const formData = new FormData();
@@ -98,12 +97,8 @@ export default function NewLeague() {
             }
         });
 
-        console.log("FormData contents:");
-        for (const [key, value] of formData.entries()) {
-            console.log(`${key}:`, value);
-        }
-
         // Call the API and handle errors
+        setCreateLoading(true);
         createContest(formData)
             .then(() => {
                 notifications.show({
@@ -121,11 +116,6 @@ export default function NewLeague() {
                         message: "Please fix errors and try again.",
                         position: "top-center",
                         autoClose: 1500,
-                    });
-
-                    window.scrollTo({
-                        top: 0,
-                        behavior: "smooth", // Use "smooth" for a smoother scrolling effect
                     });
 
                     // Assuming the error response is a JSON object with field-specific errors
@@ -149,7 +139,8 @@ export default function NewLeague() {
                 } else {
                     console.error("Unexpected error:", error);
                 }
-            });
+            })
+            .finally(() => setCreateLoading(false));
     };
 
     useEffect(() => {
@@ -165,12 +156,12 @@ export default function NewLeague() {
 
     const onQueryChange = (query: string) => {
         if (query) {
-            setLoading(true);
+            setSearchLoading(true);
             setSearchQuery(query);
             searchPlayers(query)
                 .then((data) => setPlayers(data))
                 .catch((error) => console.error(error))
-                .finally(() => setLoading(false));
+                .finally(() => setSearchLoading(false));
         } else {
             setSearchQuery(query);
             setPlayers([]);
@@ -234,7 +225,7 @@ export default function NewLeague() {
                                     ? "No players matched your search."
                                     : "Players will appear here"
                             }
-                            loading={loading}
+                            loading={searchLoading}
                         />
                     </Stack>
                 </Group>
@@ -345,16 +336,16 @@ export default function NewLeague() {
                             onChange={(date) =>
                                 setContest({
                                     ...contest,
-                                    start_date: date ? dateToString(date) : contest.start_date,
+                                    start_date: date
+                                        ? dateToString(date)
+                                        : contest.start_date,
                                 })
                             }
-                            minDate={
-                                DateTime.now()
-                                    .setZone("America/New_York")
-                                    .endOf("day") // Move to the end of the current day in EST
-                                    .plus({ days: 1 }) // Add 1 day to ensure it's the next day
-                                    .toJSDate() 
-                            }
+                            minDate={DateTime.now()
+                                .setZone("America/New_York")
+                                .endOf("day") // Move to the end of the current day in EST
+                                .plus({ days: 1 }) // Add 1 day to ensure it's the next day
+                                .toJSDate()}
                             maxDate={
                                 new Date(
                                     new Date().setFullYear(
@@ -423,9 +414,13 @@ export default function NewLeague() {
                         />
                     </Stack>
                 </Flex>
-                <Button size="xl" onClick={handleCreate}>
-                    Create Contest
-                </Button>
+                {createLoading ? (
+                    <Center><Loader type="dots" /></Center>
+                ) : (
+                    <Button size="xl" onClick={handleCreate}>
+                        Create Contest
+                    </Button>
+                )}
             </Stack>
         </AppShell>
     );
