@@ -10,7 +10,7 @@ def send_invitation_email(player, contest):
         {
             "player": player,
             "contest": contest,
-            "invitation_link": f"http://your-domain.com/contests/{contest.id}/join",
+            "invitation_link": f"https://{settings.FRONTEND_URL}/contests/{contest.id}",
         },
     )
     send_mail(
