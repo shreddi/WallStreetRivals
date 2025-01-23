@@ -26,6 +26,7 @@ import { DatePicker } from "@mantine/dates";
 import { createContest } from "../../api/contestService";
 import { useNavigate } from "react-router-dom";
 import { DateTime } from "luxon";
+import { dateToString, stringToDate } from "../../utils/dateConversion";
 
 export default function NewLeague() {
     const { currentAccount: currentPlayer } = useAccount();
@@ -340,11 +341,11 @@ export default function NewLeague() {
                     <Stack>
                         <Text>Start Date</Text>
                         <DatePicker
-                            value={contest.start_date}
+                            value={stringToDate(contest.start_date)}
                             onChange={(date) =>
                                 setContest({
                                     ...contest,
-                                    start_date: date ?? contest.start_date,
+                                    start_date: date ? dateToString(date) : contest.start_date,
                                 })
                             }
                             minDate={
