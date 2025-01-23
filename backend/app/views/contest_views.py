@@ -13,3 +13,9 @@ class ContestViewSet(viewsets.ModelViewSet):
         public_contests = self.queryset.filter(league_type="public")
         serializer = self.get_serializer(public_contests, many=True)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"], name="My Contests")
+    def mine(self, request):
+        my_contests = self.queryset.filter(portfolios__player=request.user)
+        serializer = self.get_serializer(my_contests, many=True)
+        return Response(serializer.data)

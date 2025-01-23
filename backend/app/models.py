@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from datetime import datetime, timedelta, date
-
+from .services.email_service import send_invitation_email
 
 # Abstract model that tracks metadata. The other models used in this project extend MetadataModel
 class MetadataModel(models.Model):
@@ -52,6 +52,7 @@ class Player(AbstractUser):
     weekly_summary = models.BooleanField(default=False)
     daily_summary = models.BooleanField(default=True)
     contest_rank_change = models.BooleanField(default=False)
+    contest_invite = models.BooleanField(default=True)
 
 
 class Contest(MetadataModel):
@@ -102,6 +103,28 @@ class Contest(MetadataModel):
             elif self.duration == "month":
                 self.end_date = self.start_date + timedelta(days=30)  # Approximation for months
         super().save(*args, **kwargs)
+
+
+class Notification(MetadataModel):
+    NOTIFICATION_TYPES = [
+        ("weekly_summary", "weekly_summary"),
+        ("daily_summary",  "daily_summary"),
+        ("contest_rank_change", "contest_rank_change"),
+        ("contest_invite", "contest_invite"),
+    ]
+    read = models.BooleanField(default=False)
+    type = models.CharField(max_length=127, choices=NOTIFICATION_TYPES)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='notifications')
+    contest = models.ForeignKey(Contest, null=True, on_delete=models.SET_NULL, related_name='notifications')
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        #Send emails based on player's notification preferences
+        match self.type:
+            case "contest_invite":
+                if(self.player.contest_invite):
+                    send_invitation_email(player=self.player, contest=self.contest)
 
 
 # Portfolio Model

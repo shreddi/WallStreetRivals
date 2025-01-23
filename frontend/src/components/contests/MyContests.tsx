@@ -1,17 +1,17 @@
 import { Box, Center, Flex, Loader, Stack, Title } from "@mantine/core"
 import { Contest } from "../../types"
 import { useEffect, useState } from "react"
-import { getOpenContests } from "../../api/contestService"
+import { getMyContests } from "../../api/contestService"
 import AppShell from '../appShell/AppShell'
 import ContestTable from './ContestTable'
 
 
-export default function OpenContests() {
+export default function MyContests() {
     const [contests, setContests] = useState<Contest[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        getOpenContests()
+        getMyContests()
             .then((data) => {
                 setContests(data)
                 console.log(data)
@@ -35,8 +35,8 @@ export default function OpenContests() {
     return (
         <AppShell>
             <Stack gap='xl' p='md' w='100%'>
-                <Title order={1}>OPEN CONtests</Title>
-                <ContestTable contests={contests} />
+                <Title order={1}>My CONtests</Title>
+                <ContestTable contests={contests} detailed/>
             </Stack>
         </AppShell>
     )

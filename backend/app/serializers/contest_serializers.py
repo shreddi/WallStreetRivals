@@ -1,12 +1,13 @@
 from rest_framework import serializers
 from .portfolio_serializers import PortfolioSerializer
-from ..models import Contest, Player, Portfolio
+from ..models import Contest, Player, Portfolio, Notification
 from datetime import date, datetime, timedelta, time
 import pytz
+from django.db import transaction
 
 
 class ContestSerializer(serializers.ModelSerializer):
-    # portfolios = PortfolioSerializer(many=True, read_only=True)
+    starting_balance = serializers.IntegerField(required=True, write_only=True)
     portfolios = serializers.SerializerMethodField()
     time_left = serializers.SerializerMethodField(read_only=True)
     players = serializers.PrimaryKeyRelatedField(many=True, queryset=Player.objects.all(), write_only=True)
@@ -38,46 +39,54 @@ class ContestSerializer(serializers.ModelSerializer):
             "rank",
             "balance",
             "state",
+            "starting_balance",
         ]
         extra_kwargs = {"end_date": {"read_only": True}}
 
+    @transaction.atomic
     def create(self, validated_data):
         # Extract player IDs from the input data
         players = validated_data.pop("players", [])
+        owner = validated_data.get("owner")
+        starting_balance = validated_data.pop("starting_balance")
         contest = Contest.objects.create(**validated_data)
-
+        
         # Create a portfolio for each player and associate with the contest
         for player in players:
-            Portfolio.objects.create(player=player, contest=contest)
+            if player.id == owner.id:
+                Portfolio.objects.create(player=player, contest=contest, active=True, cash=starting_balance)
+            else:
+                Notification.objects.create(player=player, contest=contest, type="contest_invite")
+                Portfolio.objects.create(player=player, contest=contest, active=False, cash=starting_balance)
+
 
         return contest
 
-    def validate(self, data):
+    def validate_start_date(self, value):
         today = date.today()
         one_year_from_now = today + timedelta(days=365)
 
-        # Ensure the start date is at least one day in the future
-        if "start_date" in data:
-            if data["start_date"] <= today:
-                raise serializers.ValidationError(
-                    {"start_date": "Please include a start date. The start date must be at least one day in the future."}
-                )
-            if data["start_date"] > one_year_from_now:
-                raise serializers.ValidationError({"start_date": "The start date cannot be more than one year from today."})
+        if value <= today:
+            raise serializers.ValidationError("Please include a start date. The start date must be at least one day in the future.")
+        if value > one_year_from_now:
+            raise serializers.ValidationError("The start date cannot be more than one year from today.")
 
+        return value
+
+    def validate_name(self, value):
         # Validate the name is not taken
-        if "name" in data:
-            if Contest.objects.filter(name=data["name"]).exists():
-                raise serializers.ValidationError({"name": "This contest name is already taken. Please choose another name."})
+        if Contest.objects.filter(name=value).exists():
+            raise serializers.ValidationError("This contest name is already taken. Please choose another name.")
+        # Validate the name has a minimum length
+        if len(value) < 3:
+            raise serializers.ValidationError("The name must be at least 3 characters long.")
+        # Validate the name has a maximum length
+        if len(value) > 50:  # Adjust the limit as needed
+            raise serializers.ValidationError("The name must not exceed 50 characters.")
 
-            # Validate the name has a minimum length
-            if len(data["name"]) < 3:
-                raise serializers.ValidationError({"name": "The name must be at least 3 characters long."})
+        return value
 
-            # Validate the name has a maximum length
-            if len(data["name"]) > 50:  # Adjust the limit as needed
-                raise serializers.ValidationError({"name": "The name must not exceed 50 characters."})
-
+    def validate(self, data):
         # Validate player count does not exceed player_limit
         if "players" in data and "player_limit" in data:
             if len(data["players"]) > data["player_limit"]:
@@ -97,7 +106,6 @@ class ContestSerializer(serializers.ModelSerializer):
 
     def get_time_left(self, obj):
         now = datetime.now(pytz.utc)
-        print(obj.state)
         till_date = obj.end_date if obj.state == "active" else obj.start_date
         till_time = time(16, 30)
         till_datetime = datetime.combine(till_date, till_time)
@@ -142,7 +150,6 @@ class ContestSerializer(serializers.ModelSerializer):
         request = self.context.get("request", None)
         user = request.user
         for portfolio in obj.portfolios.all():
-            print(portfolio.player)
             if portfolio.player == user:
                 serialized_portfolio = PortfolioSerializer(portfolio).data
                 return serialized_portfolio.get("total")
