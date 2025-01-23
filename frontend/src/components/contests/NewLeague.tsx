@@ -107,7 +107,7 @@ export default function NewLeague() {
                     position: "top-center",
                     autoClose: 2000,
                 });
-                navigate("/open_contests");
+                navigate("/my_contests");
             })
             .catch((error) => {
                 if (error.response && error.response.data) {

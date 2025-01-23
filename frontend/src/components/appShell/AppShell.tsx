@@ -9,6 +9,7 @@ import {
     Group,
     Image,
     Box,
+    Text
 } from "@mantine/core";
 import { useAccount } from "../../contexts/useAccount";
 import UserDropdown from "./UserDropdown";
@@ -29,68 +30,68 @@ export default function BasicAppShell({
         <AppShell header={{ height: 140 }}>
             <AppShell.Header bg="black" p="md">
                 <Group justify="space-between" align="flex-start" h={140}>
-                    <Box h={140} w={300}>
+                    <Box h={140} w='25%'>
                         <Image src={Logo} h={100} fit="contain" />
                     </Box>
-                    <Stack justify="center">
+                    <Stack justify="center" w='70%'>
                         <Flex align="center" justify="Flex-end" gap="md">
-                            <Title order={6} c="white" fw={700} tt="uppercase">
+                            <Text size='sm' c="white" fw={700} tt="uppercase">
                                 welcome, {currentAccount?.username}
-                            </Title>
+                            </Text>
                             <UserDropdown />
                         </Flex>
-                        <Flex align="center" justify="Flex-end" gap="md">
+                        <Flex align="center" justify="Flex-end" gap="xs">
                             <Button
                                 onClick={() => navigate("/my_contests")}
                                 variant="transparent"
                             >
-                                <Title
-                                    order={6}
+                                <Text
+                                    size='sm'
                                     c="white"
                                     fw={700}
                                     tt="uppercase"
                                 >
                                     my contests
-                                </Title>
+                                </Text>
                             </Button>
                             <Button
                                 onClick={() => navigate("/open_contests")}
                                 variant="transparent"
                             >
-                                <Title
-                                    order={6}
+                                <Text
+                                    size='sm'
                                     c="white"
                                     fw={700}
                                     tt="uppercase"
                                 >
                                     open contests
-                                </Title>
+                                </Text>
                             </Button>
                             <Button
                                 onClick={() => navigate("/dashboard")}
                                 variant="transparent"
                             >
-                                <Title
-                                    order={6}
+                                <Text
+                                    size='sm'
                                     c="white"
                                     fw={700}
                                     tt="uppercase"
                                 >
                                     dashboard
-                                </Title>
+                                </Text>
                             </Button>
                             <Button
                                 onClick={() => navigate("/new_league")}
                                 variant="transparent"
                             >
-                                <Title
-                                    order={6}
+                                <Text
+                                    size='sm'
                                     c="white"
                                     fw={700}
                                     tt="uppercase"
                                 >
                                     new league (+)
-                                </Title>
+                                </Text>
                             </Button>
                         </Flex>
                     </Stack>
