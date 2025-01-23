@@ -1,4 +1,4 @@
-import { Box, Center, Flex, Loader } from "@mantine/core"
+import { Box, Center, Flex, Loader, Stack, Title } from "@mantine/core"
 import { Contest } from "../../types"
 import { useEffect, useState } from "react"
 import { getOpenContests } from "../../api/contestService"
@@ -34,7 +34,10 @@ export default function CreateLeague() {
 
     return (
         <AppShell>
-            <ContestTable contests={contests} />
+            <Stack gap='xl' p='md' w='100%'>
+                <Title order={1}>OPEN CONtests</Title>
+                <ContestTable contests={contests} />
+            </Stack>
         </AppShell>
     )
 

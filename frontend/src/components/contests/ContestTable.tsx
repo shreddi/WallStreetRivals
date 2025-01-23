@@ -31,9 +31,8 @@ export default function ContestTable({
             {
                 accessorKey: "name",
                 header: "Contest",
-                minSize: 250,
-                enableResizing: true,
-                Cell: ({ cell, row }) => (
+                size: 250,
+                Cell: ({ row }) => (
                     <Group>
                         <AspectRatio ratio={1} w={50}>
                             <img
@@ -47,8 +46,7 @@ export default function ContestTable({
             {
                 accessorKey: "state",
                 header: "Status",
-                minSize: 50,
-                enableResizing: true,
+                size: 50,
                 Cell: ({ cell }) => (
                     <Text size="sm" tt="capitalize">
                         {cell.getValue<string>()}
@@ -56,19 +54,29 @@ export default function ContestTable({
                 ),
             },
             {
-                header: "Rank/Players",
+                header: detailed ? "Rank" : "Players",
+                size: 30,
                 Cell: ({ row }) => {
-                    const rank = row.original.rank;
-                    const rankLabel = rank == -1 ? "-" : rank;
-                    return (
-                        <Text size="sm">
-                            {rankLabel}/{row.original.num_active_players}
-                        </Text>
-                    );
+                    if (detailed) {
+                        const rank = row.original.rank;
+                        const rankLabel = rank == -1 ? "-" : rank;
+                        return (
+                            <Text size="sm">
+                                {rankLabel}/{row.original.num_active_players}
+                            </Text>
+                        );
+                    }else{
+                        return (
+                            <Text size="sm">
+                                {row.original.num_active_players}
+                            </Text>
+                        );
+                    }
                 },
             },
             {
                 header: "Marketplaces",
+                size: 180,
                 Cell: ({ row }) => (
                     <Flex gap="5px" wrap="wrap">
                         {row.original.nyse && <Badge>NYSE</Badge>}
@@ -80,6 +88,7 @@ export default function ContestTable({
             {
                 accessorKey: "duration",
                 header: "Duration",
+                size: 70,
                 Cell: ({ cell }) => {
                     let label = "";
 
