@@ -196,7 +196,7 @@ export default function ContestTable({
             style: { display: "none" },
         },
         renderDetailPanel: ({ row }) => {
-            if(row.original){
+            if(contests.length > 0){
                 const activePortfolios = row.original.portfolios.filter(
                     (portfolio) => portfolio.active
                 );

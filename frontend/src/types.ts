@@ -114,6 +114,7 @@ export const defaultAccount: Account = {
 
 export const defaultContest: Contest = {
     id: undefined, // Optional ID, can be undefined for a new contest
+    starting_balance: 100000,
     name: "",
     owner: undefined, // Will be assigned when the contest is created
     is_tournament: false,
