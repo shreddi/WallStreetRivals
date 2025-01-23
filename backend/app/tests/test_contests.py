@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 from django.test import TestCase
-from ..models import Player, Contest, Portfolio
+from ..models import Player, Contest, Portfolio, Notification
 from ..serializers.contest_serializers import ContestSerializer
 
 class ContestSerializerTestCase(TestCase):
@@ -87,3 +87,20 @@ class ContestSerializerTestCase(TestCase):
         serializer = ContestSerializer(data=invalid_data)
         self.assertFalse(serializer.is_valid())
         self.assertIn("At least one marketplace (NYSE, NASDAQ, or Crypto) must be enabled.", serializer.errors['marketplaces'])
+
+    def test_notifications_created_on_contest_create(self):
+        serializer = ContestSerializer(data=self.valid_data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        contest = serializer.save()
+
+        # Assert notifications are created for each player
+        notifications = Notification.objects.filter(contest=contest)
+        self.assertEqual(notifications.count(), 3)
+
+        # Assert that each notification is associated with the correct player
+        notification_player_ids = [notification.player.id for notification in notifications]
+        self.assertListEqual(notification_player_ids, [self.player1.id, self.player2.id, self.player3.id])
+
+        # Assert that the notification type is correct
+        for notification in notifications:
+            self.assertEqual(notification.type, "contest_invite")

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .portfolio_serializers import PortfolioSerializer
-from ..models import Contest, Player, Portfolio
+from ..models import Contest, Player, Portfolio, Notification
 from datetime import date, datetime, timedelta, time
 import pytz
 
@@ -49,6 +49,7 @@ class ContestSerializer(serializers.ModelSerializer):
         # Create a portfolio for each player and associate with the contest
         for player in players:
             Portfolio.objects.create(player=player, contest=contest)
+            Notification.objects.create(player=player, contest=contest, type="contest_invite")
 
         return contest
 
