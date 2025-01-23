@@ -25,15 +25,17 @@ env_file = ".env.prod" if os.getenv("DJANGO_ENV") == "production" else ".env.dev
 load_dotenv(os.path.join(BASE_DIR, env_file))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")#"django-insecure-y*kkmdl$+nar0q(f_a@f$(19kvdqr@s1u1a(=5%i$@sl%jm7t6"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ") 
 
-# FRONTEND_URL = os.environ.get("FRONTEND_URL")
-FRONTEND_URL = "http://localhost:5173"
+FRONTEND_URL = os.environ.get("FRONTEND_URL")
+
+BACKEND_URL = os.environ.get("BACKEND_URL")
+# FRONTEND_URL = "http://localhost:5173"
 
 # Application definition
 
@@ -181,7 +183,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'static'
+# STATIC_ROOT = BASE_DIR / 'static'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),  # Ensure this matches your structure
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
