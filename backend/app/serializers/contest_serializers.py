@@ -44,12 +44,16 @@ class ContestSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Extract player IDs from the input data
         players = validated_data.pop("players", [])
+        owner = validated_data.get("owner")
         contest = Contest.objects.create(**validated_data)
 
         # Create a portfolio for each player and associate with the contest
         for player in players:
-            Portfolio.objects.create(player=player, contest=contest)
-            Notification.objects.create(player=player, contest=contest, type="contest_invite")
+            if(player.id == owner.id):
+                Portfolio.objects.create(player=player, contest=contest, active=True)
+            else:
+                Portfolio.objects.create(player=player, contest=contest, active=False)
+                Notification.objects.create(player=player, contest=contest, type="contest_invite")
 
         return contest
 
