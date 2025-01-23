@@ -18,12 +18,13 @@ import {
 import { useMemo } from "react";
 import { IconPlus, IconX, IconCrown } from "@tabler/icons-react";
 
-interface PlayerProps {
+interface PlayerTableProps {
     players: Player[];
     onAdd?: (player: Player) => void;
     onRemove?: (player: Player) => void;
     emptyLabel?: string;
     loading?: boolean;
+    nested?: boolean
 }
 
 export default function PlayerTable({
@@ -32,7 +33,8 @@ export default function PlayerTable({
     onRemove,
     emptyLabel,
     loading,
-}: PlayerProps) {
+    nested,
+}: PlayerTableProps) {
     const columns = useMemo<MRT_ColumnDef<Player>[]>(
         () => [
             {
@@ -118,8 +120,12 @@ export default function PlayerTable({
         },
         mantineTableContainerProps: {
             style: {
+                minHeight: (nested ? "0px" : "354px"),
                 maxHeight: "354px", // Adjust the height as needed
             },
+        },
+        mantinePaperProps: {
+            radius: (nested ? '0px' : '5px'),
         },
         renderEmptyRowsFallback: () => (
             <Box style={{ textAlign: "center" }}>

@@ -84,14 +84,14 @@ export default function ContestDetailPanel({
                 <></>
             </Tabs.Panel>
             <Tabs.Panel value="players">
-                <PlayerTable players={players} />
+                <PlayerTable players={players} nested={true}/>
             </Tabs.Panel>
             <Tabs.Panel value="transactions">
                 <></>
             </Tabs.Panel>
             <Tabs.Panel value="contestDetails">
-                <Group bg="white" justify="space-between">
-                    <Stack
+            <Group bg="white" justify="space-between" bd='1px solid gray.3'>
+            <Stack
                         p="md"
                         h="100%"
                         align="flex-start"
