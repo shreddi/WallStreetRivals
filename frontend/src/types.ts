@@ -72,8 +72,8 @@ export interface Contest extends ResourceWithMetadata {
     league_type: string;
     cash_interest_rate: number;
     duration: string;
-    start_date: Date | string;
-    end_date: Date;
+    start_date: string;
+    end_date: string;
     player_limit: number;
     nyse: boolean
     nasdaq: boolean
