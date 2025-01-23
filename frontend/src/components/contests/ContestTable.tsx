@@ -196,16 +196,20 @@ export default function ContestTable({
             style: { display: "none" },
         },
         renderDetailPanel: ({ row }) => {
-            const activePortfolios = row.original.portfolios.filter(
-                (portfolio) => portfolio.active
-            );
-            const players = activePortfolios.map(
-                (portfolio) => portfolio.player
-            );
+            if(row.original){
+                const activePortfolios = row.original.portfolios.filter(
+                    (portfolio) => portfolio.active
+                );
+                const players = activePortfolios.map(
+                    (portfolio) => portfolio.player
+                );
 
-            return (
-                <ContestDetailPanel players={players} contest={row.original} detailed={detailed}/>
-            );
+                return (
+                    <ContestDetailPanel players={players} contest={row.original} detailed={detailed}/>
+                );
+            }else{
+                return (<></>)
+            }
         },
     });
 

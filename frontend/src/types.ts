@@ -67,6 +67,7 @@ export interface Account extends Player {
 
 export interface Contest extends ResourceWithMetadata {
     id?: number;
+    starting_balance: number;
     name: string;
     owner?: number; //fk
     picture?: string //static image url

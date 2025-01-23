@@ -330,6 +330,24 @@ export default function NewLeague() {
                         />
                     </Stack>
                     <Stack>
+                        <Text>Starting Balance</Text>
+                        <Slider
+                            mt="20px"
+                            value={contest.starting_balance}
+                            onChange={(val) =>
+                                setContest({
+                                    ...contest,
+                                    starting_balance: val,
+                                })
+                            }
+                            min={100000}
+                            max={500000}
+                            step={25000}
+                            label={(value) => `${value/1000},000`}
+                            labelAlwaysOn
+                        />
+                    </Stack>
+                    <Stack>
                         <Text>Start Date</Text>
                         <DatePicker
                             value={stringToDate(contest.start_date)}

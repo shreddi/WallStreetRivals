@@ -3,10 +3,11 @@ from .portfolio_serializers import PortfolioSerializer
 from ..models import Contest, Player, Portfolio, Notification
 from datetime import date, datetime, timedelta, time
 import pytz
+from django.db import transaction
 
 
 class ContestSerializer(serializers.ModelSerializer):
-    # portfolios = PortfolioSerializer(many=True, read_only=True)
+    starting_balance = serializers.IntegerField(required=True, write_only=True)
     portfolios = serializers.SerializerMethodField()
     time_left = serializers.SerializerMethodField(read_only=True)
     players = serializers.PrimaryKeyRelatedField(many=True, queryset=Player.objects.all(), write_only=True)
@@ -38,22 +39,26 @@ class ContestSerializer(serializers.ModelSerializer):
             "rank",
             "balance",
             "state",
+            "starting_balance",
         ]
         extra_kwargs = {"end_date": {"read_only": True}}
 
+    @transaction.atomic
     def create(self, validated_data):
         # Extract player IDs from the input data
         players = validated_data.pop("players", [])
         owner = validated_data.get("owner")
+        starting_balance = validated_data.pop("starting_balance")
         contest = Contest.objects.create(**validated_data)
-
+        
         # Create a portfolio for each player and associate with the contest
         for player in players:
-            if(player.id == owner.id):
-                Portfolio.objects.create(player=player, contest=contest, active=True)
+            if player.id == owner.id:
+                Portfolio.objects.create(player=player, contest=contest, active=True, cash=starting_balance)
             else:
-                Portfolio.objects.create(player=player, contest=contest, active=False)
                 Notification.objects.create(player=player, contest=contest, type="contest_invite")
+                Portfolio.objects.create(player=player, contest=contest, active=False, cash=starting_balance)
+
 
         return contest
 
@@ -78,7 +83,7 @@ class ContestSerializer(serializers.ModelSerializer):
         # Validate the name has a maximum length
         if len(value) > 50:  # Adjust the limit as needed
             raise serializers.ValidationError("The name must not exceed 50 characters.")
-        
+
         return value
 
     def validate(self, data):
