@@ -37,3 +37,15 @@ export const createContest = async (formData: FormData) => {
         throw error;
     }
 }
+
+export const getSingleContest = async (contestID: number) => {
+    const headers = getAuthHeaders()
+    
+    try {
+        const response = await axios.get(buildUrl(`/api/contests/${contestID}/`), {headers, withCredentials: true});
+        return response.data;
+    } catch (error) {
+        console.error(`Failed to get contest: `, error);
+        throw error;
+    }
+}

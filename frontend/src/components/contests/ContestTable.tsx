@@ -20,11 +20,13 @@ import ContestDetailPanel from "./ContestDetailPanel";
 interface ContestTableProps {
     contests: Contest[];
     detailed?: boolean;
+    single?: boolean;
 }
 
 export default function ContestTable({
     contests,
     detailed,
+    single,
 }: ContestTableProps) {
     const columns = useMemo<MRT_ColumnDef<Contest>[]>(
         () => [
@@ -177,16 +179,18 @@ export default function ContestTable({
     const table = useMantineReactTable({
         columns,
         data: contests,
-        // enableExpandAll: false,
         enableDensityToggle: false,
         enableFullScreenToggle: false,
         enableSorting: false,
         enableHiding: false,
         enableColumnActions: false,
         enableColumnFilters: false,
+        enableTopToolbar: !single,
+        enableBottomToolbar: !single,
         initialState: {
             density: "xs",
             columnVisibility: { balance: detailed ?? false },
+            expanded: !!single
         },
         mantineExpandAllButtonProps: {
             style: { display: "none" },
