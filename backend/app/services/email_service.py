@@ -12,7 +12,7 @@ def send_invitation_email(player, contest):
         {   
             "player": player,
             "contest": contest,
-            "invitation_link": f"https://{settings.FRONTEND_URL}/contests/{contest.id}",
+            "invitation_link": f"{settings.FRONTEND_URL}/contest/{contest.id}",
         },
     )
     send_mail(
