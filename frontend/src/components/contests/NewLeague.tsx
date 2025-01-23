@@ -25,6 +25,7 @@ import placeholderImage from "../../assets/placeholder.png";
 import { DatePicker } from "@mantine/dates";
 import { createContest } from "../../api/contestService";
 import { useNavigate } from "react-router-dom";
+import { DateTime } from "luxon";
 
 export default function NewLeague() {
     const { currentAccount: currentPlayer } = useAccount();
@@ -199,7 +200,7 @@ export default function NewLeague() {
 
     return (
         <AppShell>
-            <Stack gap="xl" p="md" w='75%'>
+            <Stack gap="xl" p="md" w="75%">
                 <Title order={1}>Create new league</Title>
                 <Title order={4}>Invite players</Title>
                 {validationErrors.players && (
@@ -347,10 +348,12 @@ export default function NewLeague() {
                                 })
                             }
                             minDate={
-                                new Date(
-                                    new Date().setDate(new Date().getDate() + 1)
-                                )
-                            } // 1 day after today
+                                DateTime.now()
+                                    .setZone("America/New_York")
+                                    .endOf("day") // Move to the end of the current day in EST
+                                    .plus({ days: 1 }) // Add 1 day to ensure it's the next day
+                                    .toJSDate() 
+                            }
                             maxDate={
                                 new Date(
                                     new Date().setFullYear(
